@@ -151,28 +151,23 @@ L'algorithme ne place ces commandes que sur des dates où la totalité de la qua
 
 ## 12. Exclusions Complètes (EXCLUSIONS)
 
-Commandes totalement exclues du plan :
+Commandes totalement exclues du plan (hors commandes déjà livrées = auto-exclusion État=Livrée) :
 
-| Réf. | Client | Raison |
-|------|--------|--------|
-| SO2601-42244 | GIC AMOUR (TEDONGMO YEMDJI FRANCK) | Client exclu |
-| SO2507-25604 | — | Commande retirée |
-| SO2603-48874 | ABDOUL NASSER HAMADOU | Livraison partielle : 2000 déjà livrées (réelle) |
-| SO2509-31314 | — | Échéance hors période : septembre |
-| SO2511-37631 | — | Pas prêt à livrer |
-| SO2512-39755 | — | Livraison partielle : reste 200 |
-| SO2604-53606 | PRODIPEL SARL | **Reportée** — prise en intégralité, livraison reportée |
-| SO2506-24935 | — | Commande non sûre |
-| SO2602-45862 | ABOUBAKAR SADJO | Commande déjà livrée |
-| SO2604-52536 | TAMATIO | Commande déjà livrée |
-| SO2601-44631 | TCHINDA KAAWE SOL PLEISIS | Déjà livrée (problème système — non mis à jour) |
-| SO2603-50721 | CHRISTY NJIE | **Retirée du plan** — sur demande |
-| SO2602-46834 | TOWA LUC | **Retirée du plan** — sur demande |
-| SO2604-53945 | KOAGNE TCHOUDA DADINE CAROLLE | **Retirée du plan** — sur demande |
-| SO2604-53949 | TAMOU JEAN ROBERT | **Retirée du plan** — sur demande |
-| SO2602-46455 | Midland Company Limited | **Retirée du plan** — sur demande |
-| SO2604-52423 | GIC Jeunes Producteurs Agropastoraux | Commande déjà livrée |
-| SO2601-42254 | Gic Producteurs De Mais De Yaounde | Commande déjà livrée |
+| Réf. | Client | Qté | Agence | Raison |
+|------|--------|-----|--------|--------|
+| SO2601-42244 | GIC AMOUR | 8 000 | BELGO-FAMLA | Client exclu |
+| SO2507-25604 | — | — | — | Commande retirée |
+| SO2603-48874 | ABDOUL NASSER HAMADOU | 2 150 | BELGO-NDERE | Livraison partielle : 2000 déjà livrées (réelle) |
+| SO2509-31314 | — | — | — | Échéance hors période : septembre |
+| SO2511-37631 | — | — | — | Pas prêt à livrer |
+| SO2512-39755 | — | — | — | Livraison partielle : reste 200 |
+| SO2604-53606 | PRODIPEL SARL | 15 700 | BELGO-NDJELENG | **Reportée** — prise en intégralité, livraison reportée |
+| SO2506-24935 | — | — | — | Commande non sûre |
+| SO2603-50721 | CHRISTY NJIE | 500 | BELGO-BERI | **Retirée du plan** — sur demande |
+| SO2602-46834 | TOWA LUC | 2 200 | BELGO-FAMLA | **Retirée du plan** — sur demande |
+| SO2604-53945 | KOAGNE TCHOUDA DADINE CAROLLE | 3 300 | BELGO-NDJELENG | **Retirée du plan** — sur demande |
+| SO2604-53949 | TAMOU JEAN ROBERT | 2 000 | BELGO-NDJELENG | **Retirée du plan** — sur demande |
+| SO2602-46455 | Midland Company Limited | 100 | BELGO-BERI | **Retirée du plan** — sur demande |
 
 ---
 
