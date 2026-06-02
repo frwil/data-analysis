@@ -98,9 +98,17 @@ Classification :
 
 ## 6. Verrouillage Régional (REGION_LOCK_DATES)
 
-*Aucun verrouillage défini pour ce cycle.*
+| Date | Régions autorisées |
+|------|--------------------|
+| 04/06/2026 | Ouest + Nord + Est |
+| 05/06/2026 | Centre uniquement |
+| 10/06/2026 | Centre uniquement |
+| 11/06/2026 | Ouest uniquement |
+| 15/06/2026 | Centre uniquement |
+| 19/06/2026 | Ouest uniquement |
 
-Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible.
+- **Le Littoral est exempté** de tous les verrouillages — il peut s'insérer partout (minime ≤25% du jour)
+- Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible
 
 ---
 
@@ -153,21 +161,21 @@ L'algorithme ne place ces commandes que sur des dates où la totalité de la qua
 
 Commandes totalement exclues du plan (hors commandes déjà livrées = auto-exclusion État=Livrée) :
 
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2601-42244 | GIC AMOUR | 8 000 | BELGO-FAMLA | Client exclu |
-| SO2507-25604 | — | — | — | Commande retirée |
-| SO2603-48874 | ABDOUL NASSER HAMADOU | 2 150 | BELGO-NDERE | Livraison partielle : 2000 déjà livrées (réelle) |
-| SO2509-31314 | — | — | — | Échéance hors période : septembre |
-| SO2511-37631 | — | — | — | Pas prêt à livrer |
-| SO2512-39755 | — | — | — | Livraison partielle : reste 200 |
-| SO2604-53606 | PRODIPEL SARL | 15 700 | BELGO-NDJELENG | **Reportée** — prise en intégralité, livraison reportée |
-| SO2506-24935 | — | — | — | Commande non sûre |
-| SO2603-50721 | CHRISTY NJIE | 500 | BELGO-BERI | **Retirée du plan** — sur demande |
-| SO2602-46834 | TOWA LUC | 2 200 | BELGO-FAMLA | **Retirée du plan** — sur demande |
-| SO2604-53945 | KOAGNE TCHOUDA DADINE CAROLLE | 3 300 | BELGO-NDJELENG | **Retirée du plan** — sur demande |
-| SO2604-53949 | TAMOU JEAN ROBERT | 2 000 | BELGO-NDJELENG | **Retirée du plan** — sur demande |
-| SO2602-46455 | Midland Company Limited | 100 | BELGO-BERI | **Retirée du plan** — sur demande |
+| Réf. | Client | Qté | Agence | Date prévue | Raison |
+|------|--------|-----|--------|-------------|--------|
+| SO2601-42244 | GIC AMOUR | 8 000 | BELGO-FAMLA | 25/02/2026 | Client exclu |
+| SO2507-25604 | — | — | — | — | Commande retirée (absente des extractions) |
+| SO2603-48874 | ABDOUL NASSER HAMADOU | 2 150 | BELGO-NDERE | 11/07/2026 | Livraison partielle : 2000 déjà livrées (réelle) |
+| SO2509-31314 | — | — | — | — | Échéance hors période : septembre (absente des extractions) |
+| SO2511-37631 | — | — | — | — | Pas prêt à livrer (absente des extractions) |
+| SO2512-39755 | — | — | — | — | Livraison partielle : reste 200 (absente des extractions) |
+| SO2604-53606 | PRODIPEL SARL | 15 700 | BELGO-NDJELENG | 23/09/2026 | **Reportée** — prise en intégralité, livraison reportée |
+| SO2506-24935 | — | — | — | — | Commande non sûre (absente des extractions) |
+| SO2603-50721 | CHRISTY NJIE | 500 | BELGO-BERI | 20/06/2026 | **Retirée du plan** — sur demande |
+| SO2602-46834 | TOWA LUC | 2 200 | BELGO-FAMLA | 08/07/2026 | **Retirée du plan** — sur demande |
+| SO2604-53945 | KOAGNE TCHOUDA DADINE CAROLLE | 3 300 | BELGO-NDJELENG | 15/05/2026 | **Retirée du plan** — sur demande |
+| SO2604-53949 | TAMOU JEAN ROBERT | 2 000 | BELGO-NDJELENG | 15/05/2026 | **Retirée du plan** — sur demande |
+| SO2602-46455 | Midland Company Limited | 100 | BELGO-BERI | 01/07/2026 | **Retirée du plan** — sur demande |
 
 ---
 
@@ -179,11 +187,13 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 ## 14. Assignations Forcées (FORCED_ASSIGNMENTS)
 
-*Aucune assignation forcée définie pour ce cycle.*
+Commandes forcées sur une date spécifique :
 
-- Sont planifiées en priorité absolue (Étape 0)
-- Sont protégées contre le rééquilibrage
-- Contournent les restrictions de jour (Nord/Est le mardi)
+### 04/06 (Ouest+Nord+Est)
+
+| Réf. | Client | Qté | Agence | Raison |
+|------|--------|-----|--------|--------|
+| SO2603-47945 | KUATE KENGNE MATHIAS | 4 600 | BELGO-FAMLA | Inclusion exceptionnelle (AGRO-TMC-AKWA) — forcé le 04/06 |
 
 ---
 
@@ -266,6 +276,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v17 | 02/06/2026 | Nouveau cycle juin 2026 : 6 éclosions (04/06–19/06). Capacité 189 000 réel / 174 600 marge. Régions : Ouest+Nord+Est, Centre, Ouest. Reset des forced assignments, excluded_from_date et region_locks du cycle précédent. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 174,450/174,600. 120 exclusions. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 144,400/174,600. 120 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 174,500/174,600. 124 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 188,650/189,000. 124 exclusions. |
 | v16 | 01/06/2026 | Exécution automatique. Planifié 204,400/204,700. 124 exclusions. |
@@ -283,6 +295,10 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **02/06/2026** — Réf: **02/06/2026**
@@ -291,24 +307,24 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 110 |
+| Commandes PONTE | 114 |
 | Commandes COQ | 7 |
-| Exclusions | 124 |
-| Planifié Réel | 174,500 / 174,600 |
-| Planifié Marge | 165,750 / 165,850 |
-| Non planifiées (marge) | 68 |
-| Nouvelles auto-exclusions | 106 |
+| Exclusions | 120 |
+| Planifié Réel | 174,450 / 174,600 |
+| Planifié Marge | 165,850 / 165,850 |
+| Non planifiées (marge) | 77 |
+| Nouvelles auto-exclusions | 107 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 04/06/2026 | Jeu | Centre, Littoral, Ouest | 27,800 | 27,800 | 100% |
-| 05/06/2026 | Ven | Centre, Ouest | 35,700 | 35,700 | 100% |
-| 10/06/2026 | Mer | Ouest | 12,750 | 12,800 | 100% |
+| 04/06/2026 | Jeu | Littoral, Ouest | 27,800 | 27,800 | 100% |
+| 05/06/2026 | Ven | Centre, Littoral | 35,700 | 35,700 | 100% |
+| 10/06/2026 | Mer | Centre | 12,800 | 12,800 | 100% |
 | 11/06/2026 | Jeu | Ouest | 35,300 | 35,300 | 100% |
-| 15/06/2026 | Lun | Centre | 27,050 | 27,100 | 100% |
-| 19/06/2026 | Ven | Centre, Littoral | 35,900 | 35,900 | 100% |
+| 15/06/2026 | Lun | Centre | 26,950 | 27,100 | 99% |
+| 19/06/2026 | Ven | Ouest | 35,900 | 35,900 | 100% |
 
 ### Répartition par priorité
 
@@ -316,6 +332,6 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 |----------|-----------|-------------|
 | IMMINENTE | 6 | 29,650 |
 | NON ÉCHUE | 81 | 486,800 |
-| RECLASSÉE | 4 | 23,500 |
-| ÉCHUE | 18 | 59,300 |
-| ÉCHUE RECLASSÉE | 1 | 3,000 |
+| RECLASSÉE | 5 | 30,500 |
+| ÉCHUE | 19 | 60,400 |
+| ÉCHUE RECLASSÉE | 3 | 26,850 |

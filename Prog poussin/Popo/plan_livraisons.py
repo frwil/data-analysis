@@ -718,7 +718,8 @@ def run_allocation(df_orders, capacity_key):
                 continue
 
             # CONTRAINTE: verrouillage régional (REGION_LOCK_DATES)
-            if date in REGION_LOCK_DATES and region not in REGION_LOCK_DATES[date]:
+            # Le Littoral est toujours exempté des verrouillages régionaux
+            if date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[date]:
                 continue
 
             # Vérification de compatibilité région
@@ -1082,7 +1083,7 @@ def run_allocation(df_orders, capacity_key):
                         continue
                     
                     # Vérifier verrouillage régional (REGION_LOCK_DATES)
-                    if early_date in REGION_LOCK_DATES and region not in REGION_LOCK_DATES[early_date]:
+                    if early_date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[early_date]:
                         continue
                     
                     # DÉPLACER la commande de late_date vers early_date
@@ -1147,7 +1148,7 @@ def run_allocation(df_orders, capacity_key):
                 # Vérifier aussi EXCLUDED_FROM_DATE et REGION_LOCK_DATES
                 if ref in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[ref]:
                     continue
-                if date in REGION_LOCK_DATES and region not in REGION_LOCK_DATES[date]:
+                if date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[date]:
                     continue
                 if (get_cap(date) > 0 
                     and is_day_allowed(region, date)
@@ -1235,7 +1236,7 @@ def run_allocation(df_orders, capacity_key):
                 # Vérifier aussi EXCLUDED_FROM_DATE et REGION_LOCK_DATES
                 if order['ref'] in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[order['ref']]:
                     continue
-                if date in REGION_LOCK_DATES and region not in REGION_LOCK_DATES[date]:
+                if date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[date]:
                     continue
                 if (get_cap(date) > 0 
                     and is_day_allowed(region, date)
@@ -1262,7 +1263,7 @@ def run_allocation(df_orders, capacity_key):
                     # Vérifier aussi EXCLUDED_FROM_DATE et REGION_LOCK_DATES
                     if order['ref'] in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[order['ref']]:
                         continue
-                    if date in REGION_LOCK_DATES and region not in REGION_LOCK_DATES[date]:
+                    if date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[date]:
                         continue
                     if (get_cap(date) > 0 
                         and is_day_allowed(region, date)
@@ -1272,10 +1273,17 @@ def run_allocation(df_orders, capacity_key):
                 if can_still_schedule_le1000:
                     break
         
-        can_schedule_non_echue = (not can_still_schedule_imminente and 
-                                  not can_still_schedule_le1000)
-        
-        if can_schedule_non_echue:
+        # v17: En force majeure, les NON ÉCHUE remplissent TOUJOURS la capacité restante,
+        # même s'il reste des IMMINENTE ou ≤1000 théoriquement planifiables.
+        # Ces commandes prioritaires n'ont pas pu être placées (contraintes régionales,
+        # split, NO_SPLIT, etc.) — laisser la capacité vide serait pire.
+        force_majeure_warning = []
+        if can_still_schedule_imminente:
+            force_majeure_warning.append('IMMINENTE restantes non placées (contraintes)')
+        if can_still_schedule_le1000:
+            force_majeure_warning.append('≤1000 restantes non placées (contraintes)')
+
+        if True:  # Toujours procéder en force majeure
             # v13: Les NON ÉCHUE peuvent remplir TOUTES les dates avec capacité restante.
             # La restriction min_date (qui bloquait les NON ÉCHUE après la dernière date
             # prioritaire) a été supprimée car elle empêchait le remplissage des dates
@@ -1323,19 +1331,9 @@ def run_allocation(df_orders, capacity_key):
                                 o['force_majeure'] = True
             
             print(f"    NON ÉCHUE planifiées: {phase3_scheduled_qty:,} sujets (dont {phase3_flexible_qty:,} en flexibilité régionale)")
-        else:
-            if can_still_schedule_imminente:
-                print(f"    ⚠ IMMINENTE restantes planifiables — NON ÉCHUE bloquée")
-            elif can_still_schedule_le1000:
-                print(f"    ⚠ Commandes ≤1000 restantes planifiables — NON ÉCHUE bloquée")
-                print(f"    Commandes ≤1000 non planifiées:")
-                all_remaining_le1k = df_orders[
-                    (df_orders['priority_num'] != NON_ECHUE_NUM) & 
-                    (df_orders['qte_restante'] <= 1000)
-                ]
-                for _, o in all_remaining_le1k.iterrows():
-                    if remaining_qty.get(o['ref'], 0) > 0:
-                        print(f"      {o['ref']}: {remaining_qty[o['ref']]:,} | {o['priority_label']} | {o['region_norm']}")
+        if force_majeure_warning:
+            for w in force_majeure_warning:
+                print(f"    ⚠ Force majeure: {w} — NON ÉCHUE comble la capacité restante")
     
     # =======================================================================
     # v13: VALIDATION CHRONOLOGIQUE — ÉCHUE AVANT NON ÉCHUE
@@ -1413,7 +1411,7 @@ def run_allocation(df_orders, capacity_key):
                         continue
                     
                     # Vérifier verrouillage régional pour la commande prioritaire sur la date NON ÉCHUE
-                    if ne_date in REGION_LOCK_DATES and p_region not in REGION_LOCK_DATES[ne_date]:
+                    if ne_date in REGION_LOCK_DATES and p_region != 'Littoral' and p_region not in REGION_LOCK_DATES[ne_date]:
                         continue
                     
                     # Vérifier région + jour pour la commande NON ÉCHUE sur la date prioritaire
@@ -1423,7 +1421,7 @@ def run_allocation(df_orders, capacity_key):
                         continue
                     
                     # Vérifier verrouillage régional pour la commande NON ÉCHUE sur la date prioritaire
-                    if p_date in REGION_LOCK_DATES and ne_region not in REGION_LOCK_DATES[p_date]:
+                    if p_date in REGION_LOCK_DATES and ne_region != 'Littoral' and ne_region not in REGION_LOCK_DATES[p_date]:
                         continue
                     
                     # Effectuer le swap
