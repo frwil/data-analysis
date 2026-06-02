@@ -276,6 +276,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v17 | 02/06/2026 | Nouveau cycle juin 2026 : 6 éclosions (04/06–19/06). Capacité 189 000 réel / 174 600 marge. Régions : Ouest+Nord+Est, Centre, Ouest. Reset des forced assignments, excluded_from_date et region_locks du cycle précédent. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 128,000/174,600. 216 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 174,450/174,600. 120 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 144,400/174,600. 120 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 174,500/174,600. 124 exclusions. |
@@ -299,6 +300,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **02/06/2026** — Réf: **02/06/2026**
@@ -307,31 +310,31 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 114 |
-| Commandes COQ | 7 |
-| Exclusions | 120 |
-| Planifié Réel | 174,450 / 174,600 |
-| Planifié Marge | 165,850 / 165,850 |
-| Non planifiées (marge) | 77 |
-| Nouvelles auto-exclusions | 107 |
+| Commandes PONTE | 123 |
+| Commandes COQ | 11 |
+| Exclusions | 216 |
+| Planifié Réel | 128,000 / 174,600 |
+| Planifié Marge | 126,000 / 165,850 |
+| Non planifiées (marge) | 104 |
+| Nouvelles auto-exclusions | 203 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 04/06/2026 | Jeu | Littoral, Ouest | 27,800 | 27,800 | 100% |
-| 05/06/2026 | Ven | Centre, Littoral | 35,700 | 35,700 | 100% |
+| 04/06/2026 | Jeu | Littoral, Nord, Ouest | 27,800 | 27,800 | 100% |
+| 05/06/2026 | Ven | Centre, Littoral | 32,950 | 35,700 | 92% |
 | 10/06/2026 | Mer | Centre | 12,800 | 12,800 | 100% |
-| 11/06/2026 | Jeu | Ouest | 35,300 | 35,300 | 100% |
-| 15/06/2026 | Lun | Centre | 26,950 | 27,100 | 99% |
-| 19/06/2026 | Ven | Ouest | 35,900 | 35,900 | 100% |
+| 11/06/2026 | Jeu | Ouest | 34,250 | 35,300 | 97% |
+| 15/06/2026 | Lun | - | 0 | 27,100 | 0% |
+| 19/06/2026 | Ven | Ouest | 20,200 | 35,900 | 56% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 6 | 29,650 |
-| NON ÉCHUE | 81 | 486,800 |
-| RECLASSÉE | 5 | 30,500 |
-| ÉCHUE | 19 | 60,400 |
-| ÉCHUE RECLASSÉE | 3 | 26,850 |
+| IMMINENTE | 11 | 36,500 |
+| NON ÉCHUE | 89 | 607,200 |
+| RECLASSÉE | 13 | 84,250 |
+| ÉCHUE | 8 | 29,800 |
+| ÉCHUE RECLASSÉE | 2 | 23,850 |

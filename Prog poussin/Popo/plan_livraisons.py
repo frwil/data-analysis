@@ -50,8 +50,8 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', '16382c5d-20b8-410f-abaa-259c39fe777e.xlsx')
-EXP_FILE = os.path.join('extractions', 'bbeedece-69ae-44bc-ae14-14a53573326a.xlsx')
+ATR_FILE = os.path.join('extractions', 'AT_2026-06-02.xlsx')
+EXP_FILE = os.path.join('extractions', 'EXP_2026-06-02.xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 
 REF_DATE = config['ref_date'] or datetime(2026, 5, 15)
