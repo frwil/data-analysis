@@ -44,21 +44,31 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📈 Dernière Exécution (01/06/2026)
+## 📈 Dernière Exécution (02/06/2026) — v19 Exceptionnelle
 
 | Métrique | Valeur |
 |----------|--------|
-| REF_DATE | 26/05/2026 |
-| Commandes PONTE | 103 (571 100 sujets) |
-| Commandes COQ | 7 (850 sujets) |
-| Exclusions | 131 |
-| **Planifié Réel** | **106 400 / 106 700** |
+| REF_DATE | 02/06/2026 |
+| Commandes PONTE | 123 (781 600 sujets) |
+| Commandes COQ | 11 (17 550 sujets) |
+| Exclusions | 216 |
+| **Planifié Réel** | **174 600 / 174 600** |
+| **Planifié Marge** | **165 700 / 165 850** |
 
 | Date | Région | Réel |
 |------|--------|------|
-| Lun 25/05 | Centre | 30 000/30 000 |
-| Mar 26/05 | Littoral + Ouest | 38 400/38 700 |
-| Ven 29/05 | Centre + Littoral + Ouest | 38 000/38 000 |
+| Jeu 04/06 | Littoral + Nord | 27 800/27 800 |
+| Ven 05/06 | Centre | 35 700/35 700 |
+| Mer 10/06 | Centre | 12 800/12 800 |
+| Jeu 11/06 | Ouest | 35 300/35 300 |
+| Lun 15/06 | Centre + Littoral | 27 100/27 100 |
+| Ven 19/06 | Ouest | 35 900/35 900 |
+
+### 🔄 Changements exceptionnels (v19)
+- **5 commandes forcées sur le 04/06** : SO2605-56192, SO2603-50402, SO2603-49144, SO2604-51013, SO2605-57283
+- **KUATE SO2603-47945** retiré du 04/06 → repositionné le **11/06** (Ouest) ✓
+- **SO2605-57283** ajouté au NO_SPLIT (intégralité le 04/06) — 9 750/10 000 placé (manque 250, capacité saturée)
+- ⚠️ Littoral conséquent sur 04/06 (40.5% > 25%) — exception acceptée
 
 ---
 

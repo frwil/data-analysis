@@ -522,6 +522,44 @@ for i, (_, r) in enumerate(df_ponte.head(10).iterrows()):
     dp = r['date_prevue'].strftime('%d/%m/%Y') if pd.notna(r['date_prevue']) else 'N/A'
     print(f"    {i+1}. {r['ref']} | {r['priority_label']:20s} | qte={r['qte_restante']:,} | date_prevue={dp} | region={r['region_norm']}")
 
+# Équité §4 : recalcul dynamique de l'échéance par rapport à la date de programmation
+def get_dynamic_priority(date_prevue, date_modif, date_commande, target_date):
+    """
+    Recalcule le statut d'échéance en utilisant target_date comme référence
+    (au lieu de REF_DATE). Règle d'équité §4 : une commande programmée à une
+    date ultérieure ne doit pas être pénalisée par rapport à aujourd'hui.
+    Retourne (priority_num, priority_label).
+    """
+    if date_prevue is None or pd.isna(date_prevue):
+        return 5, 'SANS DATE'
+
+    ref = target_date if target_date and not pd.isna(target_date) else REF_DATE
+
+    is_reclassee = False
+    if (date_modif and not pd.isna(date_modif) and date_commande and not pd.isna(date_commande)
+        and isinstance(date_modif, datetime) and isinstance(date_commande, datetime)
+        and isinstance(date_prevue, datetime)):
+        modif_date = date_modif.date()
+        cmd_date = date_commande.date()
+        prevue_date = date_prevue.date()
+        if modif_date > cmd_date and modif_date < prevue_date - timedelta(days=5):
+            is_reclassee = True
+
+    is_echue = date_prevue <= ref
+    is_imminente = not is_echue and (date_prevue - ref).days <= 10
+
+    if is_echue and is_reclassee:
+        return 2, 'ÉCHUE RECLASSÉE'
+    elif is_echue:
+        return 1, 'ÉCHUE'
+    elif is_reclassee:
+        return 3, 'RECLASSÉE'
+    elif is_imminente:
+        return 4, 'IMMINENTE'
+    else:
+        return 6, 'NON ÉCHUE'
+
+
 # Allocation pour Plan Réel et Plan Marge
 def run_allocation(df_orders, capacity_key):
     """
@@ -705,8 +743,8 @@ def run_allocation(df_orders, capacity_key):
         # Aucune non-Littoral existante → on peut ajouter
         return True
     
-    def assign(ref, tiers, agence, region, produit, qty, priority, date_prevue, date, 
-               forced=False, force_majeure=False):
+    def assign(ref, tiers, agence, region, produit, qty, priority, date_prevue, date,
+               forced=False, force_majeure=False, date_modif=None, date_commande=None):
         alloc = allocations[date]
         alloc['qty_used'] += qty
         alloc['regions'].add(region)
@@ -715,6 +753,9 @@ def run_allocation(df_orders, capacity_key):
             'produit': produit, 'qte': qty, 'priority': priority,
             'date_prevue': date_prevue, 'forced': forced,
             'force_majeure': force_majeure,
+            '_date_prevue': date_prevue,
+            '_date_modif': date_modif,
+            '_date_commande': date_commande,
         })
     
     def try_schedule_order(order, qty_left, flexible_region=False, prefer_early_dates=False, min_date=None):
@@ -835,10 +876,17 @@ def run_allocation(df_orders, capacity_key):
             cap = get_cap(date)
             if cap <= 0:
                 continue
+            # Tolérance de dépassement : la marge (95%) absorbe les petits écarts.
+            # On ne "casse" pas une quantité si la capacité restante est proche.
+            CAPACITY_OVERSHOOT_TOLERANCE = 500
             # NO_SPLIT: sauter les dates où la quantité complète ne tient pas
-            if is_no_split and cap < qty_left:
+            # (avec tolérance pour les petits dépassements)
+            if is_no_split and cap < qty_left - CAPACITY_OVERSHOOT_TOLERANCE:
                 continue
-            qty_assign = min(qty_left, cap)
+            if 0 < qty_left - cap <= CAPACITY_OVERSHOOT_TOLERANCE:
+                qty_assign = qty_left  # on place la totalité, léger dépassement
+            else:
+                qty_assign = min(qty_left, cap)
             # Vérification règle de split (Contrainte n°13) :
             if qty_assign < qty_left:  # c'est un split
                 if qty_left < order['qte_restante']:
@@ -850,7 +898,8 @@ def run_allocation(df_orders, capacity_key):
                         continue  # Split trop petit → on saute cette date
             assign(ref, order['tiers'], order['agence'], region,
                    order['produit'], qty_assign, order['priority_label'],
-                   order['date_prevue'], date)
+                   order['date_prevue'], date,
+                   date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
             qty_left -= qty_assign
             remaining_qty[ref] = qty_left
             
@@ -877,10 +926,16 @@ def run_allocation(df_orders, capacity_key):
         qty = remaining_qty[ref]
         cap = get_cap(forced_date)
         if cap > 0:
-            qty_assign = min(qty, cap)
+            # Tolérance de dépassement : on ne réduit pas la qté forcée
+            # si la capacité restante est proche (marge 95% absorbe l'écart)
+            if 0 < qty - cap <= 500:
+                qty_assign = qty
+            else:
+                qty_assign = min(qty, cap)
             assign(ref, order['tiers'], order['agence'], order['region_norm'],
                    order['produit'], qty_assign, order['priority_label'],
-                   order['date_prevue'], forced_date, forced=True)
+                   order['date_prevue'], forced_date, forced=True,
+                   date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
             remaining_qty[ref] -= qty_assign
             if remaining_qty[ref] <= 0:
                 scheduled_refs.add(ref)
@@ -946,10 +1001,14 @@ def run_allocation(df_orders, capacity_key):
                     # Essayer d'abord le jour dédié
                     cap = get_cap(best_date)
                     if cap > 0:
-                        qty_assign = min(qty_left, cap)
+                        if 0 < qty_left - cap <= 500:
+                            qty_assign = qty_left
+                        else:
+                            qty_assign = min(qty_left, cap)
                         assign(ref, order['tiers'], order['agence'], 'Littoral',
                                order['produit'], qty_assign, order['priority_label'],
-                               order['date_prevue'], best_date)
+                               order['date_prevue'], best_date,
+                               date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
                         qty_left -= qty_assign
                         remaining_qty[ref] = qty_left
                         if qty_left <= 0:
@@ -1123,7 +1182,8 @@ def run_allocation(df_orders, capacity_key):
                     # Ajouter sur early_date
                     assign(order['ref'], order['tiers'], order['agence'], region,
                            order['produit'], actual_move, order['priority'],
-                           order['date_prevue'], early_date)
+                           order['date_prevue'], early_date,
+                           date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
                     
                     early_remaining -= actual_move
                     moved_this_round += actual_move
@@ -1185,11 +1245,13 @@ def run_allocation(df_orders, capacity_key):
                 print(f"      {order['ref']}: {remaining_qty[order['ref']]:,} | {order['priority_label']} | {order['region_norm']}")
     
     # Phase 2 : IMMINENTE (force majeure)
+    # v20 : Équité §4 — les NON ÉCHUE qui deviennent IMMINENTE par rapport
+    # à une date de programmation ultérieure sont aussi traitées en Phase 2.
     phase2_scheduled_qty = 0
     if not can_still_schedule_high:
         print(f"  [{capacity_key.upper()}] Phase 2: IMMINENTE (force majeure)...")
         phase2_orders = df_orders[df_orders['priority_num'] == IMMINENTE_NUM].copy()
-        
+
         for _, order in phase2_orders.iterrows():
             ref = order['ref']
             qty_left = remaining_qty.get(ref, 0)
@@ -1206,7 +1268,48 @@ def run_allocation(df_orders, capacity_key):
                     for o in allocations[date]['orders']:
                         if o['ref'] == ref and not o.get('force_majeure'):
                             o['force_majeure'] = True
-        
+
+        # v20: Équité §4 — NON ÉCHUE reclassifiées dynamiquement
+        # Une commande NON ÉCHUE aujourd'hui peut devenir IMMINENTE si programmée
+        # à une date ultérieure (ex: date_prévue 20/06, programmée le 15/06 → 5j ≤ 10j)
+        non_echue_orders = df_orders[df_orders['priority_num'] == NON_ECHUE_NUM]
+        phase2_dynamic_qty = 0
+        for _, order in non_echue_orders.iterrows():
+            ref = order['ref']
+            qty_left = remaining_qty.get(ref, 0)
+            if qty_left <= 0:
+                continue
+            # Vérifier si cette commande devient IMMINENTE sur une date dispo
+            best_date = None
+            best_dyn_prio = 99
+            for date in prod_dates:
+                if get_cap(date) <= 0:
+                    continue
+                dyn_prio, _ = get_dynamic_priority(order['date_prevue'], order['date_modif'],
+                                                    order['date_commande'], date)
+                if dyn_prio in (1, 2, 3, 4) and dyn_prio < best_dyn_prio:
+                    # Cette commande devient prioritaire sur cette date
+                    region = order['region_norm']
+                    if (order['ref'] not in EXCLUDED_FROM_DATE or date not in EXCLUDED_FROM_DATE.get(order['ref'], set())):
+                        if (date not in REGION_LOCK_DATES or region == 'Littoral' or region in REGION_LOCK_DATES[date]):
+                            if is_day_allowed(region, date):
+                                best_dyn_prio = dyn_prio
+                                best_date = date
+            if best_date is not None and best_dyn_prio <= 4:
+                qty_before = qty_left
+                # IMMINENTE dynamique : région stricte, préfère dates tôt
+                qty_left = try_schedule_order(order, qty_left, flexible_region=False, prefer_early_dates=True)
+                scheduled_this = qty_before - qty_left
+                if scheduled_this > 0:
+                    phase2_dynamic_qty += scheduled_this
+                    phase2_scheduled_qty += scheduled_this
+                    for d in prod_dates:
+                        for o in allocations[d]['orders']:
+                            if o['ref'] == ref and not o.get('force_majeure'):
+                                o['force_majeure'] = True
+        if phase2_dynamic_qty > 0:
+            print(f"    Dont IMMINENTE dynamiques (équité §4): {phase2_dynamic_qty:,} sujets")
+
         print(f"    IMMINENTE planifiées: {phase2_scheduled_qty:,} sujets")
     
     # =======================================================================
@@ -1466,12 +1569,14 @@ def run_allocation(df_orders, capacity_key):
                     # Ajouter commande prioritaire sur date NON ÉCHUE (date tôt)
                     assign(p_order['ref'], p_order['tiers'], p_order['agence'], p_region,
                            p_order['produit'], swap_qty, p_order['priority'],
-                           p_order['date_prevue'], ne_date)
-                    
+                           p_order['date_prevue'], ne_date,
+                           date_modif=p_order.get('date_modif'), date_commande=p_order.get('date_commande'))
+
                     # Ajouter commande NON ÉCHUE sur date prioritaire (date tardive)
                     assign(ne_order['ref'], ne_order['tiers'], ne_order['agence'], ne_region,
                            ne_order['produit'], swap_qty, ne_order['priority'],
-                           ne_order['date_prevue'], p_date, force_majeure=True)
+                           ne_order['date_prevue'], p_date, force_majeure=True,
+                           date_modif=ne_order.get('date_modif'), date_commande=ne_order.get('date_commande'))
                     
                     # Recalculer régions
                     ne_alloc['regions'] = set(o['region'] for o in ne_alloc['orders']) if ne_alloc['orders'] else set()
@@ -1517,6 +1622,28 @@ def run_allocation(df_orders, capacity_key):
         else:
             print(f"    v12: ✓ Validation réussie — Aucune NON ÉCHUE avant une commande prioritaire")
     
+    # =======================================================================
+    # v20: ÉQUITÉ §4 — Recalcul du statut d'échéance par rapport à la date
+    # de programmation effective de chaque commande.
+    # Une commande placée le 19/06 avec date_prévue=06/06 devient ÉCHUE
+    # (et non IMMINENTE comme elle l'était par rapport à aujourd'hui).
+    # =======================================================================
+    dynamic_reclass_count = 0
+    for date in prod_dates:
+        for o in allocations[date]['orders']:
+            date_prevue = o.get('_date_prevue')
+            date_modif = o.get('_date_modif')
+            date_commande = o.get('_date_commande')
+            if date_prevue is not None and not pd.isna(date_prevue):
+                dyn_prio, dyn_label = get_dynamic_priority(date_prevue, date_modif, date_commande, date)
+                old_label = o.get('priority', '')
+                if dyn_label != old_label:
+                    o['priority'] = dyn_label
+                    o['_dynamic_priority'] = True
+                    dynamic_reclass_count += 1
+    if dynamic_reclass_count > 0:
+        print(f"  [{capacity_key.upper()}] v20 Équité §4: {dynamic_reclass_count} statuts d'échéance recalculés par rapport à la date de programmation")
+
     # Résumé de l'allocation
     total_scheduled = sum(alloc['qty_used'] for alloc in allocations.values())
     print(f"\n  [{capacity_key.upper()}] Résumé:")
@@ -1657,7 +1784,14 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
             order_data = df_ponte[df_ponte['ref'] == order['ref']]
             if len(order_data) > 0 and order_data.iloc[0]['proctor_only']:
                 obs_parts.append('Mouvement systeme (pas de livraison reelle)')
-            
+
+            # Signaler les quantités déjà livrées
+            if len(order_data) > 0:
+                qte_livree = order_data.iloc[0]['qte_livree_reelle']
+                qte_cmde = order_data.iloc[0]['qte_commandee']
+                if qte_livree > 0:
+                    obs_parts.append(f'{qte_livree:,} déjà livrés (sur {qte_cmde:,} commandés)')
+
             # Check if split delivery
             total_order_qty = order_data.iloc[0]['qte_restante'] if len(order_data) > 0 else order['qte']
             if order['qte'] < total_order_qty:
