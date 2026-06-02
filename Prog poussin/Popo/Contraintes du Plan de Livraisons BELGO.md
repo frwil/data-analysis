@@ -276,6 +276,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v17 | 02/06/2026 | Nouveau cycle juin 2026 : 6 éclosions (04/06–19/06). Capacité 189 000 réel / 174 600 marge. Régions : Ouest+Nord+Est, Centre, Ouest. Reset des forced assignments, excluded_from_date et region_locks du cycle précédent. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 174,450/174,600. 216 exclusions. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 128,000/174,600. 216 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 128,000/174,600. 216 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 174,450/174,600. 120 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 144,400/174,600. 120 exclusions. |
@@ -302,6 +304,10 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **02/06/2026** — Réf: **02/06/2026**
@@ -313,9 +319,9 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 123 |
 | Commandes COQ | 11 |
 | Exclusions | 216 |
-| Planifié Réel | 128,000 / 174,600 |
-| Planifié Marge | 126,000 / 165,850 |
-| Non planifiées (marge) | 104 |
+| Planifié Réel | 174,450 / 174,600 |
+| Planifié Marge | 165,850 / 165,850 |
+| Non planifiées (marge) | 90 |
 | Nouvelles auto-exclusions | 203 |
 
 ### Plan Réel par date
@@ -323,11 +329,11 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 04/06/2026 | Jeu | Littoral, Nord, Ouest | 27,800 | 27,800 | 100% |
-| 05/06/2026 | Ven | Centre, Littoral | 32,950 | 35,700 | 92% |
-| 10/06/2026 | Mer | Centre | 12,800 | 12,800 | 100% |
-| 11/06/2026 | Jeu | Ouest | 34,250 | 35,300 | 97% |
-| 15/06/2026 | Lun | - | 0 | 27,100 | 0% |
-| 19/06/2026 | Ven | Ouest | 20,200 | 35,900 | 56% |
+| 05/06/2026 | Ven | Centre, Littoral | 35,700 | 35,700 | 100% |
+| 10/06/2026 | Mer | Centre | 12,650 | 12,800 | 99% |
+| 11/06/2026 | Jeu | Ouest | 35,300 | 35,300 | 100% |
+| 15/06/2026 | Lun | Centre, Littoral | 27,100 | 27,100 | 100% |
+| 19/06/2026 | Ven | Ouest | 35,900 | 35,900 | 100% |
 
 ### Répartition par priorité
 

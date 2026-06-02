@@ -631,9 +631,33 @@ def run_allocation(df_orders, capacity_key):
         if len(non_litt_existing) == 0:
             # Seul Littoral présent → vérifier si Littoral est conséquent
             if 'Littoral' in existing and is_littoral_significant(date):
-                # Littoral conséquent déjà là → pas d'autre région (jour dédié)
-                return False
-            # Littoral minime ou absent → on peut ajouter une non-Littoral
+                # v17: Littoral conséquent → vérifier si la nouvelle région
+                # a d'autres dates avec capacité disponible.
+                # Si oui → jour dédié Littoral (refusé).
+                # Si non → force majeure: autoriser la cohabitation.
+                other_cap = 0
+                for d in prod_dates:
+                    if d == date:
+                        continue
+                    # Vérifier verrouillage régional pour cette région sur l'autre date
+                    if d in REGION_LOCK_DATES and new_region != 'Littoral' and new_region not in REGION_LOCK_DATES[d]:
+                        continue
+                    # Vérifier jour autorisé
+                    if not is_day_allowed(new_region, d):
+                        continue
+                    # Vérifier compatibilité région sur l'autre date
+                    other_existing = allocations[d]['regions']
+                    if other_existing and new_region not in other_existing:
+                        # Vérifier si on peut ajouter new_region à l'autre date
+                        non_litt_other = [r for r in other_existing if r != 'Littoral']
+                        if non_litt_other:
+                            continue  # Déjà une autre région non-Littoral → pas de place
+                        if 'Littoral' in other_existing and is_littoral_significant(d):
+                            continue  # L'autre date a aussi un Littoral conséquent → bloqué
+                    other_cap += get_cap(d)
+                if other_cap > 0:
+                    return False  # La région a d'autres options → jour dédié Littoral
+                # Force majeure: aucune autre capacité → accepter la cohabitation
             return True
         return False
     
@@ -705,14 +729,14 @@ def run_allocation(df_orders, capacity_key):
         region = order['region_norm']
         is_tamatio = order['is_tamatio']
         priority_num = order['priority_num']
-        
+
         # Trouver les dates compatibles, triées par préférence
         compatible_dates = []
         for date in prod_dates:
             # CONTRAINTE: date minimum (pour NON ÉCHUE: ne pas planifier avant les ÉCHUE)
             if min_date is not None and date < min_date:
                 continue
-            
+
             # CONTRAINTE: commande exclue de cette date
             if ref in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[ref]:
                 continue
@@ -816,11 +840,6 @@ def run_allocation(df_orders, capacity_key):
                 continue
             qty_assign = min(qty_left, cap)
             # Vérification règle de split (Contrainte n°13) :
-            # Si on ne peut pas tout placer (qty_assign < qty_left), c'est un split.
-            # - Si pas encore splitée (qty_left == qte_restante): la livraison doit être
-            #   >= 50% de la qté totale (MIN_SPLIT_FIRST_RATIO)
-            # - Si déjà splitée (qty_left < qte_restante): on doit livrer la totalité
-            #   du reste (pas de 2e split) → on saute cette date
             if qty_assign < qty_left:  # c'est un split
                 if qty_left < order['qte_restante']:
                     # Déjà splitée → pas de 2e split, on doit tout livrer
