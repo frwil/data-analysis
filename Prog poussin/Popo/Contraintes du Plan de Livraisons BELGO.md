@@ -4,17 +4,19 @@
 
 | Date | Jour | Réel | Marge (95%) | Région principale |
 |------|------|------|-------------|-------------------|
-| 04/06/2026 | Jeudi | 30 000 | 27 800 | Ouest+Nord+Est |
-| 05/06/2026 | Vendredi | 38 000 | 35 700 | Centre |
-| 10/06/2026 | Mercredi | 15 000 | 12 800 | Centre |
-| 11/06/2026 | Jeudi | 38 000 | 35 300 | Ouest |
-| 15/06/2026 | Lundi | 30 000 | 27 100 | Centre |
-| 19/06/2026 | Vendredi | 38 000 | 35 900 | Ouest |
+| 04/06/2026 | Jeudi | 27 800 | 26 400 | Ouest+Nord+Est |
+| 05/06/2026 | Vendredi | 35 700 | 33 900 | Centre |
+| 10/06/2026 | Mercredi | 12 800 | 12 150 | Centre |
+| 11/06/2026 | Jeudi | 35 300 | 33 550 | Ouest |
+| 15/06/2026 | Lundi | 27 100 | 25 750 | Centre |
+| 19/06/2026 | Vendredi | 35 900 | 34 100 | Ouest |
 
-- Marge = valeurs fournies (Qté à programmer)
-- Capacité totale Réelle : 189 000
-- Capacité totale Marge : 174 600
-- **v17** : Nouveau cycle juin 2026 — 6 dates d'éclosion
+- **Réel** = Qté à programmer (capacité réelle après gap d'éclosion)
+- **Marge** = 95% du réel, arrondi au multiple de 50
+- **Prévisionnel** (conservé pour analyse d'impact) : 30 000 / 38 000 / 15 000 / 38 000 / 30 000 / 38 000
+- Capacité totale Réelle : 174 600
+- Capacité totale Marge : 165 850
+- **v17** : Nouveau cycle juin 2026 — 6 dates d'éclosion, gap moyen -8%
 
 ---
 
@@ -269,6 +271,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v17 | 02/06/2026 | Nouveau cycle juin 2026 : 6 éclosions (04/06–19/06). Capacité 189 000 réel / 174 600 marge. Régions : Ouest+Nord+Est, Centre, Ouest. Reset des forced assignments, excluded_from_date et region_locks du cycle précédent. |
+| v18 | 02/06/2026 | Exécution automatique. Planifié 174,500/174,600. 124 exclusions. |
 | v18 | 02/06/2026 | Exécution automatique. Planifié 188,650/189,000. 124 exclusions. |
 | v16 | 01/06/2026 | Exécution automatique. Planifié 204,400/204,700. 124 exclusions. |
 | v15 | 15/05/2026 | Restauration du 14/05 dans le plan de production. Forced assignments restaurés vers le 14/05. REGION_LOCK 14/05→Centre ajouté. Mise à jour du md avec noms de tiers dans les exclusions. |
@@ -278,6 +281,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+
+---
 
 ---
 
@@ -294,21 +299,21 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 110 |
 | Commandes COQ | 7 |
 | Exclusions | 124 |
-| Planifié Réel | 188,650 / 189,000 |
-| Planifié Marge | 174,500 / 174,600 |
-| Non planifiées (marge) | 66 |
+| Planifié Réel | 174,500 / 174,600 |
+| Planifié Marge | 165,750 / 165,850 |
+| Non planifiées (marge) | 68 |
 | Nouvelles auto-exclusions | 106 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 04/06/2026 | Jeu | Centre, Littoral, Ouest | 29,650 | 30,000 | 99% |
-| 05/06/2026 | Ven | Centre, Ouest | 38,000 | 38,000 | 100% |
-| 10/06/2026 | Mer | Ouest | 15,000 | 15,000 | 100% |
-| 11/06/2026 | Jeu | Ouest | 38,000 | 38,000 | 100% |
-| 15/06/2026 | Lun | Centre | 30,000 | 30,000 | 100% |
-| 19/06/2026 | Ven | Littoral, Nord | 38,000 | 38,000 | 100% |
+| 04/06/2026 | Jeu | Centre, Littoral, Ouest | 27,800 | 27,800 | 100% |
+| 05/06/2026 | Ven | Centre, Ouest | 35,700 | 35,700 | 100% |
+| 10/06/2026 | Mer | Ouest | 12,750 | 12,800 | 100% |
+| 11/06/2026 | Jeu | Ouest | 35,300 | 35,300 | 100% |
+| 15/06/2026 | Lun | Centre | 27,050 | 27,100 | 100% |
+| 19/06/2026 | Ven | Centre, Littoral | 35,900 | 35,900 | 100% |
 
 ### Répartition par priorité
 
