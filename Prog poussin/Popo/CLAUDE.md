@@ -20,6 +20,7 @@ Quand l'utilisateur fait une demande **sans spécifier de fichier**, lire dans c
 - Les fichiers source (AT, EXP) se déposent dans `extractions/`
 - Les fichiers générés vont dans `output/`
 - Le `.md` est mis à jour automatiquement (§22) à chaque exécution
+- **Lecture progressive des extractions** : les fichiers d'extraction (AT, EXP) sont volumineux — toujours les lire par morceaux (ex: `nrows`, `skiprows`, ou slices) plutôt que de charger l'intégralité en mémoire d'un coup, pour éviter les OOM (Out Of Memory)
 
 ## Types de demandes
 
