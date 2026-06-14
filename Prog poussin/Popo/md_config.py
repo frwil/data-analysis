@@ -343,6 +343,18 @@ def parse_special_include(md_text):
     return result
 
 
+def parse_non_echue_enabled(md_text):
+    """Parse §2: détecte si la Phase 3 (NON ÉCHUE) est activée ou désactivée.
+    Retourne False si la phase est marquée DÉSACTIVÉE, True sinon."""
+    section = extract_section(md_text, 2)
+    if not section:
+        return True  # Par défaut: activée
+    # Cherche le marqueur de désactivation dans la section Phase 3
+    if 'DÉSACTIVÉE' in section or 'désactivée' in section.lower():
+        return False
+    return True
+
+
 def parse_ref_date(md_text):
     """Parse §4: extrait la date de référence (aujourd'hui)."""
     section = extract_section(md_text, 4)
@@ -379,6 +391,7 @@ def load_config(md_path):
         'forced_assignments': parse_forced_assignments(md_text),
         'special_include': parse_special_include(md_text),
         'ref_date': parse_ref_date(md_text),
+        'non_echue_enabled': parse_non_echue_enabled(md_text),
     }
 
     return config

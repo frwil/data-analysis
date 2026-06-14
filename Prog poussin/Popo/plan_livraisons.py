@@ -50,8 +50,8 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', 'AT_2026-06-02.xlsx')
-EXP_FILE = os.path.join('extractions', 'EXP_2026-06-02.xlsx')
+ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (2).xlsx')
+EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany (1).xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 
 REF_DATE = config['ref_date'] or datetime(2026, 5, 15)
@@ -117,6 +117,9 @@ PRODUCTION_REGIONS = dict(config['production_regions'])
 
 # Verrouillage régional chargé depuis le .md
 REGION_LOCK_DATES = dict(config['region_lock_dates'])
+
+# Phase 3 (NON ÉCHUE) — activée/désactivée selon §2 du .md
+NON_ECHUE_ENABLED = config.get('non_echue_enabled', True)
 
 # Dates autorisant le complément NON ÉCHUE (toutes les dates de production)
 DATES_NON_ECHUE_FILL = set(config['production_plan'].keys())
@@ -1405,7 +1408,7 @@ def run_allocation(df_orders, capacity_key):
         if can_still_schedule_le1000:
             force_majeure_warning.append('≤1000 restantes non placées (contraintes)')
 
-        if True:  # Toujours procéder en force majeure
+        if NON_ECHUE_ENABLED:  # v20: Phase 3 peut être désactivée via §2
             # v13: Les NON ÉCHUE peuvent remplir TOUTES les dates avec capacité restante.
             # La restriction min_date (qui bloquait les NON ÉCHUE après la dernière date
             # prioritaire) a été supprimée car elle empêchait le remplissage des dates
@@ -1453,9 +1456,14 @@ def run_allocation(df_orders, capacity_key):
                                 o['force_majeure'] = True
             
             print(f"    NON ÉCHUE planifiées: {phase3_scheduled_qty:,} sujets (dont {phase3_flexible_qty:,} en flexibilité régionale)")
+        else:
+            print(f"  [{capacity_key.upper()}] Phase 3: NON ÉCHUE DÉSACTIVÉE (v20) — commandes non échues exclues du plan")
         if force_majeure_warning:
             for w in force_majeure_warning:
-                print(f"    ⚠ Force majeure: {w} — NON ÉCHUE comble la capacité restante")
+                if NON_ECHUE_ENABLED:
+                    print(f"    ⚠ Force majeure: {w} — NON ÉCHUE comble la capacité restante")
+                else:
+                    print(f"    ⚠ Force majeure: {w} — NON ÉCHUE désactivée, capacité restante non comblée")
     
     # =======================================================================
     # v13: VALIDATION CHRONOLOGIQUE — ÉCHUE AVANT NON ÉCHUE
@@ -1708,7 +1716,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     ws = wb.create_sheet(title=sheet_name)
     
     # Largeurs de colonnes
-    col_widths = [3, 16, 20, 35, 15, 14, 20, 12, 20, 22, 18, 70]
+    col_widths = [3, 16, 20, 35, 15, 14, 28, 20, 12, 20, 22, 18, 70]
     for i, w in enumerate(col_widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
     
@@ -1724,9 +1732,9 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     row += 2
     
     # En-têtes
-    headers = ['Date éclosion', 'Capacité production', 'Tiers', 'Réf. Tiers', 
-               'Qté à livrer', 'Qté totale commande', 'Région', 'Agence',
-               'Date prévue livraison', 'Statut échéance', 'Observation']
+    headers = ['Date éclosion', 'Capacité production', 'Tiers', 'Réf. Tiers',
+               'Description du produit', 'Qté à livrer', 'Qté totale commande',
+               'Région', 'Agence', 'Date prévue livraison', 'Statut échéance', 'Observation']
     for col_idx, header in enumerate(headers, 2):
         cell = ws.cell(row=row, column=col_idx, value=header)
         cell.font = header_font_white
@@ -1765,7 +1773,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         cell = ws.cell(row=row, column=2, value=section_text)
         cell.font = section_font
         cell.fill = date_section_fill
-        for c in range(2, 13):
+        for c in range(2, 14):
             ws.cell(row=row, column=c).fill = date_section_fill
         row += 1
         
@@ -1822,7 +1830,8 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
             
             values = [
                 date_eclosion, cap, order['tiers'], order['ref'],
-                order['qte'], total_order_qty, order['region'], order['agence'],
+                order.get('produit', ''), order['qte'], total_order_qty,
+                order['region'], order['agence'],
                 date_prevue_str, order['priority'], observation
             ]
             
@@ -1830,7 +1839,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
                 cell = ws.cell(row=row, column=col_idx, value=val)
                 cell.border = thin_border
                 cell.alignment = Alignment(wrap_text=True)
-                if col_idx == 12:  # Observation
+                if col_idx == 13:  # Observation
                     cell.font = Font(size=9)
                 if order.get('forced'):
                     cell.font = forced_font
