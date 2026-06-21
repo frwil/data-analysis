@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **01/06/2026** — Script plan_livraisons.py opérationnel
+> Dernière mise à jour : **21/06/2026** — Nouveau cycle 24/06–30/06
 
 ---
 
@@ -16,19 +16,18 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 | Fichier | Contenu |
 |---------|---------|
-| `Contraintes du Plan de Livraisons BELGO.md` | 19 sections de règles métier (algo v13, régions, exclusions, etc.) |
-| `PLAN DE LIVRAISON SEMAINE.pdf` | Plan de référence avec mapping agence→région |
-| `plan_livraisons.py` | Script principal v12 (2275 lignes) — tourne sans erreur |
-| `Plan_Livraisons_BELGO_Ponte.xlsx` | Fichier généré (8 feuilles) |
+| `Contraintes du Plan de Livraisons BELGO.md` | Config v20 — 3 dates (24/06–30/06) |
+| `plan_livraisons.py` | Script principal — prêt pour le nouveau cycle |
+| `md_config.py` | Parser du .md |
 
 ---
 
-## 📊 Fichiers Source
+## 📊 Fichiers Source (v20)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
-| `16382c5d-...xlsx` | AT — Lignes de commandes | 732 |
-| `bbeedece-...xlsx` | EXP — Lignes des expéditions | 407 |
+| `NJS GROUP ERP - Lignes de commandes + multicompany (5).xlsx` | AT — 21/06 | 1 221 |
+| `NJS GROUP ERP - Lignes des expeditions + multicompany (3).xlsx` | EXP — 21/06 | 829 |
 
 ---
 
@@ -44,44 +43,31 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📈 Dernière Exécution (02/06/2026) — v19 Exceptionnelle
+## 📈 Nouveau Cycle v20 (21/06/2026)
 
-| Métrique | Valeur |
-|----------|--------|
-| REF_DATE | 02/06/2026 |
-| Commandes PONTE | 123 (781 600 sujets) |
-| Commandes COQ | 11 (17 550 sujets) |
-| Exclusions | 216 |
-| **Planifié Réel** | **174 600 / 174 600** |
-| **Planifié Marge** | **165 700 / 165 850** |
+| Date | Jour | Réel | Marge | Région |
+|------|------|------|-------|--------|
+| 24/06/2026 | Mer | 38 000 | 35 500 | Ouest |
+| 25/06/2026 | Jeu | 30 000 | 27 700 | Centre |
+| 30/06/2026 | Mar | 30 000 | 27 450 | À définir |
+| **Total** | | **98 000** | **90 650** | |
 
-| Date | Région | Réel |
-|------|--------|------|
-| Jeu 04/06 | Littoral + Nord | 27 800/27 800 |
-| Ven 05/06 | Centre | 35 700/35 700 |
-| Mer 10/06 | Centre | 12 800/12 800 |
-| Jeu 11/06 | Ouest | 35 300/35 300 |
-| Lun 15/06 | Centre + Littoral | 27 100/27 100 |
-| Ven 19/06 | Ouest | 35 900/35 900 |
+### 🔄 Changements v20
 
-### 🔄 Changements exceptionnels (v19)
-- **5 commandes forcées sur le 04/06** : SO2605-56192, SO2603-50402, SO2603-49144, SO2604-51013, SO2605-57283
-- **KUATE SO2603-47945** retiré du 04/06 → repositionné le **11/06** (Ouest) ✓
-- **SO2605-57283** ajouté au NO_SPLIT (intégralité le 04/06) — 9 750/10 000 placé (manque 250, capacité saturée)
-- ⚠️ Littoral conséquent sur 04/06 (40.5% > 25%) — exception acceptée
+- **15 commandes livrées** retirées de la config (§10, §12, §14, §15)
+- **3 exclusions « Déjà livrée »** redevenues actives : SO2601-44631, SO2604-52536, SO2601-42254
+- **SO2602-46160** livré partiellement : 11 650 PONTE + 200 COQ livrés, reste 15 350 PONTE
+- **Commandes non livrées conservées** : SO2605-55879 (10 000), SO2512-38407 (21 500)
 
----
+### ⚠️ En attente
 
-## 🔧 Corrections Appliquées au Script
-
-1. ✅ Chemins fichiers : `upload/` → dossier courant
-2. ✅ Ajout `sys.stdout.reconfigure(encoding='utf-8')` (crash Unicode Windows)
-3. ✅ Indentation Phase 1 corrigée (était dans le bloc else de l'Étape 0b)
+- **Régions principales** pour les 3 nouvelles dates (à définir)
+- **REGION_LOCK** à configurer
 
 ---
 
 ## ⏭️ Prochaines Étapes
 
-1. Revoir les paramètres (REF_DATE, PRODUCTION_PLAN) pour le prochain cycle
-2. Ajouter les nouvelles commandes à planifier
-3. Ajuster les exclusions / assignations forcées si nécessaire
+1. Définir les régions pour les 3 dates de production
+2. Vérifier les commandes à inclure/exclure
+3. Lancer `plan_livraisons.py`

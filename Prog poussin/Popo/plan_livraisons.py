@@ -50,8 +50,8 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (2).xlsx')
-EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany (1).xlsx')
+ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (5).xlsx')
+EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany (3).xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 
 REF_DATE = config['ref_date'] or datetime(2026, 5, 15)
@@ -408,7 +408,7 @@ for _, row in df_atr.iterrows():
         'priority_num': priority_num,
         'priority_label': priority_label,
         'proctor_only': ref in proctor_en_cours_refs,
-        'forced_date': FORCED_ASSIGNMENTS.get(ref),
+        'forced_date': FORCED_ASSIGNMENTS.get(ref, (None,))[0],
         'is_tamatio': TAMATIO_CLIENT in tiers.upper(),
         'is_coq': is_coq,
         'statut_facture': statut_facture,
@@ -536,7 +536,7 @@ def get_dynamic_priority(date_prevue, date_modif, date_commande, target_date):
     if date_prevue is None or pd.isna(date_prevue):
         return 5, 'SANS DATE'
 
-    ref = target_date if target_date and not pd.isna(target_date) else REF_DATE
+    ref = (target_date + timedelta(days=1)) if target_date and not pd.isna(target_date) else REF_DATE
 
     is_reclassee = False
     if (date_modif and not pd.isna(date_modif) and date_commande and not pd.isna(date_commande)
@@ -919,14 +919,15 @@ def run_allocation(df_orders, capacity_key):
     # ÉTAPE 0: Assignations forcées
     # =======================================================================
     print(f"\n  [{capacity_key.upper()}] Étape 0: Assignations forcées...")
-    for ref, forced_date in FORCED_ASSIGNMENTS.items():
+    for ref, fa_value in FORCED_ASSIGNMENTS.items():
         if ref not in remaining_qty:
             continue
         order = df_orders[df_orders['ref'] == ref]
         if len(order) == 0:
             continue
         order = order.iloc[0]
-        qty = remaining_qty[ref]
+        forced_date, forced_qty = fa_value if isinstance(fa_value, tuple) else (fa_value, None)
+        qty = forced_qty if forced_qty else remaining_qty[ref]
         cap = get_cap(forced_date)
         if cap > 0:
             # Tolérance de dépassement : on ne réduit pas la qté forcée
@@ -1683,6 +1684,108 @@ alloc_reelle, remaining_reelle, scheduled_reelle = run_allocation(df_ponte, 'ree
 alloc_marge, remaining_marge, scheduled_marge = run_allocation(df_ponte, 'marge')
 
 # ============================================================================
+# PLANIFICATION COQ (sans contrainte de capacité, basée sur l'échéance + région)
+# ============================================================================
+
+print("\n=== PLANIFICATION COQ ===")
+
+coq_alloc = {d: [] for d in prod_dates}
+coq_non_planifie = []
+
+def _coq_no_eligible_reason(region):
+    """Explique pourquoi aucune date n'est éligible pour une région COQ."""
+    reasons = []
+    for d in prod_dates:
+        parts = []
+        if d in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[d]:
+            parts.append('région lock')
+        if not is_day_allowed(region, d):
+            parts.append('jour interdit')
+        if parts:
+            reasons.append(f"{d.strftime('%d/%m')}={', '.join(parts)}")
+    return '; '.join(reasons) if reasons else 'Aucune date compatible'
+
+# Construire un index client → date(s) PONTE planifiée(s)
+client_ponte_dates = {}  # {tiers: {date, ...}}
+for d in prod_dates:
+    for o in alloc_reelle[d]['orders']:
+        tiers = o.get('tiers', '')
+        if tiers not in client_ponte_dates:
+            client_ponte_dates[tiers] = set()
+        client_ponte_dates[tiers].add(d)
+
+# Exclusions COQ spécifiques (commandes dont seul le COQ est livré/exclu)
+coq_exclusions = {'SO2602-46160'}  # COQ livré, PONTE conservée
+
+for _, order in df_coq.iterrows():
+    ref = str(order.get('ref', ''))
+    if ref in coq_exclusions:
+        order['_coq_reason'] = 'Exclue (COQ déjà livré)'
+        coq_non_planifie.append(order)
+        continue
+    region = order['region_norm']
+    priority = order['priority_num']
+    tiers = order['tiers']
+
+    # Déterminer les dates éligibles
+    eligible_dates = []
+    for d in prod_dates:
+        # Vérifier région lock (sauf Littoral)
+        if d in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[d]:
+            continue
+        # Vérifier jour interdit (Nord/Est le mardi)
+        if not is_day_allowed(region, d):
+            continue
+        eligible_dates.append(d)
+
+    if not eligible_dates:
+        order['_coq_reason'] = _coq_no_eligible_reason(region)
+        coq_non_planifie.append(order)
+        continue
+
+    # Règles COQ :
+    # - ÉCHUE (priorité 1) / ÉCHUE RECLASSÉE (priorité 2) → toujours planifier
+    # - Autres (RECLASSÉE, IMMINENTE, SANS DATE, NON ÉCHUE) → UNIQUEMENT si
+    #   le client a du PONTE planifié le même jour
+    ponte_dates_for_client = client_ponte_dates.get(tiers, set())
+    same_day_eligible = [d for d in ponte_dates_for_client if d in eligible_dates]
+
+    is_echue = priority in [1, 2]  # ÉCHUE ou ÉCHUE RECLASSÉE
+
+    if is_echue:
+        # Toujours planifier : priorité même jour PONTE, sinon date la plus proche
+        if same_day_eligible:
+            assigned = min(same_day_eligible, key=lambda d: d)
+        else:
+            assigned = eligible_dates[0]
+    else:
+        # NON ÉCHUE / RECLASSÉE / IMMINENTE / SANS DATE :
+        # uniquement si le client a du PONTE le même jour
+        if same_day_eligible:
+            assigned = min(same_day_eligible, key=lambda d: d)
+        else:
+            pl = order['priority_label']
+            if client_ponte_dates.get(tiers):
+                ponte_str = ', '.join(sorted(d.strftime('%d/%m') for d in client_ponte_dates[tiers]))
+                order['_coq_reason'] = f"{pl} — PONTE client sur {ponte_str} (date non éligible pour COQ {region})"
+            elif len(df_ponte[df_ponte['tiers'] == tiers]) > 0:
+                order['_coq_reason'] = f"{pl} — client a du PONTE mais non planifié"
+            else:
+                order['_coq_reason'] = f"{pl} — pas de PONTE pour ce client"
+            coq_non_planifie.append(order)
+            continue
+
+    coq_alloc[assigned].append(order)
+
+# Stats
+for d in prod_dates:
+    qty = sum(o['qte_restante'] for o in coq_alloc[d])
+    print(f"  {d.strftime('%d/%m')}: {len(coq_alloc[d])} commandes, {qty:,} sujets")
+if coq_non_planifie:
+    qty_np = sum(o['qte_restante'] for o in coq_non_planifie)
+    print(f"  ⚠ Non planifiées: {len(coq_non_planifie)} commandes, {qty_np:,} sujets")
+
+# ============================================================================
 # GÉNÉRATION EXCEL (FORMAT ORIGINAL)
 # ============================================================================
 
@@ -2206,23 +2309,22 @@ for _, exp_row in df_exp.iterrows():
     row += 1
 
 # ============================================================================
-# Feuille 7: Livraisons Coq
+# Feuille 7: Plan Livraisons COQ
 # ============================================================================
 
-print("  Livraisons Coq...")
+print("  Plan Livraisons COQ...")
 
-ws6 = wb.create_sheet(title='Livraisons Coq')
-col_widths_6 = [3, 30, 16, 14, 22, 12, 20, 22, 18, 22, 18, 50]
+ws6 = wb.create_sheet(title='Plan Livraisons COQ')
+col_widths_6 = [3, 16, 30, 16, 14, 28, 14, 22, 16, 18, 18, 30]
 for i, w in enumerate(col_widths_6, 1):
     ws6.column_dimensions[get_column_letter(i)].width = min(w, 50)
 
 row = 2
-ws6.cell(row=row, column=2, value="Pas de plan de production COQ — Livraisons alignées sur les PONTE quand possible").font = title_font
+ws6.cell(row=row, column=2, value="Plan Livraisons COQ — ÉCHUE tjrs planifiées ; NON ÉCHUE uniquement si PONTE le même jour").font = title_font
 row += 2
 
-headers_6 = ['Tiers', 'Réf. Commande', 'Qté commandée', 'Description', 'Région',
-             'Agence', 'Date prévue livraison', 'Statut échéance', 'Date livraison PONTE',
-             'Planning COQ', 'Observation']
+headers_6 = ['Date programmée', 'Tiers', 'Réf. Commande', 'Qté', 'Description', 'Région',
+             'Agence', 'Date prévue livraison', 'Statut échéance', 'Client PONTE?', 'Observation']
 for col_idx, h in enumerate(headers_6, 2):
     cell = ws6.cell(row=row, column=col_idx, value=h)
     cell.font = header_font_white
@@ -2234,58 +2336,110 @@ row += 1
 total_coq = 0
 ponte_clients = 0
 coq_only = 0
+coq_by_priority = {}
 
-for _, order in df_coq.iterrows():
-    date_prevue_str = order['date_prevue'].strftime('%d/%m/%Y') if order.get('date_prevue') and not pd.isna(order['date_prevue']) else 'N/A'
-    
-    client_ponte = df_ponte[df_ponte['tiers'] == order['tiers']]
-    ponte_date = 'Non planifiée'
-    planning_coq = 'En attente PONTE'
-    observation = ''
-    
-    if len(client_ponte) > 0:
-        ponte_clients += 1
-        for d in prod_dates:
-            for o in alloc_marge[d]['orders']:
-                if o['ref'] in set(client_ponte['ref']):
-                    ponte_date = d.strftime('%d/%m/%Y')
-                    planning_coq = d.strftime('%d/%m/%Y')
-                    observation = f"Même jour que PONTE ({ponte_date})"
-                    break
-            if ponte_date != 'Non planifiée':
-                break
-        if ponte_date == 'Non planifiée':
-            observation = "Même jour que PONTE (non planifiée)"
-    else:
-        coq_only += 1
-        planning_coq = 'Dès que possible'
-        observation = "Dès que possible — client sans commande PONTE"
-    
-    values = [
-        order['tiers'], order['ref'], order['qte_restante'], order['produit'],
-        order['region_norm'], order['agence'], date_prevue_str, order['priority_label'],
-        ponte_date, planning_coq, observation
-    ]
-    
-    for col_idx, val in enumerate(values, 2):
-        cell = ws6.cell(row=row, column=col_idx, value=val)
-        cell.border = thin_border
-        cell.alignment = Alignment(wrap_text=True)
-    
-    total_coq += order['qte_restante']
+# Afficher par date de production
+for date in prod_dates:
+    orders = coq_alloc[date]
+    if not orders:
+        continue
+
+    # Sous-titre date
+    day_name = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][date.weekday()]
+    ws6.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
+    date_label = f"{date.strftime('%d/%m/%Y')} ({day_name}) — {len(orders)} commandes, {sum(o['qte_restante'] for o in orders):,} sujets"
+    cell = ws6.cell(row=row, column=2, value=date_label)
+    cell.font = section_font
     row += 1
 
-# Total
+    # Trier par priorité puis par date prévue
+    sorted_orders = sorted(orders, key=lambda o: (o['priority_num'], o['date_prevue'] if pd.notna(o['date_prevue']) else datetime(2099,1,1)))
+
+    for order in sorted_orders:
+        date_prevue_str = order['date_prevue'].strftime('%d/%m/%Y') if order.get('date_prevue') and pd.notna(order['date_prevue']) else 'N/A'
+
+        # Vérifier si le client a aussi du PONTE
+        client_ponte = df_ponte[df_ponte['tiers'] == order['tiers']]
+        has_ponte = 'Oui' if len(client_ponte) > 0 else 'Non'
+        if len(client_ponte) > 0:
+            ponte_clients += 1
+        else:
+            coq_only += 1
+
+        # Vérifier si le client PONTE est planifié le même jour
+        observation = ''
+        if len(client_ponte) > 0:
+            ponte_dates = set()
+            for d in prod_dates:
+                for o in alloc_marge[d]['orders']:
+                    if o['ref'] in set(client_ponte['ref']):
+                        ponte_dates.add(d.strftime('%d/%m/%Y'))
+            if ponte_dates:
+                if date.strftime('%d/%m/%Y') in ponte_dates:
+                    observation = 'Même jour que PONTE'
+                else:
+                    observation = f"PONTE planifié le {', '.join(sorted(ponte_dates))}"
+            else:
+                observation = 'PONTE non planifié'
+
+        values = [
+            date.strftime('%d/%m/%Y'), order['tiers'], order['ref'], order['qte_restante'],
+            order['produit'], order['region_norm'], order['agence'], date_prevue_str,
+            order['priority_label'], has_ponte, observation
+        ]
+
+        for col_idx, val in enumerate(values, 2):
+            cell = ws6.cell(row=row, column=col_idx, value=val)
+            cell.border = thin_border
+            cell.alignment = Alignment(wrap_text=True)
+
+        total_coq += order['qte_restante']
+        pl = order['priority_label']
+        coq_by_priority[pl] = coq_by_priority.get(pl, 0) + order['qte_restante']
+        row += 1
+
+    row += 1  # Espace entre dates
+
+# Commandes non planifiées
+if coq_non_planifie:
+    ws6.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
+    np_qty = sum(o['qte_restante'] for o in coq_non_planifie)
+    cell = ws6.cell(row=row, column=2, value=f"⚠ NON PLANIFIÉES — {len(coq_non_planifie)} commandes, {np_qty:,} sujets")
+    cell.font = Font(bold=True, color="CC0000")
+    row += 1
+
+    for order in sorted(coq_non_planifie, key=lambda o: (o['priority_num'], o['region_norm'])):
+        date_prevue_str = order['date_prevue'].strftime('%d/%m/%Y') if order.get('date_prevue') and pd.notna(order['date_prevue']) else 'N/A'
+        reason = order.get('_coq_reason', '')
+
+        values = ['—', order['tiers'], order['ref'], order['qte_restante'],
+                  order['produit'], order['region_norm'], order['agence'], date_prevue_str,
+                  order['priority_label'], '', reason]
+        for col_idx, val in enumerate(values, 2):
+            cell = ws6.cell(row=row, column=col_idx, value=val)
+            cell.border = thin_border
+            cell.alignment = Alignment(wrap_text=True)
+        row += 1
+
+    row += 1
+
+# Totaux et résumé
 row += 1
 ws6.cell(row=row, column=2, value="TOTAL COQ").font = Font(bold=True)
 ws6.cell(row=row, column=4, value=total_coq).font = Font(bold=True)
 row += 2
 
-ws6.cell(row=row, column=2, value="Résumé par statut :").font = Font(bold=True)
+ws6.cell(row=row, column=2, value="Résumé par statut d'échéance :").font = Font(bold=True)
 row += 1
-ws6.cell(row=row, column=2, value=f"Client avec PONTE : {ponte_clients} commandes").font = legend_font
+priority_order = ['ÉCHUE', 'ÉCHUE RECLASSÉE', 'RECLASSÉE', 'SANS DATE', 'IMMINENTE', 'NON ÉCHUE']
+for pl in priority_order:
+    if pl in coq_by_priority:
+        ws6.cell(row=row, column=2, value=f"{pl} : {coq_by_priority[pl]:,} sujets").font = legend_font
+        row += 1
 row += 1
-ws6.cell(row=row, column=2, value=f"Client COQ uniquement : {coq_only} commandes").font = legend_font
+ws6.cell(row=row, column=2, value=f"Clients avec PONTE : {ponte_clients} commandes").font = legend_font
+row += 1
+ws6.cell(row=row, column=2, value=f"Clients COQ uniquement : {coq_only} commandes").font = legend_font
 
 # ============================================================================
 # Feuille 8: Plan de Production

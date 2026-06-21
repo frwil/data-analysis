@@ -21,6 +21,16 @@ Quand l'utilisateur fait une demande **sans spécifier de fichier**, lire dans c
 - Les fichiers générés vont dans `output/`
 - Le `.md` est mis à jour automatiquement (§22) à chaque exécution
 - **Lecture progressive des extractions** : les fichiers d'extraction (AT, EXP) sont volumineux — toujours les lire par morceaux (ex: `nrows`, `skiprows`, ou slices) plutôt que de charger l'intégralité en mémoire d'un coup, pour éviter les OOM (Out Of Memory)
+- **Recherche dans les extractions** : toute recherche de commande (par référence, client, statut, etc.) doit **TOUJOURS** se faire dans les fichiers Excel d'extraction (`extractions/`) avec pandas, et **pas uniquement via grep** dans les fichiers texte du projet. Les `.xlsx` ne sont pas lisibles par grep. Méthode à utiliser :
+  ```python
+  import pandas as pd
+  # ⚠️ header=1 obligatoire : la ligne 0 est le titre (ex: "AGROCAM SA - NJS GROUP ERP...")
+  df = pd.read_excel('extractions/<fichier>.xlsx', header=1)
+  result = df[df['Réf.'].astype(str).str.contains('XXXXX', na=False)]
+  ```
+  - Rechercher systématiquement dans **tous** les fichiers d'extraction (AT et EXP), pas seulement le plus récent
+  - Vérifier les colonnes de statut (`État`, `Status Commande`) pour connaître l'état réel de la commande dans l'ERP
+  - Si la commande est absente de toutes les extractions → le signaler clairement et demander confirmation avant de procéder
 
 ## Types de demandes
 

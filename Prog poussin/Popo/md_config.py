@@ -294,8 +294,9 @@ def parse_excluded_from_date(md_text):
 
 
 def parse_forced_assignments(md_text):
-    """Parse §14: FORCED_ASSIGNMENTS → dict {ref: date}.
-    Les dates sont dans les titres de sous-section (### 14/05 (Centre))."""
+    """Parse §14: FORCED_ASSIGNMENTS → dict {ref: (date, qty)}.
+    Les dates sont dans les titres de sous-section (### 14/05 (Centre)).
+    La qté est lue depuis la colonne Qté du tableau (prioritaire sur l'ERP)."""
     section = extract_section(md_text, 14)
     if not section:
         return {}
@@ -321,7 +322,15 @@ def parse_forced_assignments(md_text):
             if len(cells) >= 1 and cells[0]:
                 ref = cells[0]
                 if ref.startswith('SO'):
-                    result[ref] = current_date
+                    # Lire la qté forcée si présente (colonne 3, index 2)
+                    qty = None
+                    if len(cells) >= 3:
+                        qty_str = cells[2].replace(' ', '').replace(' ', '')
+                        try:
+                            qty = int(qty_str)
+                        except ValueError:
+                            qty = None
+                    result[ref] = (current_date, qty)
 
     return result
 
