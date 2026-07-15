@@ -50,8 +50,8 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (5).xlsx')
-EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany (3).xlsx')
+ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (6).xlsx')
+EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany.xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 
 REF_DATE = config['ref_date'] or datetime(2026, 5, 15)
@@ -69,7 +69,14 @@ NEW_AUTO_EXCLUSIONS = {}
 CLIENT_EXCLU = 'TEDONGMO YEMDJI FRANCK'
 
 # FORCED_ASSIGNMENTS chargées depuis le .md
-FORCED_ASSIGNMENTS = dict(config['forced_assignments'])
+FORCED_ASSIGNMENTS_RAW = dict(config['forced_assignments'])
+# Normaliser: une entrée seule → liste, pour supporter les splits forcés (même ref, plusieurs dates)
+FORCED_ASSIGNMENTS = {}
+for ref, val in FORCED_ASSIGNMENTS_RAW.items():
+    if isinstance(val, list):
+        FORCED_ASSIGNMENTS[ref] = val
+    else:
+        FORCED_ASSIGNMENTS[ref] = [val]  # backward compat: (date, qty) → [(date, qty)]
 
 TAMATIO_CLIENT = 'TAMATIO'
 
@@ -408,7 +415,7 @@ for _, row in df_atr.iterrows():
         'priority_num': priority_num,
         'priority_label': priority_label,
         'proctor_only': ref in proctor_en_cours_refs,
-        'forced_date': FORCED_ASSIGNMENTS.get(ref, (None,))[0],
+        'forced_date': FORCED_ASSIGNMENTS.get(ref, [(None,)])[0][0],
         'is_tamatio': TAMATIO_CLIENT in tiers.upper(),
         'is_coq': is_coq,
         'statut_facture': statut_facture,
@@ -919,31 +926,40 @@ def run_allocation(df_orders, capacity_key):
     # ÉTAPE 0: Assignations forcées
     # =======================================================================
     print(f"\n  [{capacity_key.upper()}] Étape 0: Assignations forcées...")
-    for ref, fa_value in FORCED_ASSIGNMENTS.items():
+    for ref, fa_entries in FORCED_ASSIGNMENTS.items():
         if ref not in remaining_qty:
             continue
         order = df_orders[df_orders['ref'] == ref]
         if len(order) == 0:
             continue
         order = order.iloc[0]
-        forced_date, forced_qty = fa_value if isinstance(fa_value, tuple) else (fa_value, None)
-        qty = forced_qty if forced_qty else remaining_qty[ref]
-        cap = get_cap(forced_date)
-        if cap > 0:
-            # Tolérance de dépassement : on ne réduit pas la qté forcée
-            # si la capacité restante est proche (marge 95% absorbe l'écart)
-            if 0 < qty - cap <= 500:
-                qty_assign = qty
-            else:
-                qty_assign = min(qty, cap)
-            assign(ref, order['tiers'], order['agence'], order['region_norm'],
-                   order['produit'], qty_assign, order['priority_label'],
-                   order['date_prevue'], forced_date, forced=True,
-                   date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
-            remaining_qty[ref] -= qty_assign
+        # Support split forcé: même ref sur plusieurs dates
+        for fa_value in fa_entries:
+            forced_date, forced_qty = fa_value if isinstance(fa_value, tuple) else (fa_value, None)
             if remaining_qty[ref] <= 0:
-                scheduled_refs.add(ref)
-            print(f"    {ref}: {qty_assign:,} → {forced_date.strftime('%d/%m')}")
+                break
+            qty = forced_qty if forced_qty else remaining_qty[ref]
+            cap = get_cap(forced_date)
+            if cap > 0 or forced_qty:
+                # Si la qté est explicitement spécifiée dans le .md (§14 colonne Qté),
+                # on force la quantité exacte demandée, même en dépassement de capacité
+                if forced_qty:
+                    qty_assign = qty  # qté explicite du .md : forcée intégralement
+                elif 0 < qty - cap <= 500:
+                    qty_assign = qty
+                else:
+                    qty_assign = min(qty, cap)
+                assign(ref, order['tiers'], order['agence'], order['region_norm'],
+                       order['produit'], qty_assign, order['priority_label'],
+                       order['date_prevue'], forced_date, forced=True,
+                       date_modif=order.get('date_modif'), date_commande=order.get('date_commande'))
+                remaining_qty[ref] -= qty_assign
+                if remaining_qty[ref] <= 0:
+                    scheduled_refs.add(ref)
+                overcap = ""
+                if qty_assign > max(0, cap):
+                    overcap = f" ⚠ DÉPASSEMENT {qty_assign - max(0, cap):+,}"
+                print(f"    {ref}: {qty_assign:,} → {forced_date.strftime('%d/%m')}{overcap}")
     
     # =======================================================================
     # ÉTAPE 0b: PRÉ-PLANIFICATION LITTORAL (si qtés ÉCHUE conséquentes)
@@ -1738,6 +1754,13 @@ for _, order in df_coq.iterrows():
             continue
         eligible_dates.append(d)
 
+    # Forced COQ assignment: bypass normal rules (les assignations forcées
+    # contournent les restrictions de région lock et jour interdit)
+    forced_date = order.get('forced_date')
+    if forced_date is not None and pd.notna(forced_date) and forced_date in prod_dates:
+        coq_alloc[forced_date].append(order)
+        continue
+
     if not eligible_dates:
         order['_coq_reason'] = _coq_no_eligible_reason(region)
         coq_non_planifie.append(order)
@@ -1819,7 +1842,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     ws = wb.create_sheet(title=sheet_name)
     
     # Largeurs de colonnes
-    col_widths = [3, 16, 20, 35, 15, 14, 28, 20, 12, 20, 22, 18, 70]
+    col_widths = [3, 16, 20, 35, 15, 14, 28, 20, 12, 14, 10, 20, 22, 18, 70]
     for i, w in enumerate(col_widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
     
@@ -1837,7 +1860,8 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     # En-têtes
     headers = ['Date éclosion', 'Capacité production', 'Tiers', 'Réf. Tiers',
                'Description du produit', 'Qté à livrer', 'Qté totale commande',
-               'Région', 'Agence', 'Date prévue livraison', 'Statut échéance', 'Observation']
+               'Région', 'Agence', 'Date commande', 'Temps',
+               'Date prévue livraison', 'Statut échéance', 'Observation']
     for col_idx, header in enumerate(headers, 2):
         cell = ws.cell(row=row, column=col_idx, value=header)
         cell.font = header_font_white
@@ -1876,7 +1900,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         cell = ws.cell(row=row, column=2, value=section_text)
         cell.font = section_font
         cell.fill = date_section_fill
-        for c in range(2, 14):
+        for c in range(2, 16):
             ws.cell(row=row, column=c).fill = date_section_fill
         row += 1
         
@@ -1930,19 +1954,30 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
                 obs_parts.append('Est+Nord meme jour')
             
             observation = ' | '.join(obs_parts)
-            
+
+            # Date commande et Temps (différence date_éclosion - date_commande)
+            date_cmd = order.get('_date_commande')
+            if date_cmd and not pd.isna(date_cmd) and isinstance(date_cmd, datetime):
+                date_cmd_str = date_cmd.strftime('%d/%m/%Y')
+                temps_jours = (date - date_cmd).days
+                temps_str = f'{temps_jours} j'
+            else:
+                date_cmd_str = 'N/A'
+                temps_str = 'N/A'
+
             values = [
                 date_eclosion, cap, order['tiers'], order['ref'],
                 order.get('produit', ''), order['qte'], total_order_qty,
                 order['region'], order['agence'],
+                date_cmd_str, temps_str,
                 date_prevue_str, order['priority'], observation
             ]
-            
+
             for col_idx, val in enumerate(values, 2):
                 cell = ws.cell(row=row, column=col_idx, value=val)
                 cell.border = thin_border
                 cell.alignment = Alignment(wrap_text=True)
-                if col_idx == 13:  # Observation
+                if col_idx == 15:  # Observation
                     cell.font = Font(size=9)
                 if order.get('forced'):
                     cell.font = forced_font
@@ -1954,7 +1989,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         cell = ws.cell(row=row, column=2, value=f"Sous-total {day_name} {date.strftime('%d/%m')}")
         cell.font = subtotal_font
         cell.fill = subtotal_fill
-        for c in range(2, 13):
+        for c in range(2, 15):
             ws.cell(row=row, column=c).fill = subtotal_fill
         ws.cell(row=row, column=6, value=date_subtotal).font = subtotal_font
         ws.cell(row=row, column=6).fill = subtotal_fill
@@ -1968,11 +2003,11 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
             cell = ws.cell(row=row, column=2, value=f"Qté manquante pour compléter la production")
             cell.font = missing_font
             cell.fill = missing_fill
-            for c in range(2, 13):
+            for c in range(2, 15):
                 ws.cell(row=row, column=c).fill = missing_fill
             ws.cell(row=row, column=6, value=non_utilise).font = Font(size=9, italic=True, bold=True, color="CC6600")
             ws.cell(row=row, column=6).fill = missing_fill
-            ws.cell(row=row, column=12, value="Capacité disponible pour insertion ultérieure").font = missing_font
+            ws.cell(row=row, column=14, value="Capacité disponible pour insertion ultérieure").font = missing_font
             row += 1
         
         row += 1
@@ -1981,7 +2016,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     cell = ws.cell(row=row, column=2, value="TOTAL GENERAL LIVRE")
     cell.font = Font(bold=True, size=12)
     cell.fill = total_fill
-    for c in range(2, 13):
+    for c in range(2, 15):
         ws.cell(row=row, column=c).fill = total_fill
     ws.cell(row=row, column=6, value=total_qty).font = Font(bold=True, size=12)
     ws.cell(row=row, column=6).fill = total_fill
@@ -2000,7 +2035,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         cell = ws.cell(row=row, column=2, value="TOTAL QTE MANQUANTE (capacité disponible)")
         cell.font = Font(bold=True, size=11, italic=True, color="996600")
         cell.fill = missing_total_fill
-        for c in range(2, 13):
+        for c in range(2, 15):
             ws.cell(row=row, column=c).fill = missing_total_fill
         ws.cell(row=row, column=6, value=total_missing).font = Font(bold=True, size=11, italic=True, color="CC6600")
         ws.cell(row=row, column=6).fill = missing_total_fill

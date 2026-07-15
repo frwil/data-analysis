@@ -330,7 +330,9 @@ def parse_forced_assignments(md_text):
                             qty = int(qty_str)
                         except ValueError:
                             qty = None
-                    result[ref] = (current_date, qty)
+                    if ref not in result:
+                        result[ref] = []
+                    result[ref].append((current_date, qty))
 
     return result
 
