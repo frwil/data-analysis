@@ -50,7 +50,7 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (6).xlsx')
+ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (1).xlsx')
 EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany.xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 

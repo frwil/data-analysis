@@ -2,16 +2,18 @@
 
 ## 1. Plan de Production
 
-| Date | Jour | Réel | Marge (95%) | Région principale |
-|------|------|------|-------------|-------------------|
-| 14/07/2026 | Mardi | 27 850 | 26 450 | Ouest |
-| 15/07/2026 | Mercredi | 28 750 | 27 300 | Ouest |
-| 16/07/2026 | Jeudi | 29 850 | 28 350 | Ouest, Centre |
+| Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
+|------|------|-------------|------|-------------|-------------------|
+| 23/07/2026 | Jeudi | 38 000 | 36 400 | 34 550 | Centre, Nord |
+| 24/07/2026 | Vendredi | 16 000 | 16 000 | 15 200 | Ouest |
+| 28/07/2026 | Lundi | 38 000 | 36 350 | 34 500 | Ouest, Centre |
 
+- **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 86 450
-- Capacité totale Marge : 82 100
+- Capacité totale Réelle : 88 750
+- Capacité totale Marge : 84 250
+- Capacité totale Annoncée : 92 000
 
 ---
 
@@ -52,7 +54,7 @@ Ordre de tri strict : priorité > ≤1000 > FIFO > quantité
 
 ## 4. Recalcul Échéance (Colonne K)
 
-- Date de référence = 15/07/2026 (1ère date d'éclosion 14/07 + 1 jour)
+- Date de référence = 24/07/2026 (1ère date d'éclosion 23/07 + 1 jour)
 - **Équité de programmation (v20)** : pour une commande programmée à une date X, le statut d'échéance est recalculé par rapport à **X + 1 jour** (et non à aujourd'hui). Cela évite de pénaliser une commande repoussée à une date ultérieure et tient compte du délai de mise à disposition post-éclosion.
 
 Classification :
@@ -95,9 +97,9 @@ Classification :
 
 | Date | Régions autorisées |
 |------|--------------------|
-| 14/07/2026 | Ouest |
-| 15/07/2026 | Ouest |
-| 16/07/2026 | Ouest, Centre |
+| 23/07/2026 | Centre, Nord |
+| 24/07/2026 | Ouest, Centre |
+| 28/07/2026 | Ouest, Centre |
 
 - **Le Littoral est exempté** de tous les verrouillages — il peut s'insérer partout (minime ≤25% du jour)
 - Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible
@@ -167,10 +169,13 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2603-49511 | GIC FAMES | 4 200 | BELGO-NKOABANG | 01/08/2026 | **En attente** — livraison ultérieure |
 | SO2605-57283 | NGUIMDJOU ROGER | 10 000 | BELGO-NKONGSAMBA | 22/08/2026 | **Reportée** — client pas prêt, programmation ultérieure |
 | SO2604-53606 | PRODIPEL SARL | 15 700 | BELGO-NDJELENG | 23/09/2026 | **Non reclassée** — mise en non planifiée |
-| SO2606-59715 | LEMOKEM TIODOU ZEPHIRIN | 28 000 | BELGO-FAMLA | 03/07/2026 | **En attente** — programmation ultérieure (retirée du 03/07) |
 | SO2605-56687 | Kenne Manfouo Idrice | 34 800 | BELGO-NDJELENG | 02/07/2026 | **En attente** — programmation à partir du 20/07 (retirée du 16/07) |
 | SO2602-47700 | PEKA TAGNE IGNACE | 9 250 | BELGO-FAMLA | 01/07/2026 | **En attente** — reprogrammation 03/07 |
 | SO2604-52451 | NOUPING | 1 500 | BELGO-BERI | 01/08/2026 | **En attente** — reprogrammation 03/07 |
+| SO2607-62689 | Manfouo Mathieu | 4 100 | BELGO-NKONGSAMBA | 19/12/2026 | **Reportée** — attente prochaine programmation |
+| SO2606-58836 | TSAFACK ROBERT | 8 500 | BELGO-MESSASSI | 26/06/2026 | **En attente** — programmation ultérieure |
+| SO2607-62671 | BOGNING | 4 100 | BELGO-MESSASSI | 14/07/2026 | **En attente** — programmation ultérieure |
+| SO2607-61674 | LAMBOU TINO | 3 300 | BELGO-FAMLA | 11/07/2026 | **Reportée** — reprogrammation ultérieure |
 
 ---
 
@@ -182,33 +187,37 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 ## 14. Assignations Forcées (FORCED_ASSIGNMENTS)
 
-### 14/07 (Ouest)
+### 23/07 (Centre, Nord)
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2605-56363 | NOUTCHOGOUI TASSE HUBERT | 20 000 | BELGO-NDJELENG | Commande mai 2026 — NON ÉCHUE forcée |
-| SO2605-57754 | KOAGNE ALAIN | 4 200 | BELGO-NDJELENG | ÉCHUE 27/06 — libérée §12 → 14/07 |
-| SO2606-59060 | Biepip Ngoufo Dolf Brice | 2 100 | BELGO-NDJELENG | ÉCHUE 01/07 — libérée §12 → 14/07 |
+| SO2604-52423 | Groupe D'initiative Commune Des Jeunes Producteurs Agropastoraux De L'est (Gic/Jepro-Agro) | 6 600 | BELGO-MESSASSI | Assignée au 23/07 — ÉCHUE Centre |
+| SO2603-48511 | DJEMENI KAMENI | 1 700 | BELGO-NKOLBISSON | Assignée au 23/07 — ÉCHUE Centre |
+| SO2606-59999 | SEUYA GILDAS DIDIER (SEUYA GILDAS DIDIER) | 1 500 | BELGO-NKONGSAMBA | Assignée au 23/07 — ÉCHUE Littoral |
+| SO2606-59007 | LAMINE BOUBA | 4 500 | BELGO-NDERE | Assignée au 23/07 — ÉCHUE Nord |
+| SO2605-54348 | Ngouana Anselme | 3 000 | BELGO-NDERE | Assignée au 23/07 — ÉCHUE Nord |
+| SO2604-53962 | Haman Soudi | 3 000 | BELGO-NDERE | Assignée au 23/07 — ÉCHUE Nord |
+| SO2605-57151 | HAMIDOU MOUSSA | 1 300 | BELGO-NDERE | Assignée au 23/07 — ÉCHUE Nord |
+| SO2605-56126 | Sandeep Tirkey | 1 000 | BELGO-NDERE | Assignée au 23/07 — ÉCHUE Nord |
+| SO2607-62732 | DJEMENI KAMENI | 300 | BELGO-NKOLBISSON | Assignée au 23/07 — ÉCHUE Centre (≤1000) |
 
-### 15/07 (Ouest)
+### 24/07 (Ouest, Centre)
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2605-56364 | NOUTCHOGOUI TASSE HUBERT | 20 000 | BELGO-NDJELENG | Commande mai 2026 — split 1/2 (reste 5 650 le 16/07) |
+| SO2606-59715 | LEMOKEM TIODOU ZEPHIRIN | 13 700 | BELGO-FAMLA | Assignée au 24/07 — ÉCHUE Ouest (split 1/2) |
+| SO2606-58677 | LAMBO NGOUO RIVALDO | 2 300 | BELGO-BERI | Assignée au 24/07 — Littoral |
 
-### 16/07 (Ouest, Centre)
+### 28/07 (Ouest, Centre)
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2606-59519 | TCHANGANG GILBERT | 8 600 | BELGO MBOUDA | ÉCHUE 26/06 — libérée §12 → 16/07 |
-| SO2605-56192 | WANDJI ELISABETH | 1 500 | BELGO-BERI | ÉCHUE 04/06 — libérée §12 → 16/07 |
-| SO2603-49185 | SOFAB PROVENDERIE | 3 500 | BELGO-MESSASSI | ÉCHUE 14/07 |
-| SO2606-59142 | FERME MODERNE DU SUD | 500 | BELGO-MESSASSI | ÉCHUE 25/06 |
-| SO2606-58791 | FERME MODERNE DU SUD | 7 000 | BELGO-MESSASSI | ÉCHUE 24/06 |
-| SO2606-59141 | NOVEACAM (FOCHUE YEMZEU JEAN-CLAUDE) | 4 000 | BELGO AHALA | ÉCHUE 01/07 |
-| SO2605-56364 | NOUTCHOGOUI TASSE HUBERT | 5 650 | BELGO-NDJELENG | Commande mai 2026 — split 2/2 (solde restant) |
-
-> **Historique** : 03/07 clôturé. Nouveau cycle 14–16/07. Forcées 03/07 retirées (date passée).
+| SO2606-59715 | LEMOKEM TIODOU ZEPHIRIN | 14 300 | BELGO-FAMLA | Assignée au 28/07 — split 2/2 |
+| SO2603-48726 | GLOBAL BUSINESS | 5 950 | BELGO-MESSASSI | Reliquat — Assignée au 28/07 |
+| SO2606-58519 | KUHLIFARM COOP-BOD (KUMBA KOPEFUL LIVESTOCK FARMERS) | 5 000 | BELGO-BERI | Assignée au 28/07 — Littoral |
+| SO2606-58995 | ETAPE GRACE EKUME | 500 | BELGO-BERI | Assignée au 28/07 — Littoral |
+| SO2606-61325 | GIC DES AGRICULTEURS DE TSINGBEU | 3 000 | BELGO-FAMLA | Assignée au 28/07 — ÉCHUE Ouest |
+| SO2606-60951 | NGOBESING BLAISIUS NGWA | 2 300 | BELGO MBOUDA | Assignée au 28/07 — ÉCHUE Ouest |
 
 ---
 
@@ -250,14 +259,14 @@ Le script exclut automatiquement :
 
 ---
 
-## 19. Fichiers Source (v24)
+## 19. Fichiers Source (v25)
 
 | Fichier | Rôle |
 |---------|------|
-| NJS GROUP ERP - Lignes de commandes + multicompany (6).xlsx | AT principal — 14/07/2026 — 1 366 lignes |
-| NJS GROUP ERP - Lignes des expeditions + multicompany.xlsx | EXP principal — 14/07/2026 — 727 lignes |
+| NJS GROUP ERP - Lignes de commandes + multicompany (1).xlsx | AT principal — 21/07/2026 — 1 407 lignes |
+| NJS GROUP ERP - Lignes des expeditions + multicompany.xlsx | EXP principal — 21/07/2026 — 762 lignes |
 
-**v25** : Nouveau cycle 14–16/07 (3 dates, 86 450 réel / 82 100 marge). Nouvelles extractions du 14/07.
+**v25** : Nouveau cycle 23–28/07 (3 dates, 86 750 réel / 82 350 marge). Nouvelles extractions du 21/07. Ancien cycle 14-16/07 clôturé — toutes les forcées livrées et retirées.
 
 ---
 
@@ -291,6 +300,15 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v24 | 14/07/2026 | Nouveau cycle 14–16/07 (3 dates, 86 450 réel / 82 100 marge). Régions : Ouest, Ouest, Ouest+Centre. Forcées 03/07 retirées (date passée). Extractions en attente de mise à jour. |
+| v25 | 24/07/2026 | Exécution automatique. Planifié 88,750/88,750. 320 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 90,700/86,750. 320 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 96,750/86,750. 319 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 97,200/86,750. 319 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 97,250/86,750. 319 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 96,750/86,750. 317 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 86,950/86,750. 316 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 86,750/86,750. 317 exclusions. |
+| v25 | 21/07/2026 | Exécution automatique. Planifié 87,000/86,750. 298 exclusions. |
 | v25 | 15/07/2026 | Exécution automatique. Planifié 87,600/86,450. 297 exclusions. |
 | v25 | 15/07/2026 | Exécution automatique. Planifié 88,900/86,450. 297 exclusions. |
 | v25 | 15/07/2026 | Exécution automatique. Planifié 87,300/86,450. 297 exclusions. |
@@ -677,36 +695,54 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **15/07/2026** — Réf: **15/07/2026**
+> Exécutée le **24/07/2026** — Réf: **24/07/2026**
 
 ### Résumé
 
 | Métrique | Valeur |
 |----------|--------|
 | Commandes PONTE | 194 |
-| Commandes COQ | 18 |
-| Exclusions | 297 |
-| Planifié Réel | 87,600 / 86,450 |
-| Planifié Marge | 84,350 / 82,100 |
-| Non planifiées (marge) | 182 |
-| Nouvelles auto-exclusions | 281 |
+| Commandes COQ | 19 |
+| Exclusions | 320 |
+| Planifié Réel | 88,750 / 88,750 |
+| Planifié Marge | 84,650 / 84,250 |
+| Non planifiées (marge) | 171 |
+| Nouvelles auto-exclusions | 301 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 14/07/2026 | Mar | Ouest | 28,100 | 27,850 | 101% |
-| 15/07/2026 | Mer | Ouest | 28,750 | 28,750 | 100% |
-| 16/07/2026 | Jeu | Centre, Littoral, Ouest | 30,750 | 29,850 | 103% |
+| 23/07/2026 | Jeu | Centre, Littoral, Nord | 36,400 | 36,400 | 100% |
+| 24/07/2026 | Ven | Littoral, Ouest | 16,000 | 16,000 | 100% |
+| 28/07/2026 | Mar | Centre, Littoral, Ouest | 36,350 | 36,350 | 100% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 12 | 73,300 |
-| NON ÉCHUE | 133 | 990,900 |
-| RECLASSÉE | 11 | 61,450 |
-| ÉCHUE | 36 | 170,350 |
-| ÉCHUE RECLASSÉE | 2 | 16,750 |
+| IMMINENTE | 8 | 46,900 |
+| NON ÉCHUE | 133 | 958,200 |
+| RECLASSÉE | 13 | 85,800 |
+| ÉCHUE | 34 | 179,150 |
+| ÉCHUE RECLASSÉE | 6 | 50,800 |
