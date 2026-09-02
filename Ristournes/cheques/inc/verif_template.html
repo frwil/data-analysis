@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vérification de document — BELGOCAM</title>
+<style>
+  :root {
+    --fond:#f2f4f7; --carte:#fff; --encre:#18202c; --mineur:#5b6b7d;
+    --ok:#0e7a3d; --ok-fond:#e6f5ec; --ko:#b3261e; --ko-fond:#fdeceb;
+    --accent:#0d47a1; --grille:#e3e8ef;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         background:var(--fond); color:var(--encre); }
+  .wrap { max-width:540px; margin:0 auto; padding:16px 14px 30px; }
+  h1 { font-size:17px; margin:4px 0 2px; }
+  .sous { color:var(--mineur); font-size:13px; margin:0 0 14px; }
+  .carte { background:var(--carte); border-radius:10px; padding:14px; margin-bottom:12px;
+           box-shadow:0 1px 3px rgba(16,24,40,.09); }
+  #video { width:100%; max-width:340px; display:block; margin:0 auto 10px; border-radius:8px; background:#000; }
+  .btn { display:inline-block; padding:10px 14px; border:1px solid var(--grille); background:#fff;
+         border-radius:8px; font-size:14px; cursor:pointer; }
+  .btn-principal { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  textarea { width:100%; min-height:74px; font:12px ui-monospace, Consolas, monospace;
+             border:1px solid var(--grille); border-radius:8px; padding:8px; margin-bottom:8px; }
+  .resultat { border-width:1.5px; border-style:solid; }
+  .resultat.ok { background:var(--ok-fond); border-color:var(--ok); }
+  .resultat.ko { background:var(--ko-fond); border-color:var(--ko); }
+  .resultat .titre { font-size:18px; font-weight:700; }
+  .resultat.ok .titre { color:var(--ok); }
+  .resultat.ko .titre { color:var(--ko); }
+  table.infos { width:100%; border-collapse:collapse; margin-top:8px; }
+  .infos td { padding:6px 4px; border-bottom:1px solid rgba(91,107,125,.18); vertical-align:top; }
+  .infos td:first-child { color:var(--mineur); width:42%; }
+  .montant { font-size:20px; font-weight:700; }
+  .conseil { font-size:12.5px; color:var(--mineur); margin-top:8px; }
+  .brut { font-family:ui-monospace, Consolas, monospace; font-size:10.5px; word-break:break-all;
+          color:var(--mineur); margin-top:8px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Vérification d'authenticité</h1>
+  <p class="sous">Chèques et listings de ristournes — BELGOCAM S.A.<br>
+  Scannez le code QR du document, ou collez le code dans la zone ci-dessous.
+  La vérification s'effectue dans ce téléphone, aucune donnée n'est envoyée.</p>
+
+  <div class="carte">
+    <video id="video" playsinline class="hidden"></video>
+    <button id="btn-scan" class="btn btn-principal" type="button">📷 Scanner le QR</button>
+    <button id="btn-stop" class="btn hidden" type="button">Arrêter</button>
+    <div id="err-cam" class="conseil hidden">Caméra indisponible ou autorisation refusée — collez le code dans la zone ci-dessous.</div>
+  </div>
+
+  <div class="carte">
+    <textarea id="code" placeholder="Code du document (si vous ne pouvez pas scanner)…"></textarea>
+    <button id="btn-verif" class="btn" type="button">Vérifier le code collé</button>
+  </div>
+
+  <div id="resultat" class="carte resultat hidden">
+    <div class="titre" id="res-titre"></div>
+    <table class="infos"><tbody id="res-infos"></tbody></table>
+    <div class="conseil" id="res-conseil"></div>
+    <div class="brut" id="res-brut"></div>
+  </div>
+</div>
+
+<script>/*__NACL__*/</script>
+<script>/*__JSQR__*/</script>
+<script>
+/* LOGIC-START */
+'use strict';
+var PUBKEY_B64 = "__PUBKEY__";
+
+/* b64url (sans bourrage) -> Uint8Array */
+function b64urlDecode(s) {
+  s = String(s).replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) { s += '='; }
+  var bin = atob(s);
+  var u = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) { u[i] = bin.charCodeAt(i); }
+  return u;
+}
+
+/* DEFLATE brut (gzdeflate PHP) -> Uint8Array du JSON */
+function inflateRaw(u8) {
+  if (typeof DecompressionStream === 'undefined') {
+    throw new Error('navigateur trop ancien (decompression non supportée)');
+  }
+  var ds = new DecompressionStream('deflate-raw');
+  return new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer()
+    .then(function (ab) { return new Uint8Array(ab); });
+}
+
+/* uuid compact (22 car. b64url) -> forme 8-4-4-4-12 affichée sur le document */
+function uuidEtendre(compact) {
+  var u = b64urlDecode(compact);
+  if (u.length !== 16) { return compact; }
+  var h = '';
+  for (var i = 0; i < 16; i++) { h += ('0' + u[i].toString(16)).slice(-2); }
+  return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' +
+         h.slice(16, 20) + '-' + h.slice(20);
+}
+
+/* Vérifie la chaîne (brute, scannée ou collée) : [url#]B1.data.sig
+   Résout en {ok, data?, url?, erreur?, brut}. */
+function verifierChaine(chaine) {
+  var brutes = String(chaine).trim();
+  var base = brutes, url = null;
+  var m = base.match(/^(https?:\/\/[^#]*)#(.+)$/);
+  if (m) { url = m[1]; base = m[2]; }
+  var parts = base.split('.');
+  if (parts.length !== 3 || parts[0] !== 'B1') {
+    return Promise.resolve({ ok:false, erreur:'Format de code non reconnu.', brut:brutes });
+  }
+  var pub, data, sig;
+  try {
+    pub = b64urlDecode(PUBKEY_B64);
+    data = b64urlDecode(parts[1]);
+    sig = b64urlDecode(parts[2]);
+  } catch (e) {
+    return Promise.resolve({ ok:false, erreur:'Code illisible ou endommagé.', brut:brutes });
+  }
+  return inflateRaw(data).then(function (jsonBytes) {
+    if (!nacl.sign.detached.verify(jsonBytes, sig, pub)) {
+      return { ok:false, brut:brutes,
+               erreur:'Signature invalide — document NON authentique (contrefaçon ou code falsifié).' };
+    }
+    var d;
+    try { d = JSON.parse(new TextDecoder('utf-8').decode(jsonBytes)); } catch (e) {
+      return { ok:false, brut:brutes, erreur:'Contenu illisible.' };
+    }
+    if (d === null || typeof d !== 'object' || typeof d.t !== 'string' ||
+        typeof d.a !== 'string' || typeof d.y !== 'number' ||
+        typeof d.m !== 'number' || typeof d.u !== 'string') {
+      return { ok:false, brut:brutes, erreur:'Contenu incomplet.' };
+    }
+    return { ok:true, data:d, url:url, brut:brutes };
+  }).catch(function (e) {
+    return { ok:false, brut:brutes,
+             erreur:'Code non déchiffrable' + (e && e.message ? ' (' + e.message + ')' : '') + '.' };
+  });
+}
+/* LOGIC-END */
+
+(function () {
+  var video = document.getElementById('video');
+  var btnScan = document.getElementById('btn-scan');
+  var btnStop = document.getElementById('btn-stop');
+  var btnVerif = document.getElementById('btn-verif');
+  var errCam = document.getElementById('err-cam');
+  var codeZone = document.getElementById('code');
+  var resultat = document.getElementById('resultat');
+  var resTitre = document.getElementById('res-titre');
+  var resInfos = document.getElementById('res-infos');
+  var resConseil = document.getElementById('res-conseil');
+  var resBrut = document.getElementById('res-brut');
+  var scanning = false;
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d', { willReadFrequently:true });
+
+  function echap(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function afficher(r) {
+    resultat.classList.remove('hidden', 'ok', 'ko');
+    resultat.classList.add(r.ok ? 'ok' : 'ko');
+    resBrut.textContent = r.brut;
+    resConseil.textContent = '';
+    resInfos.innerHTML = '';
+    if (!r.ok) {
+      resTitre.textContent = '✗ ' + r.erreur;
+      resConseil.textContent = 'Si ce code provient d\'un document présenté comme original, contactez la direction avant tout paiement.';
+      return;
+    }
+    resTitre.textContent = '✓ Document authentique';
+    var d = r.data;
+    var fmt = new Intl.NumberFormat('fr-FR');
+    var lignes = [
+      ['Bénéficiaire', echap(d.t)],
+      ['Agence', echap(d.a)],
+      ['Exercice', String(d.y)],
+      ['N° du document', echap(uuidEtendre(d.u))],
+      ['Montant', '<span class="montant">' + fmt.format(d.m) + ' BLP</span>']
+    ];
+    lignes.forEach(function (l) {
+      var tr = document.createElement('tr');
+      var td1 = document.createElement('td'); td1.textContent = l[0];
+      var td2 = document.createElement('td'); td2.innerHTML = l[1];
+      tr.appendChild(td1); tr.appendChild(td2);
+      resInfos.appendChild(tr);
+    });
+    resConseil.textContent = 'Comparez le bénéficiaire et le montant avec ceux du document papier. ' +
+      'S\'ils diffèrent, le document a été falsifié — ne pas payer.';
+  }
+
+  function traiter(chaine) {
+    codeZone.value = chaine;
+    verifierChaine(chaine).then(afficher);
+  }
+
+  /* Ouverture via l'URL du QR : le fragment contient la chaîne signée */
+  if (location.hash && location.hash.length > 1) {
+    try { traiter(decodeURIComponent(location.hash.slice(1))); } catch (e) {
+      traiter(location.hash.slice(1));
+    }
+  }
+
+  function arreterScan() {
+    scanning = false;
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(function (t) { t.stop(); });
+      video.srcObject = null;
+    }
+    video.classList.add('hidden');
+    btnStop.classList.add('hidden');
+    btnScan.classList.remove('hidden');
+  }
+
+  function boucleScan() {
+    if (!scanning) { return; }
+    if (video.readyState >= 2 && video.videoWidth) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+      var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      try {
+        var res = jsQR(img.data, img.width, img.height, { inversionAttempts:'attemptBoth' });
+        if (res && res.data) { arreterScan(); traiter(res.data); return; }
+      } catch (e) { /* image trop grande / transitoire : on réessaie */ }
+    }
+    requestAnimationFrame(boucleScan);
+  }
+
+  function demarrerScan() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      errCam.classList.remove('hidden'); return;
+    }
+    scanning = true;
+    errCam.classList.add('hidden');
+    btnScan.classList.add('hidden');
+    btnStop.classList.remove('hidden');
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } })
+      .then(function (stream) {
+        if (!scanning) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        video.play().then(boucleScan).catch(boucleScan);
+      })
+      .catch(function () {
+        scanning = false;
+        btnStop.classList.add('hidden');
+        btnScan.classList.remove('hidden');
+        errCam.classList.remove('hidden');
+      });
+  }
+
+  btnScan.addEventListener('click', demarrerScan);
+  btnStop.addEventListener('click', arreterScan);
+  btnVerif.addEventListener('click', function () {
+    if (codeZone.value.trim() !== '') { traiter(codeZone.value); }
+  });
+})();
+</script>
+</body>
+</html>

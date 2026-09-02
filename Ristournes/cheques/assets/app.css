@@ -1,0 +1,293 @@
+/* =============================================================
+ * Application chèques & listings de ristournes — BELGOCAM S.A.
+ * Écran : prévisualisation confortable (feuilles A4 regroupant
+ * 2 documents). Impression : A4 portrait, 2 documents par page
+ * (½ A4 chacun), marges @page 10 mm (haut/bas) × 12 mm (gauche/droite).
+ * ============================================================= */
+:root {
+  --encre: #1c1c1c;
+  --mineur: #555;
+  --grille: #c9c9c9;
+  --grille-clair: #e6e6e6;
+  --fond: #eef0ee;
+  --blanc: #fff;
+  --accent: #14532d;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif;
+  color: var(--encre);
+  background: var(--fond);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------
+ * Barre d'outils (écran uniquement)
+ * --------------------------------------------------------------- */
+.toolbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 20px;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.toolbar a { color: #fff; }
+.toolbar .spacer { flex: 1; }
+.tb-info { font-size: 13px; opacity: .92; }
+
+.btn-principal {
+  background: #fff; color: var(--accent);
+  border: none; padding: 9px 18px; font-size: 14px; font-weight: 600;
+  border-radius: 4px; cursor: pointer;
+}
+.btn-principal:hover { background: #f0f0f0; }
+
+.btn-pdf {
+  background: transparent; color: #fff; text-decoration: none;
+  border: 1px solid #fff; padding: 8px 14px; font-size: 14px; font-weight: 600;
+  border-radius: 4px;
+}
+.btn-pdf:hover { background: rgba(255,255,255,.18); }
+
+/* ---------------------------------------------------------------
+ * Formulaire
+ * --------------------------------------------------------------- */
+.wrap-form {
+  max-width: 900px; margin: 28px auto; padding: 22px 26px;
+  background: var(--blanc); border: 1px solid var(--grille); border-radius: 6px;
+}
+.wrap-form h1 { margin: 0 0 4px; font-size: 21px; }
+.sous-titre { margin: 0 0 18px; color: var(--mineur); }
+
+fieldset {
+  border: 1px solid var(--grille); border-radius: 4px;
+  margin: 0 0 14px; padding: 10px 14px 12px;
+}
+legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
+.ligne-champs { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; }
+.ligne-champs label { display: flex; gap: 6px; align-items: center; }
+.ligne-champs select {
+  padding: 5px 8px; border: 1px solid var(--grille); border-radius: 3px; font-size: 14px;
+}
+.ligne-champs .case { cursor: pointer; }
+
+.picker-bar { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; }
+.picker-bar input[type="text"] {
+  flex: 1; min-width: 160px; padding: 6px 9px;
+  border: 1px solid var(--grille); border-radius: 3px;
+}
+.picker-bar .spacer { flex: 1; }
+#compteur { font-size: 13px; color: var(--mineur); }
+.btn-mini {
+  padding: 5px 12px; border: 1px solid var(--grille);
+  background: #f7f7f7; border-radius: 3px; cursor: pointer;
+}
+.btn-mini:hover { background: #eee; }
+.btn-mini:disabled { cursor: default; }
+
+.picklist {
+  max-height: 230px; overflow-y: auto;
+  border: 1px solid var(--grille); border-radius: 3px;
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.picklist label {
+  display: flex; gap: 7px; align-items: center;
+  padding: 4px 9px; font-size: 13px;
+  border-bottom: 1px solid var(--grille-clair);
+  cursor: pointer; white-space: nowrap; overflow: hidden;
+}
+.picklist label:nth-child(odd) { background: #fafafa; }
+.picklist label:hover { background: #eef6f0; }
+.picklist .code { font-weight: 600; min-width: 76px; }
+.picklist .tiers { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.picklist .ag { color: var(--mineur); font-size: 12px; }
+.note-picker { font-size: 12.5px; color: var(--mineur); margin: 8px 0 0; }
+
+.barre-actions { display: flex; justify-content: flex-end; }
+.barre-actions .btn-principal { background: var(--accent); color: #fff; }
+.barre-actions .btn-principal:hover { background: #0d3f22; }
+
+.vide { max-width: 900px; margin: 40px auto; text-align: center; color: var(--mineur); }
+
+/* ---------------------------------------------------------------
+ * Documents (chèque / listing) — ½ A4 en longueur : 186 × 128 mm
+ * (A5 paysage 210 × 148 mm − marges 12+12, 10+10)
+ * --------------------------------------------------------------- */
+.doc {
+  width: 186mm; height: 128mm;
+  margin: 18px auto;
+  background: var(--blanc);
+  border: 1px solid #cfcfcf;
+  box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  display: flex; flex-direction: column;
+  padding: 2mm 7mm;
+  overflow: hidden;
+}
+
+/* En-tête commun */
+.entete {
+  display: flex; gap: 4mm; align-items: flex-start;
+  border-bottom: 1.6px solid var(--encre);
+  padding-bottom: 1mm;
+}
+.entete-logo { flex: 0 0 15mm; }
+.entete-logo img { width: 15mm; height: auto; }
+.entete-infos { flex: 1; }
+.entete-infos .nom { font-size: 10pt; font-weight: 700; letter-spacing: .04em; }
+.entete-infos .slogan { font-style: italic; font-size: 6.2pt; }
+.entete-infos div:not(.nom):not(.slogan) { font-size: 5.8pt; line-height: 1.05; color: var(--mineur); }
+.entete-titre { text-align: right; }
+.entete-titre .titre { font-size: 9.5pt; font-weight: 700; letter-spacing: .05em; }
+.entete-titre .docno, .entete-titre .docdate { font-size: 5.8pt; color: var(--mineur); }
+
+/* Corps du chèque */
+.corps { flex: 1; display: flex; flex-direction: column; padding-top: 1mm; }
+.ligne-ordre { font-size: 8pt; margin-bottom: .5mm; }
+.ligne-client {
+  font-size: 11pt; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .02em; margin: .6mm 0 1.2mm;
+  border-bottom: 1.4px solid var(--encre); padding-bottom: .9mm;
+  overflow-wrap: break-word; line-height: 1.15;
+}
+.ligne-client .code {
+  font-size: 8pt; font-weight: 600; text-transform: none; color: var(--mineur);
+}
+.ligne { font-size: 8pt; margin: .4mm 0; }
+.ligne-somme { font-size: 8pt; margin-top: 1.2mm; }
+.ligne-somme em { font-weight: 600; font-style: normal; }
+.ligne-montant { margin: .8mm 0 .4mm; display: flex; justify-content: flex-end; }
+.ligne-montant .val {
+  font-size: 11.5pt; font-weight: 700; letter-spacing: .03em;
+  border: 1.2px solid var(--encre); padding: .8mm 3.5mm; background: #fbfbfb;
+}
+.ligne-montant small { font-size: 7.5pt; }
+.ligne-banque { font-size: 7pt; color: var(--mineur); margin-top: 1mm; }
+
+/* Répartition du paiement en produits (chèque) */
+.repartition { margin-top: .8mm; font-size: 7.7pt; border-collapse: collapse; }
+.repartition td { padding: .35mm 0; border-bottom: .3pt dotted var(--grille); }
+.repartition td.num {
+  text-align: right; font-weight: 700; padding-left: 6mm;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nota bene du chèque */
+.nb {
+  margin-top: auto; margin-bottom: .4mm;
+  font-size: 6.1pt; line-height: 1.25;
+  border: .8px solid var(--grille); background: #fbfbfb;
+  padding: .9mm 1.6mm;
+}
+
+/* Mention devise du listing */
+.mention-bcp { font-size: 7pt; color: var(--mineur); margin-top: 1.2mm; }
+
+/* Résumé du listing */
+.resume { margin-top: 2mm; }
+.resume div { font-size: 10pt; margin: .8mm 0; }
+.resume .code { font-weight: 600; }
+
+/* Tableaux côte à côte du listing */
+.tables { display: flex; gap: 6mm; margin-top: 1.5mm; }
+.tables .tab { flex: 1; border-collapse: collapse; font-size: 8pt; }
+.tab caption {
+  font-size: 8.5pt; font-weight: 700; letter-spacing: .06em;
+  text-align: left; padding-bottom: 1mm;
+}
+.tab th, .tab td { border: .4pt solid var(--grille); padding: .9mm 1.6mm; text-align: left; }
+.tab th { background: #f2f2f2; font-weight: 600; }
+.tab td.num, .tab th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.tab tr.tot td { font-weight: 700; border-top: 1px solid var(--encre); background: #f7f7f7; }
+
+/* Bas de document : 4 niveaux de signature + QR */
+.bas { display: flex; gap: 6mm; align-items: flex-end; margin-top: 1.2mm; }
+.signatures { flex: 1; display: flex; gap: 3mm; }
+.sig { flex: 1; }
+.sig-label { font-size: 6.6pt; font-weight: 600; line-height: 1.1; min-height: 4.2mm; }
+.sig-espace {
+  height: 13mm; margin-top: .6mm;
+  border-bottom: 1px solid var(--encre);
+  font-size: 6pt; color: var(--mineur);
+  display: flex; align-items: flex-end; padding-bottom: .5mm;
+}
+.qr-bloc { text-align: center; }
+/* QR signé (Ed25519) : plus dense que l'ancien uuid, agrandi pour rester lisible */
+.qr { width: 15mm; height: 15mm; margin: 0 auto; }
+.qr img, .qr canvas { width: 15mm; height: 15mm; }
+.qr-txt {
+  font-size: 4.7pt; color: var(--mineur); margin-top: .4mm;
+  word-break: break-all; max-width: 21mm; line-height: 1.15;
+}
+.qr-verif { font-size: 4.2pt; font-style: italic; margin-top: .2mm; }
+
+/* Pied de page */
+.pied {
+  border-top: .8px solid var(--grille); margin-top: .8mm; padding-top: .5mm;
+  display: flex; gap: 3mm; justify-content: space-between;
+}
+.pied-lignes { font-size: 6.1pt; line-height: 1.15; color: var(--mineur); }
+.pied-uuid { font-size: 5.5pt; line-height: 1.15; color: var(--mineur); text-align: right; }
+
+/* Compactage du listing : 2 tableaux × 12 mois + répartition + signatures
+   doivent tenir dans la hauteur du document (128 mm) */
+.listing .resume { margin-top: .5mm; }
+.listing .resume div { font-size: 7.5pt; line-height: 1.15; margin: .3mm 0; }
+.listing .tables { gap: 4mm; margin-top: .7mm; }
+.listing .tab th, .listing .tab td { padding: .22mm .9mm; line-height: 1.1; }
+.listing .tab caption { font-size: 6.6pt; padding-bottom: .4mm; }
+.listing .mention-bcp { font-size: 5.6pt; margin-top: .4mm; }
+.listing .ligne-somme { font-size: 7.5pt; margin-top: .8mm; }
+.listing .ligne-montant { margin: .8mm 0 .3mm; }
+.listing .ligne-montant .val { font-size: 10.2pt; padding: .7mm 3mm; }
+.listing .bas { gap: 5mm; margin-top: .8mm; }
+.listing .sig-label { font-size: 6.2pt; min-height: 4mm; }
+.listing .sig-espace { height: 11mm; margin-top: .5mm; }
+.listing .qr { width: 14mm; height: 14mm; }
+.listing .qr img, .listing .qr canvas { width: 14mm; height: 14mm; }
+.listing .qr-txt { font-size: 4.5pt; max-width: 19mm; }
+.listing .pied { margin-top: .5mm; padding-top: .4mm; }
+.listing .pied-lignes { font-size: 5.9pt; }
+.listing .pied-uuid { font-size: 5.3pt; }
+
+/* ---------------------------------------------------------------
+ * Feuille A4 portrait : regroupe 2 documents (½ A4 chacun).
+ * Écran : rendu « carte » regroupant la paire. Impression : la
+ * feuille remplit exactement la zone imprimable (277 mm) et les
+ * 2 documents y sont centrés — la coupe au milieu de l'A4 passe
+ * entre les deux documents.
+ * --------------------------------------------------------------- */
+.feuille {
+  width: 210mm; margin: 18px auto; padding: 7mm 12mm;
+  background: #dfe3df; border-radius: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 7mm;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12);
+}
+.feuille .doc { margin: 0; }
+
+/* ---------------------------------------------------------------
+ * Impression : A4 portrait — 2 documents par page (½ A4 chacun),
+ * marges @page 10 mm (haut/bas) × 12 mm (gauche/droite)
+ * --------------------------------------------------------------- */
+@page { size: A4 portrait; margin: 10mm 12mm; }
+
+@media print {
+  html, body { background: #fff; }
+  .toolbar, .wrap-form { display: none !important; }
+  .feuille {
+    width: auto; height: 277mm; margin: 0; padding: 0;
+    background: none; border-radius: 0; box-shadow: none;
+    justify-content: center; gap: 0;
+    break-after: page; page-break-after: always;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .feuille:last-child { break-after: auto; page-break-after: auto; }
+  .doc {
+    margin: 0 auto;
+    border: none; box-shadow: none;
+    flex-shrink: 0;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
