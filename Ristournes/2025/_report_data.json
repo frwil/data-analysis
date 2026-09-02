@@ -1,0 +1,627 @@
+{
+ "brutes": 70266,
+ "colonnes": {
+  "commande": [
+   "Réf. commande client",
+   "Date de commande"
+  ],
+  "ht": [
+   "Montant HT"
+  ]
+ },
+ "etats": {
+  "Livrée": 69807,
+  "En cours": 341,
+  "Validée": 118
+ },
+ "typeClient": {
+  "CLIENT": 70230,
+  "ENTITE": 36
+ },
+ "categories": {
+  "CONCENTRES": 43898,
+  "INGREDIENTS": 25120,
+  "PREMIX": 1247,
+  "nan": 1
+ },
+ "n_agences": 14,
+ "doublons": {
+  "lignes": 70,
+  "commandes": 63
+ },
+ "ligne_sans_produit": [
+  {
+   "Tiers": "TIWA RENE",
+   "Réf. produit": " ",
+   "Description du produit": "BELGO 10% CHAIR 50Kg",
+   "Qté commandée": 20,
+   "État": "Livrée"
+  }
+ ],
+ "repro": {
+  "lignes_calc": 547,
+  "ok": 540,
+  "ecarts_n": 7,
+  "absents_n": 0,
+  "somme_calc": 91783812,
+  "somme_pareto_liste": 91783805,
+  "somme_pareto_synthese": 91783812,
+  "ecarts_liste": [
+   {
+    "Tiers": "ETS GLOBAL COMPAGNY AGROVET (ABOUBAKAR MOHAMADOU)",
+    "Agence": "Ngaoundere",
+    "total": 39450,
+    "Montant": 39449,
+    "ecart": 1
+   },
+   {
+    "Tiers": "ETS KINRA & FRERE",
+    "Agence": "Ahala",
+    "total": 57360,
+    "Montant": 57359,
+    "ecart": 1
+   },
+   {
+    "Tiers": "Monguh Ernest ningha",
+    "Agence": "Mbouda",
+    "total": 500750,
+    "Montant": 500749,
+    "ecart": 1
+   },
+   {
+    "Tiers": "NSUH EDWIN CHEO (ETS GILLI BROWN CONSTRUCTION)",
+    "Agence": "Ndobo",
+    "total": 86700,
+    "Montant": 86699,
+    "ecart": 1
+   },
+   {
+    "Tiers": "RINGNYU BONAVENTURE",
+    "Agence": "Famla",
+    "total": 52250,
+    "Montant": 52249,
+    "ecart": 1
+   },
+   {
+    "Tiers": "TANG INNOCENT",
+    "Agence": "Messassi",
+    "total": 44700,
+    "Montant": 44699,
+    "ecart": 1
+   },
+   {
+    "Tiers": "TCHOUATA TANDA HERLIN (CBF005)",
+    "Agence": "Djeleng",
+    "total": 63950,
+    "Montant": 63949,
+    "ecart": 1
+   }
+  ]
+ },
+ "entite": {
+  "lignes": 36,
+  "valeur_pareto": 2525000,
+  "liste_pareto": [
+   {
+    "Client": "SPC",
+    "Agence": "Ndobo",
+    "Montant": 1465000
+   },
+   {
+    "Client": "PROVENDERIE DU CENTRE (PDC) (FILIALE GROUPE NJS)",
+    "Agence": "Ndobo",
+    "Montant": 750000
+   },
+   {
+    "Client": "SPC",
+    "Agence": "Famla",
+    "Montant": 310000
+   }
+  ],
+  "valeur_isolee": 2525000
+ },
+ "comptoirs": {
+  "lignes": 30311,
+  "pct_lignes": 43.1,
+  "valeur_rist": 8885463,
+  "clients_seuil": 14
+ },
+ "non_livrees": {
+  "lignes": 459,
+  "commandes": 108,
+  "tonnes": 197.45,
+  "ht": 137939359,
+  "valeur_rist_isolee": 558525,
+  "par_etat": {
+   "En cours": {
+    "lignes": 341,
+    "commandes": 90,
+    "tonnes": 130.88,
+    "ht": 92352969
+   },
+   "Validée": {
+    "lignes": 118,
+    "commandes": 18,
+    "tonnes": 66.57,
+    "ht": 45586390
+   }
+  },
+  "revue": {
+   "Livrée": 250,
+   "Annulée": 1
+  }
+ },
+ "annulee": {
+  "lignes": 2
+ },
+ "corrige": {
+  "clients": 544,
+  "total": 89264312,
+  "paliers": {
+   "0": 5123,
+   "1": 916,
+   "2": 116,
+   "3": 17
+  },
+  "t_conc": 17923.5,
+  "t_autres": 855.3
+ },
+ "vol_mensuels": [
+  {
+   "mois": "2025-01",
+   "CONC": 1546.1,
+   "10F": 42.6,
+   "20F": 47.1,
+   "LYS_METH": 9.5
+  },
+  {
+   "mois": "2025-02",
+   "CONC": 1371.4,
+   "10F": 36.9,
+   "20F": 17.3,
+   "LYS_METH": 4.2
+  },
+  {
+   "mois": "2025-03",
+   "CONC": 1413.2,
+   "10F": 32.2,
+   "20F": 56.6,
+   "LYS_METH": 5.9
+  },
+  {
+   "mois": "2025-04",
+   "CONC": 1481.9,
+   "10F": 16.5,
+   "20F": 57.8,
+   "LYS_METH": 6.7
+  },
+  {
+   "mois": "2025-05",
+   "CONC": 1429.7,
+   "10F": 10.4,
+   "20F": 41.6,
+   "LYS_METH": 1.8
+  },
+  {
+   "mois": "2025-06",
+   "CONC": 1427.7,
+   "10F": 13.2,
+   "20F": 34.3,
+   "LYS_METH": 2.0
+  },
+  {
+   "mois": "2025-07",
+   "CONC": 1555.2,
+   "10F": 10.0,
+   "20F": 40.7,
+   "LYS_METH": 7.7
+  },
+  {
+   "mois": "2025-08",
+   "CONC": 1335.2,
+   "10F": 11.4,
+   "20F": 36.3,
+   "LYS_METH": 8.1
+  },
+  {
+   "mois": "2025-09",
+   "CONC": 1384.9,
+   "10F": 17.1,
+   "20F": 42.2,
+   "LYS_METH": 6.4
+  },
+  {
+   "mois": "2025-10",
+   "CONC": 1424.8,
+   "10F": 17.4,
+   "20F": 47.1,
+   "LYS_METH": 6.0
+  },
+  {
+   "mois": "2025-11",
+   "CONC": 1789.0,
+   "10F": 22.6,
+   "20F": 58.4,
+   "LYS_METH": 5.5
+  },
+  {
+   "mois": "2025-12",
+   "CONC": 1764.5,
+   "10F": 20.8,
+   "20F": 52.9,
+   "LYS_METH": 7.8
+  }
+ ],
+ "top20": [
+  {
+   "Tiers": "KAM APPOLINAIRE",
+   "Agence": "Messassi",
+   "total": 2928400
+  },
+  {
+   "Tiers": "KENNE MANFOUO IDRICE",
+   "Agence": "Djeleng",
+   "total": 2733000
+  },
+  {
+   "Tiers": "TCHEUTCHOUA TCHINDA ERIC",
+   "Agence": "Famla",
+   "total": 2262850
+  },
+  {
+   "Tiers": "TEJIATSA BLAISE",
+   "Agence": "Nkongsamba",
+   "total": 2000045
+  },
+  {
+   "Tiers": "FEEMDISPRO",
+   "Agence": "Ahala",
+   "total": 1980650
+  },
+  {
+   "Tiers": "G.B AGROPACAM (TAMATIO)",
+   "Agence": "Ahala",
+   "total": 1937300
+  },
+  {
+   "Tiers": "LEMNYUY BETILLA VERNYUY",
+   "Agence": "Mbouda",
+   "total": 1648750
+  },
+  {
+   "Tiers": "TENE APPOLINAIRE (OUEST ELEVAGE)",
+   "Agence": "Djeleng",
+   "total": 1427350
+  },
+  {
+   "Tiers": "NZOUABET WOUAMI EMMANUEL",
+   "Agence": "Ndobo",
+   "total": 1308130
+  },
+  {
+   "Tiers": "PROVENDERIE LA REUSSITE",
+   "Agence": "Famla",
+   "total": 1297750
+  },
+  {
+   "Tiers": "KOM BLAISE STANISLAS",
+   "Agence": "Messassi",
+   "total": 1277154
+  },
+  {
+   "Tiers": "JEUGO ALICE",
+   "Agence": "Famla",
+   "total": 1273700
+  },
+  {
+   "Tiers": "KENGNE ETIENNE B",
+   "Agence": "Djeleng",
+   "total": 1254600
+  },
+  {
+   "Tiers": "PROVENDERIE DE L'ASSURANCE (NOUWOU FOZEU FRANCO)",
+   "Agence": "Messassi",
+   "total": 1226410
+  },
+  {
+   "Tiers": "NTSOPA TANDJONG LANDRY",
+   "Agence": "Bertoua",
+   "total": 1213970
+  },
+  {
+   "Tiers": "JBBCOMAX SARL",
+   "Agence": "Nkoabang",
+   "total": 1180600
+  },
+  {
+   "Tiers": "KENNE MANFOUO IDRICE",
+   "Agence": "Famla",
+   "total": 1119300
+  },
+  {
+   "Tiers": "DJOUDA ROSTAND",
+   "Agence": "Famla",
+   "total": 1114800
+  },
+  {
+   "Tiers": "PENKA DEFFO DANIEL",
+   "Agence": "Famla",
+   "total": 1104850
+  },
+  {
+   "Tiers": "NGOMPE BRUNO",
+   "Agence": "Famla",
+   "total": 1097250
+  }
+ ],
+ "top20_sum": 31386859,
+ "top20_pct": 35.2,
+ "famla_pct_lignes": 0.0,
+ "distribution": [
+  {
+   "tranche": "< 5k (exclus)",
+   "n": 0,
+   "montant": 0
+  },
+  {
+   "tranche": "5k–25k",
+   "n": 251,
+   "montant": 2628974
+  },
+  {
+   "tranche": "25k–50k",
+   "n": 70,
+   "montant": 2661628
+  },
+  {
+   "tranche": "50k–100k",
+   "n": 65,
+   "montant": 4488065
+  },
+  {
+   "tranche": "100k–250k",
+   "n": 61,
+   "montant": 9568059
+  },
+  {
+   "tranche": "250k–500k",
+   "n": 45,
+   "montant": 16920549
+  },
+  {
+   "tranche": "500k–1M",
+   "n": 29,
+   "montant": 18434368
+  },
+  {
+   "tranche": "1M–3M",
+   "n": 23,
+   "montant": 34562669
+  },
+  {
+   "tranche": "> 3M",
+   "n": 0,
+   "montant": 0
+  }
+ ],
+ "agences": [
+  {
+   "agence": "Famla",
+   "lignes": 11259,
+   "clients": 346,
+   "t_conc": 4732.1
+  },
+  {
+   "agence": "Ndobo",
+   "lignes": 3681,
+   "clients": 188,
+   "t_conc": 2053.1
+  },
+  {
+   "agence": "Messassi",
+   "lignes": 3226,
+   "clients": 164,
+   "t_conc": 1707.7
+  },
+  {
+   "agence": "Nkongsamba",
+   "lignes": 2804,
+   "clients": 51,
+   "t_conc": 937.9
+  },
+  {
+   "agence": "Ahala",
+   "lignes": 2653,
+   "clients": 84,
+   "t_conc": 1274.0
+  },
+  {
+   "agence": "Djeleng",
+   "lignes": 2536,
+   "clients": 139,
+   "t_conc": 1274.0
+  },
+  {
+   "agence": "Ngaoundere",
+   "lignes": 2242,
+   "clients": 99,
+   "t_conc": 468.9
+  },
+  {
+   "agence": "Village",
+   "lignes": 2001,
+   "clients": 108,
+   "t_conc": 1243.0
+  },
+  {
+   "agence": "Bertoua",
+   "lignes": 1941,
+   "clients": 60,
+   "t_conc": 1035.6
+  },
+  {
+   "agence": "Mbouda",
+   "lignes": 1915,
+   "clients": 63,
+   "t_conc": 979.4
+  },
+  {
+   "agence": "Buea",
+   "lignes": 1733,
+   "clients": 47,
+   "t_conc": 732.5
+  },
+  {
+   "agence": "Nkolbisson",
+   "lignes": 1450,
+   "clients": 39,
+   "t_conc": 433.5
+  },
+  {
+   "agence": "Nkoabang",
+   "lignes": 1222,
+   "clients": 58,
+   "t_conc": 490.3
+  },
+  {
+   "agence": "PK11",
+   "lignes": 1216,
+   "clients": 72,
+   "t_conc": 561.4
+  }
+ ],
+ "palier16": {
+  "n_mois": 17,
+  "n_clients": 14,
+  "montant": 1849365,
+  "liste": [
+   {
+    "Tiers": "AVIDEM SARL",
+    "Agence": "Famla",
+    "mois": "2025-05",
+    "tonnes": 15.45,
+    "montant": 108150
+   },
+   {
+    "Tiers": "G.B AGROPACAM (TAMATIO)",
+    "Agence": "Ahala",
+    "mois": "2025-05",
+    "tonnes": 15.55,
+    "montant": 108850
+   },
+   {
+    "Tiers": "G.B AGROPACAM (TAMATIO)",
+    "Agence": "Ahala",
+    "mois": "2025-08",
+    "tonnes": 15.7,
+    "montant": 109900
+   },
+   {
+    "Tiers": "JBBCOMAX SARL",
+    "Agence": "Nkoabang",
+    "mois": "2025-06",
+    "tonnes": 15.35,
+    "montant": 107450
+   },
+   {
+    "Tiers": "KOM BLAISE STANISLAS",
+    "Agence": "Messassi",
+    "mois": "2025-10",
+    "tonnes": 15.85,
+    "montant": 110950
+   },
+   {
+    "Tiers": "KUETE TANDA CELESTIN",
+    "Agence": "Djeleng",
+    "mois": "2025-11",
+    "tonnes": 15.75,
+    "montant": 110250
+   },
+   {
+    "Tiers": "MAWASSU EDVIGE ROLANDE",
+    "Agence": "Bertoua",
+    "mois": "2025-06",
+    "tonnes": 15.8,
+    "montant": 110600
+   },
+   {
+    "Tiers": "MAWASSU EDVIGE ROLANDE",
+    "Agence": "Bertoua",
+    "mois": "2025-07",
+    "tonnes": 15.45,
+    "montant": 108150
+   },
+   {
+    "Tiers": "NINDJEE ELISE M. (CAMAGRO) (NINDJEE ELISE M. (CAMAGRO))",
+    "Agence": "Ndobo",
+    "mois": "2025-06",
+    "tonnes": 15.5,
+    "montant": 108500
+   },
+   {
+    "Tiers": "NTSOPA TANDJONG LANDRY",
+    "Agence": "Bertoua",
+    "mois": "2025-01",
+    "tonnes": 15.55,
+    "montant": 108850
+   },
+   {
+    "Tiers": "NTSOPA TANDJONG LANDRY",
+    "Agence": "Bertoua",
+    "mois": "2025-02",
+    "tonnes": 15.600000000000001,
+    "montant": 109200
+   },
+   {
+    "Tiers": "PENKA DEFFO DANIEL",
+    "Agence": "Famla",
+    "mois": "2025-07",
+    "tonnes": 15.1,
+    "montant": 105700
+   },
+   {
+    "Tiers": "PROVENDERIE DE L'ASSURANCE (NOUWOU FOZEU FRANCO)",
+    "Agence": "Messassi",
+    "mois": "2025-07",
+    "tonnes": 15.25,
+    "montant": 106750
+   },
+   {
+    "Tiers": "SMI'S AGROINDUSTRIEL",
+    "Agence": "Nkolbisson",
+    "mois": "2025-12",
+    "tonnes": 15.175,
+    "montant": 106225
+   },
+   {
+    "Tiers": "TCHUENKAM KAMSU LILIANE YVETTE (NGNEMDJO MARTIAL)",
+    "Agence": "Bertoua",
+    "mois": "2025-04",
+    "tonnes": 15.445,
+    "montant": 108115
+   },
+   {
+    "Tiers": "TEJIATSA BLAISE",
+    "Agence": "Nkongsamba",
+    "mois": "2025-09",
+    "tonnes": 15.925,
+    "montant": 111475
+   },
+   {
+    "Tiers": "TENE APPOLINAIRE (OUEST ELEVAGE)",
+    "Agence": "Djeleng",
+    "mois": "2025-04",
+    "tonnes": 15.75,
+    "montant": 110250
+   }
+  ]
+ },
+ "exactement_30": {
+  "n_mois": 0,
+  "liste": []
+ },
+ "tiers_speciaux": {
+  "lignes": 38,
+  "tiers": 17
+ }
+}
