@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **14/07/2026** — v24, nouveau cycle 14–16/07 (en attente d'extractions)
+> Dernière mise à jour : **04/09/2026** — v40 : Nouvelles extractions AT(29)+EXP(9). Statuts ERP mis à jour : §14 03/09 −2 livrées (KAMTA, Kamgang), §12 −4 livrées ERP. Plan non régénéré (sur demande).
 
 ---
 
@@ -22,14 +22,14 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v24)
+## 📊 Fichiers Source (v40)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
-| `NJS GROUP ERP - Lignes de commandes + multicompany (12).xlsx` | AT — 03/07 | 1 293 |
-| `NJS GROUP ERP - Lignes des expeditions + multicompany (6).xlsx` | EXP — 03/07 | 684 |
+| `NJS GROUP ERP - Lignes de commandes + multicompany (29).xlsx` | AT — 04/09 | 1 406 |
+| `NJS GROUP ERP - Lignes des expeditions + multicompany (9).xlsx` | EXP — 04/09 | 1 252 |
 
-> ⚠ **Extractions non à jour** — en attente de nouveaux fichiers pour lancer le script.
+> ✅ **Extractions à jour** (04/09/2026) — statuts ERP mis à jour dans le `.md` (v40).
 
 ---
 
@@ -42,6 +42,46 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 | **Littoral** | BELGO-BERI, BELGO VILLAGE, BELGO-BUEA, BELGO-NKONGSAMBA |
 | **Est** | BELGO BERTOUA |
 | **Nord** | BELGO-NDERE |
+
+---
+
+## 📈 Statut v38 (02/09/2026) — Cycle 03–11/09 (4 dates)
+
+| Date | Jour | Réel | Marge | Région | Planifié réel |
+|------|------|------|-------|--------|---------------|
+| 03/09/2026 | Jeu | 21 000 | 19 950 | Nord, Centre, Ouest | 21 300 (+300 Kamgang) |
+| 07/09/2026 | Lun | 19 000 | 18 050 | Ouest | 20 100 (+1 100 WANTSA) |
+| 09/09/2026 | Mer | 30 000 | 28 500 | Centre | 31 000 (+1 000) |
+| 11/09/2026 | Ven | 20 000 | 19 000 | Ouest, Centre | 19 400 (97%, manque 600) |
+| **Total** | | **90 000** | **85 500** | | **91 800** |
+
+### 🔄 Chronologie v38 (02/09)
+
+1. **11/09** : KUETCHE SO2607-62349 retirée de §14 et exclue §13 avec MAGNE JOSEPHINE SO2607-62698 (ex-11/09) — toutes deux absentes du plan
+2. **11/09** : PROVENDERIE L' ASSURANCE SO2603-50691 (3 000, NON ÉCHUE 07/10) forcée à la place — 19 400 forcés, reste 600
+3. **Exécution** : 91 800 / 90 000 réel ; 91 800 / 85 500 marge ; 384 exclusions ; 209 non planifiées (marge)
+
+---
+
+### 🔄 Chronologie v40 (04/09)
+
+1. **Extraits AT(29)+EXP(9) du 04/09** : statuts ERP croisés avec les refs du `.md`
+2. **§14 03/09 −2 livrées** : KAMTA 5 200/5 200 et Kamgang reliquat 300 (1 500/1 500) retirées — restent 15 800 forcés (Nord 6 700 + Ouest 9 100) non encore livrés dans l'ERP
+3. **§12 −4** : Gic Emocolit 5 500 + 500, Quay's Idriss 1 100, NJOSSI 50 désormais **Livrée** dans l'ERP → retirées (auto-exclusion État=Livrée)
+4. **Nouvelles commandes depuis le 01/09** : 17 (dont Tengemne 25 000 + 13 000 + 12 000) — prises en compte au prochain run
+5. **Plan non régénéré** (sur demande)
+
+---
+
+### Historique v37 (02/09)
+
+- NGOMPE splits 2/2 (5 900 + 11 900) + DASSI 3 200 + WAFIN 10 000 forcées au 09/09 (31 000, +1 000) ; 6 commandes Centre forcées au 11/09 (17 600) ; exécution 92 800 réel / 91 550 marge.
+
+---
+
+### Historique v36 (02/09)
+
+- Nouvelle éclosion 09/09 (30 000/28 500, Centre) ; §12 +3 livrées hors ERP (Quay's Idriss, Gic Emocolit, NJOSSI) ; Kamgang reliquat 300 forcé au 03/09 (21 300, +300) ; exécution 91 550 réel / 88 900 marge.
 
 ---
 

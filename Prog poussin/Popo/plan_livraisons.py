@@ -29,6 +29,7 @@ import pandas as pd
 import numpy as np
 import sys
 import os
+import glob
 from datetime import datetime, timedelta, date
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -50,8 +51,15 @@ config = load_config(MD_PATH)
 # CONFIGURATION
 # ============================================================================
 
-ATR_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes de commandes + multicompany (1).xlsx')
-EXP_FILE = os.path.join('extractions', 'NJS GROUP ERP - Lignes des expeditions + multicompany.xlsx')
+def _newest_extraction(pattern):
+    """Retourne le fichier d'extraction le plus récent correspondant au pattern."""
+    files = glob.glob(os.path.join('extractions', pattern))
+    if not files:
+        raise FileNotFoundError(f"Aucun fichier d'extraction trouvé pour : {pattern}")
+    return max(files, key=os.path.getmtime)
+
+ATR_FILE = _newest_extraction('NJS GROUP ERP - Lignes de commandes + multicompany*.xlsx')
+EXP_FILE = _newest_extraction('NJS GROUP ERP - Lignes des expeditions + multicompany*.xlsx')
 OUTPUT_FILE = os.path.join('output', 'Plan_Livraisons_BELGO_Ponte.xlsx')
 
 REF_DATE = config['ref_date'] or datetime(2026, 5, 15)
@@ -723,10 +731,16 @@ def run_allocation(df_orders, capacity_key):
         est_nord = {'Est', 'Nord'}
         if existing.issubset(est_nord) and new_region in est_nord:
             return True
+        # v28: Sur une date verrouillée (REGION_LOCK_DATES), la règle
+        # "Littoral conséquent = journée dédiée" ne s'applique pas :
+        # la région verrouillée a priorité sur sa journée et le Littoral
+        # (exempt de verrouillage) peut s'y insérer sans la bloquer.
+        lock_bypass = (date is not None and date in REGION_LOCK_DATES
+                       and (new_region == 'Littoral' or new_region in REGION_LOCK_DATES[date]))
         # Littoral: comportement dépend de ses qtés
         if new_region == 'Littoral':
             non_litt_existing = [r for r in existing if r != 'Littoral']
-            if non_litt_existing and is_littoral_significant(date, new_qty):
+            if not lock_bypass and non_litt_existing and is_littoral_significant(date, new_qty):
                 # Littoral conséquent + autres régions présentes → REFUSÉ
                 # Le Littoral doit avoir sa propre journée dédiée
                 return False
@@ -739,7 +753,7 @@ def run_allocation(df_orders, capacity_key):
         if len(non_litt_existing) >= 2:
             return False  # Déjà 2 régions hors-Littoral
         # Vérifier si Littoral conséquent est déjà présent (jour dédié)
-        if 'Littoral' in existing and is_littoral_significant(date):
+        if not lock_bypass and 'Littoral' in existing and is_littoral_significant(date):
             # Littoral conséquent déjà là → pas d'autre région (jour dédié)
             return False
         # Ajout 2ème région hors-Littoral: ÉCHUE uniquement
@@ -1017,7 +1031,12 @@ def run_allocation(df_orders, capacity_key):
                     qty_left = remaining_qty.get(ref, 0)
                     if qty_left <= 0:
                         continue
-                    
+
+                    # EXCLUDED_FROM_DATE: ne pas pré-planifier sur une date exclue
+                    if ref in EXCLUDED_FROM_DATE and best_date in EXCLUDED_FROM_DATE[ref]:
+                        qty_left = try_schedule_order(order, qty_left, flexible_region=False, prefer_early_dates=True)
+                        continue
+
                     # Essayer d'abord le jour dédié
                     cap = get_cap(best_date)
                     if cap > 0:
@@ -2082,7 +2101,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         "9. Livraison en 2 fois possible : 2-3j meme semaine, 4-5j cross-semaine",
         "10. Quantites deja livrees (reelles) deduites via fichier A traiter",
         "11. Cross-reference expeditions pour filtrage Proctor Ai + Status Commande",
-        "12. Date de reference: 09/05/2026 (dates anterieures exclues)",
+        f"12. Date de reference: {REF_DATE.strftime('%d/%m/%Y')} (dates anterieures exclues)",
         f"13. Pas de split non pertinent: premier split >= 50% de la qte totale, pas de 2e split (totalite du reste) — capacite restante = qte manquante informative",
     ]
     
