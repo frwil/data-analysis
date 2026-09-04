@@ -113,6 +113,83 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .vide { max-width: 900px; margin: 40px auto; text-align: center; color: var(--mineur); }
 
 /* ---------------------------------------------------------------
+ * Badge d'impressions dans le picker (suivi)
+ * --------------------------------------------------------------- */
+.imp {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------
+ * Page « Suivi des impressions »
+ * --------------------------------------------------------------- */
+.wrap-suivi {
+  max-width: 980px; margin: 28px auto; padding: 22px 26px;
+  background: var(--blanc); border: 1px solid var(--grille); border-radius: 6px;
+}
+.wrap-suivi h1 { margin: 0 0 4px; font-size: 21px; }
+.wrap-suivi h2 { font-size: 16px; margin: 22px 0 8px; color: var(--accent); }
+.ligne-annees { margin: 10px 0 16px; }
+.ligne-annees select {
+  padding: 5px 8px; border: 1px solid var(--grille); border-radius: 3px; font-size: 14px;
+}
+.suivi-tab .actions { white-space: nowrap; }
+.suivi-tab .actions .btn-mini { margin-right: 4px; }
+.mineur { color: var(--mineur); }
+
+/* ---------------------------------------------------------------
+ * Modale de suivi d'impression (écran uniquement)
+ * --------------------------------------------------------------- */
+.modal-impression {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-panneau {
+  background: var(--blanc); border-radius: 6px;
+  padding: 22px 26px; max-width: 480px; width: 92%;
+  box-shadow: 0 6px 24px rgba(0,0,0,.3);
+}
+.modal-titre { font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.modal-texte { margin: 4px 0; }
+.modal-boutons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+.btn-modal {
+  padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;
+  border: 1px solid var(--grille); background: #f7f7f7; color: var(--encre);
+}
+.btn-modal.ok { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-modal.ko { background: #b3261e; border-color: #b3261e; color: #fff; }
+
+/* ---------------------------------------------------------------
+ * Page « Vérifier un document »
+ * --------------------------------------------------------------- */
+.wrap-verif {
+  max-width: 900px; margin: 28px auto; padding: 22px 26px;
+  background: var(--blanc); border: 1px solid var(--grille); border-radius: 6px;
+}
+.wrap-verif h1 { margin: 0 0 4px; font-size: 21px; }
+.wrap-verif textarea {
+  width: 100%; min-height: 70px; margin-top: 14px;
+  font: 12px Consolas, ui-monospace, monospace;
+  border: 1px solid var(--grille); border-radius: 3px; padding: 8px;
+}
+.verif-card { border: 1.5px solid; border-radius: 5px; padding: 14px 16px; margin: 16px 0; }
+.verif-card .titre { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.verif-card table { border-collapse: collapse; width: 100%; }
+.verif-card td { padding: 4px 8px; border-bottom: 1px dotted var(--grille); vertical-align: top; }
+.verif-card td:first-child { color: var(--mineur); width: 40%; }
+.verif-card.ok { background: #e6f5ec; border-color: #0e7a3d; }
+.verif-card.ok .titre { color: #0e7a3d; }
+.verif-card.ko { background: #fdeceb; border-color: #b3261e; }
+.verif-card.ko .titre { color: #b3261e; }
+.verif-card.moyen { background: #fff7e0; border-color: #c07f00; }
+.verif-card.moyen .titre { color: #8a5a00; }
+.verif-card .avert { font-size: 13px; color: #8a5a00; margin-top: 8px; }
+.verif-card .conseil { font-size: 13px; color: var(--mineur); margin-top: 8px; }
+
+/* ---------------------------------------------------------------
  * Documents (chèque / listing) — ½ A4 en longueur : 186 × 128 mm
  * (A5 paysage 210 × 148 mm − marges 12+12, 10+10)
  * --------------------------------------------------------------- */
@@ -123,7 +200,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
   border: 1px solid #cfcfcf;
   box-shadow: 0 2px 10px rgba(0,0,0,.14);
   display: flex; flex-direction: column;
-  padding: 2mm 7mm;
+  padding: 1mm 7mm;
   overflow: hidden;
 }
 
@@ -131,7 +208,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .entete {
   display: flex; gap: 4mm; align-items: flex-start;
   border-bottom: 1.6px solid var(--encre);
-  padding-bottom: 1mm;
+  padding-bottom: .5mm;
 }
 .entete-logo { flex: 0 0 15mm; }
 .entete-logo img { width: 15mm; height: auto; }
@@ -144,7 +221,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .entete-titre .docno, .entete-titre .docdate { font-size: 5.8pt; color: var(--mineur); }
 
 /* Corps du chèque */
-.corps { flex: 1; display: flex; flex-direction: column; padding-top: 1mm; }
+.corps { flex: 1; display: flex; flex-direction: column; padding-top: .5mm; }
 .ligne-ordre { font-size: 8pt; margin-bottom: .5mm; }
 .ligne-client {
   font-size: 11pt; font-weight: 700; text-transform: uppercase;
@@ -158,13 +235,13 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .ligne { font-size: 8pt; margin: .4mm 0; }
 .ligne-somme { font-size: 8pt; margin-top: 1.2mm; }
 .ligne-somme em { font-weight: 600; font-style: normal; }
-.ligne-montant { margin: .8mm 0 .4mm; display: flex; justify-content: flex-end; }
+.ligne-montant { margin: .6mm 0 .3mm; display: flex; justify-content: flex-end; }
 .ligne-montant .val {
   font-size: 11.5pt; font-weight: 700; letter-spacing: .03em;
   border: 1.2px solid var(--encre); padding: .8mm 3.5mm; background: #fbfbfb;
 }
 .ligne-montant small { font-size: 7.5pt; }
-.ligne-banque { font-size: 7pt; color: var(--mineur); margin-top: 1mm; }
+.ligne-banque { font-size: 7pt; color: var(--mineur); margin-top: .4mm; }
 
 /* Répartition du paiement en produits (chèque) */
 .repartition { margin-top: .8mm; font-size: 7.7pt; border-collapse: collapse; }
@@ -176,10 +253,10 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 
 /* Nota bene du chèque */
 .nb {
-  margin-top: auto; margin-bottom: .4mm;
+  margin-top: auto; margin-bottom: 0;
   font-size: 6.1pt; line-height: 1.25;
   border: .8px solid var(--grille); background: #fbfbfb;
-  padding: .9mm 1.6mm;
+  padding: .7mm 1.6mm;
 }
 
 /* Mention devise du listing */
@@ -203,25 +280,38 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .tab tr.tot td { font-weight: 700; border-top: 1px solid var(--encre); background: #f7f7f7; }
 
 /* Bas de document : 4 niveaux de signature + QR */
-.bas { display: flex; gap: 6mm; align-items: flex-end; margin-top: 1.2mm; }
+.bas { display: flex; gap: 6mm; align-items: flex-end; margin-top: .4mm; }
 .signatures { flex: 1; display: flex; gap: 3mm; }
 .sig { flex: 1; }
 .sig-label { font-size: 6.6pt; font-weight: 600; line-height: 1.1; min-height: 4.2mm; }
 .sig-espace {
-  height: 13mm; margin-top: .6mm;
+  height: 20mm; margin-top: .6mm;
   border-bottom: 1px solid var(--encre);
   font-size: 6pt; color: var(--mineur);
   display: flex; align-items: flex-end; padding-bottom: .5mm;
 }
 .qr-bloc { text-align: center; }
-/* QR signé (Ed25519) : plus dense que l'ancien uuid, agrandi pour rester lisible */
-.qr { width: 15mm; height: 15mm; margin: 0 auto; }
-.qr img, .qr canvas { width: 15mm; height: 15mm; }
-.qr-txt {
-  font-size: 4.7pt; color: var(--mineur); margin-top: .4mm;
-  word-break: break-all; max-width: 21mm; line-height: 1.15;
+/* QR signé (Ed25519) : 25 mm à l'impression, version 3-H (29 modules,
+   ≈ 0,86 mm/module) — taille éprouvée au scan téléphone ; sous
+   ~0,35 mm/module certains téléphones ne détectent plus le code sur papier */
+.qr { position: relative; width: 25mm; height: 25mm; margin: 0 auto; }
+.qr img, .qr canvas { width: 25mm; height: 25mm; }
+/* Filigrane « BELGOCAM SA » au centre du QR : pastille blanche imprimée
+   sur le code. ≈ 8 % des modules masqués : la correction d'erreurs
+   (niveau H) du QR corrige largement cette surface (décodage jsQR testé). */
+.qr::after {
+  content: "BELGOCAM SA";
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--blanc);
+  color: var(--encre);
+  font-size: 5.5pt; font-weight: 700;
+  letter-spacing: .4pt;
+  line-height: 1;
+  padding: .6mm 1.2mm;
+  border-radius: 1mm;
+  white-space: nowrap;
 }
-.qr-verif { font-size: 4.2pt; font-style: italic; margin-top: .2mm; }
 
 /* Pied de page */
 .pied {
@@ -233,22 +323,21 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 
 /* Compactage du listing : 2 tableaux × 12 mois + répartition + signatures
    doivent tenir dans la hauteur du document (128 mm) */
-.listing .resume { margin-top: .5mm; }
-.listing .resume div { font-size: 7.5pt; line-height: 1.15; margin: .3mm 0; }
-.listing .tables { gap: 4mm; margin-top: .7mm; }
-.listing .tab th, .listing .tab td { padding: .22mm .9mm; line-height: 1.1; }
-.listing .tab caption { font-size: 6.6pt; padding-bottom: .4mm; }
-.listing .mention-bcp { font-size: 5.6pt; margin-top: .4mm; }
-.listing .ligne-somme { font-size: 7.5pt; margin-top: .8mm; }
+.listing .resume { margin-top: .3mm; }
+.listing .resume div { font-size: 7.5pt; line-height: 1.15; margin: .2mm 0; }
+.listing .tables { gap: 4mm; margin-top: .4mm; }
+.listing .tab th, .listing .tab td { padding: .15mm .9mm; line-height: 1.05; }
+.listing .tab caption { font-size: 6.6pt; padding-bottom: .2mm; }
+.listing .mention-bcp { font-size: 5.6pt; margin-top: .2mm; }
+.listing .ligne-somme { font-size: 7.5pt; margin-top: .6mm; }
 .listing .ligne-montant { margin: .8mm 0 .3mm; }
 .listing .ligne-montant .val { font-size: 10.2pt; padding: .7mm 3mm; }
-.listing .bas { gap: 5mm; margin-top: .8mm; }
-.listing .sig-label { font-size: 6.2pt; min-height: 4mm; }
-.listing .sig-espace { height: 11mm; margin-top: .5mm; }
-.listing .qr { width: 14mm; height: 14mm; }
-.listing .qr img, .listing .qr canvas { width: 14mm; height: 14mm; }
-.listing .qr-txt { font-size: 4.5pt; max-width: 19mm; }
-.listing .pied { margin-top: .5mm; padding-top: .4mm; }
+.listing .bas { gap: 5mm; margin-top: .1mm; }
+.listing .sig-label { font-size: 6.2pt; min-height: 3.5mm; }
+.listing .sig-espace { height: 19mm; margin-top: .5mm; }
+.listing .qr { width: 24mm; height: 24mm; }
+.listing .qr img, .listing .qr canvas { width: 24mm; height: 24mm; }
+.listing .pied { margin-top: .1mm; padding-top: .4mm; }
 .listing .pied-lignes { font-size: 5.9pt; }
 .listing .pied-uuid { font-size: 5.3pt; }
 
@@ -276,8 +365,14 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 @media print {
   html, body { background: #fff; }
   .toolbar, .wrap-form { display: none !important; }
+  .modal-impression { display: none !important; }
   .feuille {
-    width: auto; height: 277mm; margin: 0; padding: 0;
+    /* 276 mm = zone imprimable exacte (297 − 2 × 10,5). 277 mm
+       débordait d'un pixel d'arrondi chez Chrome/Edge → 2e page
+       blanche dans la boîte d'impression. Le contenu (2 × 128 mm
+       = 256 mm) ne dépasse jamais : overflow:hidden pare le reste. */
+    width: auto; height: 276mm; margin: 0; padding: 0;
+    overflow: hidden;
     background: none; border-radius: 0; box-shadow: none;
     justify-content: center; gap: 0;
     break-after: page; page-break-after: always;
@@ -289,5 +384,9 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
     border: none; box-shadow: none;
     flex-shrink: 0;
   }
+  /* Impression guidée (boucle client par client) : seule la feuille
+     en cours est imprimée ; hors boucle, aucune feuille n'est masquée. */
+  body.mode-lot .feuille { display: none !important; }
+  body.mode-lot .feuille.impression-active { display: flex !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

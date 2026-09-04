@@ -52,6 +52,7 @@
     <button id="btn-scan" class="btn btn-principal" type="button">📷 Scanner le QR</button>
     <button id="btn-stop" class="btn hidden" type="button">Arrêter</button>
     <div id="err-cam" class="conseil hidden">Caméra indisponible ou autorisation refusée — collez le code dans la zone ci-dessous.</div>
+    <div id="scan-statut" class="conseil hidden">Recherche d'un code QR… cadre-le entièrement, dans un endroit bien éclairé.</div>
   </div>
 
   <div class="carte">
@@ -151,6 +152,7 @@ function verifierChaine(chaine) {
   var btnStop = document.getElementById('btn-stop');
   var btnVerif = document.getElementById('btn-verif');
   var errCam = document.getElementById('err-cam');
+  var scanStatut = document.getElementById('scan-statut');
   var codeZone = document.getElementById('code');
   var resultat = document.getElementById('resultat');
   var resTitre = document.getElementById('res-titre');
@@ -219,6 +221,7 @@ function verifierChaine(chaine) {
     video.classList.add('hidden');
     btnStop.classList.add('hidden');
     btnScan.classList.remove('hidden');
+    scanStatut.classList.add('hidden');
   }
 
   function boucleScan() {
@@ -242,6 +245,7 @@ function verifierChaine(chaine) {
     }
     scanning = true;
     errCam.classList.add('hidden');
+    scanStatut.classList.remove('hidden');
     btnScan.classList.add('hidden');
     btnStop.classList.remove('hidden');
     navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } })
@@ -253,6 +257,7 @@ function verifierChaine(chaine) {
       })
       .catch(function () {
         scanning = false;
+        scanStatut.classList.add('hidden');
         btnStop.classList.add('hidden');
         btnScan.classList.remove('hidden');
         errCam.classList.remove('hidden');
