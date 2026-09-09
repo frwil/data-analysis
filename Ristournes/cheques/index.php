@@ -424,6 +424,10 @@ function render_form(): void
                   <span class="imp<?= ($stAn['echecs'] ?? 0) > 0 ? ' imp-alerte' : '' ?>"
                         title="Impressions : 🖨 directes · ✗ échecs/annulées · 📄 PDF"
                         data-imp="<?= e(json_encode($stats[$cle] ?? new stdClass(), JSON_UNESCAPED_UNICODE)) ?>"><?= e(badge_imp($stAn)) ?></span>
+                  <button type="button" class="btn-mini btn-imprime"
+                          data-tiers="<?= e($c['tiers']) ?>" data-agence="<?= e($c['agence']) ?>" data-annee="<?= $annee ?>"
+                          title="Marquer ce client comme déjà imprimé pour l'année (🖨 directe +1) — pour corriger un compteur à 0"
+                          <?= $stAn && (($stAn['directe'] ?? 0) > 0 || ($stAn['pdf'] ?? 0) > 0) ? 'hidden' : '' ?>>✓ imprimé</button>
                 </label>
               <?php endforeach; ?>
             </div>
@@ -668,6 +672,10 @@ function page_suivi(): void
             <?php endforeach; ?>
           </select>
         </label>
+        <label>Recherche
+          <input type="text" name="q" id="filtre-suivi"
+                 placeholder="Filtrer par code, nom ou agence…" autocomplete="off">
+        </label>
       </form>
       <?php if (!$lignes): ?>
         <div class="vide">Aucune impression enregistrée pour cette année.</div>
@@ -679,8 +687,9 @@ function page_suivi(): void
             <th>Dernière impression</th><th>Actions</th>
           </tr></thead>
           <tbody>
-            <?php foreach ($lignes as $l): ?>
-              <tr data-ligne data-uuid="<?= e($l['uuid']) ?>">
+            <?php foreach ($lignes as $l): $q = function_exists('mb_strtolower') ? mb_strtolower($l['code'] . ' ' . $l['tiers'] . ' ' . $l['agence'], 'UTF-8') : strtolower($l['code'] . ' ' . $l['tiers'] . ' ' . $l['agence']); ?>
+              <tr data-ligne data-uuid="<?= e($l['uuid']) ?>"
+                  data-q="<?= e($q) ?>" data-d="<?= $l['directe'] ?>" data-x="<?= $l['echecs'] ?>" data-p="<?= $l['pdf'] ?>">
                 <td><?= e($l['code']) ?></td>
                 <td><?= e($l['tiers']) ?></td>
                 <td><?= e($l['agence']) ?></td>
@@ -700,11 +709,14 @@ function page_suivi(): void
               </tr>
             <?php endforeach; ?>
             <tr class="tot">
-              <td colspan="3">Total — <?= count($lignes) ?> document(s)</td>
-              <td class="num"><?= array_sum(array_column($lignes, 'directe')) ?></td>
-              <td class="num"><?= array_sum(array_column($lignes, 'echecs')) ?></td>
-              <td class="num"><?= array_sum(array_column($lignes, 'pdf')) ?></td>
+              <td colspan="3" id="tot-texte">Total — <?= count($lignes) ?> document(s)</td>
+              <td class="num" id="tot-d"><?= array_sum(array_column($lignes, 'directe')) ?></td>
+              <td class="num" id="tot-x"><?= array_sum(array_column($lignes, 'echecs')) ?></td>
+              <td class="num" id="tot-p"><?= array_sum(array_column($lignes, 'pdf')) ?></td>
               <td colspan="2"></td>
+            </tr>
+            <tr class="vide-ligne" style="display: none">
+              <td colspan="8" class="vide">Aucun client ne correspond à la recherche.</td>
             </tr>
           </tbody>
         </table>
@@ -732,6 +744,48 @@ function page_suivi(): void
       <?php endif; ?>
     </div>
     <script>
+    /* Filtre par code, nom ou agence : masque les lignes, recalcule les totaux.
+       La recherche est copiée dans l'URL (?q=) pour survivre aux rechargements
+       (changement d'année, actions −1 / réinitialiser). */
+    var filtreSuivi = document.getElementById('filtre-suivi');
+    var lignesSuivi = document.querySelectorAll('.suivi-tab tr[data-ligne]');
+    var videLigne = document.querySelector('.suivi-tab .vide-ligne');
+    function appliquerFiltreSuivi(q) {
+      q = q.trim().toLowerCase();
+      var d = 0, x = 0, p = 0, n = 0;
+      Array.prototype.forEach.call(lignesSuivi, function (tr) {
+        var ok = !q || tr.getAttribute('data-q').indexOf(q) !== -1;
+        tr.style.display = ok ? '' : 'none';
+        if (ok) {
+          d += +tr.getAttribute('data-d');
+          x += +tr.getAttribute('data-x');
+          p += +tr.getAttribute('data-p');
+          n++;
+        }
+      });
+      document.getElementById('tot-texte').textContent = 'Total — ' + n + ' document(s)';
+      document.getElementById('tot-d').textContent = d;
+      document.getElementById('tot-x').textContent = x;
+      document.getElementById('tot-p').textContent = p;
+      if (videLigne) { videLigne.style.display = n > 0 ? 'none' : ''; }
+    }
+    (function () {
+      var m = location.search.match(/[?&]q=([^&]*)/);
+      if (m && filtreSuivi) {
+        filtreSuivi.value = decodeURIComponent(m[1].replace(/\+/g, ' '));
+        appliquerFiltreSuivi(filtreSuivi.value);
+      }
+    })();
+    if (filtreSuivi) {
+      filtreSuivi.addEventListener('input', function () {
+        appliquerFiltreSuivi(filtreSuivi.value);
+        var url = new URL(location.href);
+        var q = filtreSuivi.value.trim();
+        if (q) { url.searchParams.set('q', q); } else { url.searchParams.delete('q'); }
+        history.replaceState(null, '', url);
+      });
+    }
+
     /* Actions −1 / réinitialiser : POST JSON, puis rechargement de la page */
     document.querySelectorAll('.suivi-tab [data-ajuster], .suivi-tab [data-reset]').forEach(function (btn) {
       btn.addEventListener('click', function () {

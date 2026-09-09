@@ -104,6 +104,11 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .picklist .code { font-weight: 600; min-width: 76px; }
 .picklist .tiers { flex: 1; overflow: hidden; text-overflow: ellipsis; }
 .picklist .ag { color: var(--mineur); font-size: 12px; }
+.picklist .btn-imprime {
+  padding: 2px 6px; font-size: 11.5px; flex-shrink: 0;
+  background: #fff; border-color: var(--accent); color: var(--accent);
+}
+.picklist .btn-imprime:hover { background: #eef6f0; }
 .note-picker { font-size: 12.5px; color: var(--mineur); margin: 8px 0 0; }
 
 .barre-actions { display: flex; justify-content: flex-end; }
@@ -142,10 +147,13 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 }
 .wrap-suivi h1 { margin: 0 0 4px; font-size: 21px; }
 .wrap-suivi h2 { font-size: 16px; margin: 22px 0 8px; color: var(--accent); }
-.ligne-annees { margin: 10px 0 16px; }
-.ligne-annees select {
+.ligne-annees { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 10px 0 16px; }
+.ligne-annees label { display: inline-flex; align-items: center; gap: 6px; }
+.ligne-annees select,
+.ligne-annees input[type="text"] {
   padding: 5px 8px; border: 1px solid var(--grille); border-radius: 3px; font-size: 14px;
 }
+.ligne-annees input[type="text"] { min-width: 260px; }
 .suivi-tab .actions { white-space: nowrap; }
 .suivi-tab .actions .btn-mini { margin-right: 4px; }
 .mineur { color: var(--mineur); }

@@ -296,6 +296,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var s = data[annee] || null;
         b.textContent = badgeTexte(s);
         b.classList.toggle('imp-alerte', !!(s && s.echecs > 0));
+        /* Bouton « ✓ imprimé » : visible seulement quand les compteurs sont à 0 */
+        var btn = b.parentElement ? b.parentElement.querySelector('.btn-imprime') : null;
+        if (btn) {
+          btn.setAttribute('data-annee', annee);
+          btn.hidden = !!(s && ((s.directe || 0) > 0 || (s.pdf || 0) > 0));
+        }
       });
     }
     if (selAnnee && badges.length) {
@@ -317,6 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var btnTous = document.getElementById('btn-tous');
   var btnAucun = document.getElementById('btn-aucun');
   var btnZero = document.getElementById('btn-zero');
+  /* Nombre de clients correspondant au filtre courant (0 = pas de filtre actif) */
+  var nbCorrespond = 0;
 
   function mode() {
     for (var i = 0; i < radios.length; i++) {
@@ -335,6 +343,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function majCompteur() {
     var n = coches().length;
+    if (nbCorrespond > 0) {
+      compteur.textContent = nbCorrespond
+        + (nbCorrespond === 1 ? ' client correspond au filtre' : ' clients correspondent au filtre')
+        + (n === 0 ? ' — aucun sélectionné' : (n === 1 ? ' — 1 sélectionné' : ' — ' + n + ' sélectionnés'));
+      return;
+    }
     compteur.textContent = n === 0 ? 'Aucun client sélectionné'
       : (n === 1 ? '1 client sélectionné' : n + ' clients sélectionnés');
   }
@@ -370,12 +384,31 @@ document.addEventListener('DOMContentLoaded', function () {
     majCompteur();
   });
 
-  /* Filtre par code, nom ou agence */
+  /* Filtre par code, nom ou agence : masque les lignes hors filtre et
+     sélectionne automatiquement les clients qui correspondent —
+     tous en mode « Liste », le premier en mode « Un client ».
+     La sélection suit le filtre : les clients qui ne correspondent
+     plus sont décochés. */
   filtre.addEventListener('input', function () {
     var q = filtre.value.trim().toLowerCase();
+    var un = (mode() === 'un');
+    nbCorrespond = 0;
+    var premier = true;
     Array.prototype.forEach.call(listes.querySelectorAll('label[data-q]'), function (lab) {
-      lab.style.display = (!q || lab.getAttribute('data-q').indexOf(q) !== -1) ? '' : 'none';
+      var ok = !q || lab.getAttribute('data-q').indexOf(q) !== -1;
+      lab.style.display = ok ? '' : 'none';
+      if (!q) { return; }
+      var c = lab.querySelector('input[name="choix[]"]');
+      if (!c) { return; }
+      if (ok) {
+        nbCorrespond++;
+        c.checked = !un || premier;
+        premier = false;
+      } else {
+        c.checked = false;
+      }
     });
+    majCompteur();
   });
 
   btnTous.addEventListener('click', function () {
@@ -389,13 +422,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* « Non imprimés » : ne cocher que les clients dont les compteurs
      d'impression sont à 0 (directe et PDF) pour l'année choisie.
+     Quand le filtre de recherche est actif, la sélection se limite
+     aux clients qui correspondent au filtre (ex. un dépôt) : les
+     clients hors filtre sont décochés.
      Les échecs/annulations laissent le compteur à 0 : le client
      reste sélectionnable, car il reste à imprimer. */
   btnZero.addEventListener('click', function () {
     var annee = selAnnee ? selAnnee.value : '';
+    var q = filtre.value.trim().toLowerCase();
     var n = 0;
     Array.prototype.forEach.call(choixs(), function (c) {
       var lab = c.closest('label');
+      var ok = !q || (lab && lab.getAttribute('data-q').indexOf(q) !== -1);
+      if (!ok) { c.checked = false; return; }
       var b = lab ? lab.querySelector('.imp[data-imp]') : null;
       var data = {};
       if (b) { try { data = JSON.parse(b.getAttribute('data-imp') || '{}'); } catch (e) { /* ignore */ } }
@@ -406,8 +445,60 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     majCompteur();
     if (!n) {
-      alert('Aucun client non imprimé pour l\'année ' + annee + '.');
+      alert(q
+        ? 'Aucun client non imprimé parmi les résultats du filtre pour l\'année ' + annee + '.'
+        : 'Aucun client non imprimé pour l\'année ' + annee + '.');
     }
+  });
+
+  /* « ✓ imprimé » : marquer le client comme déjà imprimé (+1 🖨 directe)
+     — pour corriger un client imprimé qui ressort à 0 dans « Non imprimés ».
+     Écriture d'audit dans le journal (note « marqué manuellement »). */
+  listes.addEventListener('click', function (ev) {
+    var btn = ev.target && ev.target.closest ? ev.target.closest('.btn-imprime') : null;
+    if (!btn) { return; }
+    ev.preventDefault();
+    ev.stopPropagation();
+    btn.disabled = true;
+    fetch('index.php?p=suivi_api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'marquer',
+        tiers: btn.getAttribute('data-tiers'),
+        agence: btn.getAttribute('data-agence'),
+        annee: parseInt(btn.getAttribute('data-annee'), 10)
+      })
+    }).then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.ok) {
+          alert('Marquage impossible : ' + (res.message || 'erreur inconnue'));
+          btn.disabled = false;
+          return;
+        }
+        /* Mettre à jour le badge de la ligne avec les compteurs renvoyés */
+        var lab = btn.closest('label');
+        var b = lab ? lab.querySelector('.imp[data-imp]') : null;
+        if (b) {
+          var data = {};
+          try { data = JSON.parse(b.getAttribute('data-imp') || '{}'); } catch (e) { /* ignore */ }
+          var annee = btn.getAttribute('data-annee');
+          if (!data[annee]) { data[annee] = { directe: 0, pdf: 0, echecs: 0 }; }
+          data[annee].directe = res.compteurs.directe;
+          data[annee].pdf = res.compteurs.pdf;
+          b.setAttribute('data-imp', JSON.stringify(data));
+          b.textContent = badgeTexte(data[annee] || null);
+          b.classList.toggle('imp-alerte', !!((data[annee] || {}).echecs > 0));
+        }
+        btn.hidden = true; /* compteur > 0 : le bouton disparaît */
+        var c = lab ? lab.querySelector('input[name="choix[]"]') : null;
+        if (c) { c.checked = false; }
+        majCompteur();
+      })
+      .catch(function () {
+        alert('Erreur réseau — marquage non appliqué.');
+        btn.disabled = false;
+      });
   });
 
   /* À l'envoi : renseigner id / ids selon le mode, et retirer choix[] de l'URL */

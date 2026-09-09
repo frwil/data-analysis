@@ -206,6 +206,31 @@ function suivi_action(array $r): array
                 suivi_log($uuid, $type, 'reinit', -$n, 'réinitialisation manuelle');
             }
             return ['ok' => true, 'compteurs' => suivi_compteurs($uuid)];
+
+        case 'marquer':
+            /* Marquer un client comme déjà imprimé (+1 directe), par uuid
+               (page de suivi) ou par (tiers, agence, annee) (formulaire). */
+            if ($uuid === '') {
+                $tiers = (string) ($r['tiers'] ?? '');
+                $agence = (string) ($r['agence'] ?? '');
+                $annee = (int) ($r['annee'] ?? 0);
+                if ($tiers === '' || $agence === '' || $annee <= 0) {
+                    return ['ok' => false, 'message' => 'client ou année manquant'];
+                }
+                $st = db_qr()->prepare('SELECT uuid FROM qr WHERE tiers = ? AND agence = ? AND annee = ?');
+                $st->execute([$tiers, $agence, $annee]);
+                $uuid = (string) $st->fetchColumn();
+            }
+            if (!preg_match('/^[0-9a-f-]{36}$/i', $uuid)) {
+                return ['ok' => false, 'message' => 'document introuvable pour ce client et cette année'];
+            }
+            $st = db_qr()->prepare('SELECT 1 FROM qr WHERE uuid = ?');
+            $st->execute([$uuid]);
+            if (!$st->fetchColumn()) {
+                return ['ok' => false, 'message' => 'document introuvable'];
+            }
+            suivi_log($uuid, 'directe', 'reussi', 1, 'marqué manuellement comme déjà imprimé');
+            return ['ok' => true, 'compteurs' => suivi_compteurs($uuid)];
     }
     return ['ok' => false, 'message' => 'action inconnue'];
 }
