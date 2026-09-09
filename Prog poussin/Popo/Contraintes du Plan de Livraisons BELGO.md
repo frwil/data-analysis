@@ -4,17 +4,15 @@
 
 | Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
 |------|------|-------------|------|-------------|-------------------|
-| 03/09/2026 | Jeudi | — | 21 000 | 19 950 | Nord, Centre, Ouest |
-| 07/09/2026 | Lundi | — | 19 000 | 18 050 | Ouest |
-| 09/09/2026 | Mercredi | — | 30 000 | 28 500 | Centre |
 | 11/09/2026 | Vendredi | — | 20 000 | 19 000 | Ouest, Centre |
 
 - **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 90 000
-- Capacité totale Marge : 85 500
+- Capacité totale Réelle : 20 000
+- Capacité totale Marge : 19 000
 - Capacité totale Annoncée : —
+- **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée — seule reste la date du 11/09
 
 ---
 
@@ -55,7 +53,7 @@ Ordre de tri strict : priorité > ≤1000 > FIFO > quantité
 
 ## 4. Recalcul Échéance (Colonne K)
 
-- Date de référence = 07/09/2026 (2e date d'éclosion du cycle 03–11/09)
+- Date de référence = 11/09/2026 (seule date d'éclosion restante — 03/09 et 07/09 passées, 09/09 avortée)
 - **Équité de programmation (v20)** : pour une commande programmée à une date X, le statut d'échéance est recalculé par rapport à **X + 1 jour** (et non à aujourd'hui). Cela évite de pénaliser une commande repoussée à une date ultérieure et tient compte du délai de mise à disposition post-éclosion.
 
 Classification :
@@ -98,10 +96,9 @@ Classification :
 
 | Date | Régions autorisées |
 |------|--------------------|
-| 03/09/2026 | Nord, Centre, Ouest |
-| 07/09/2026 | Ouest |
-| 09/09/2026 | Centre |
 | 11/09/2026 | Ouest, Centre |
+
+- 03/09, 07/09 passées et 09/09 avortée retirées (v44)
 
 - **Le Littoral est exempté** de tous les verrouillages — il peut s'insérer partout (minime ≤25% du jour)
 - Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible
@@ -179,9 +176,8 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | Réf. | Dates exclues |
 |------|---------------|
 | SO2607-62349 | 11/09/2026 |
-| SO2607-62698 | 11/09/2026 |
 
-*Cycle 03–11/09 (v38) : KUETCHE SO2607-62349 et MAGNE JOSEPHINE SO2607-62698 exclues du 11/09 (sur demande).*
+*Cycle 03–11/09 (v38) : KUETCHE SO2607-62349 exclue du 11/09 (sur demande). MAGNE JOSEPHINE SO2607-62698 réintégrée et forcée au 11/09 (v44).*
 
 ---
 
@@ -189,38 +185,16 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 *Cycle 25–28/08 clôturé (v32) : 10/10 forcées livrées (Kenne 34 800, PEKA 9 250, PEKA 12 750, MBE CRIYAUS, TALLA EMILE, TIWA, Chefor, DOM KANSE, LAMINE BOUBA, Gic Emocolit 5 500) — PEKA ×2 et Gic Emocolit confirmées livrées hors ERP (exclues §12).*
 
-### 03/09/2026 (Nord, Centre, Ouest)
-
-*Aucune forcée restante — 5/5 livrées dans l'ERP au 09/09 (v43) : MOTING 3 200, HAMIDOU 1 000, HASSAN 300 + 2 200, NGOMPE 59723 complète (15 000/15 000).*
-
-### 07/09/2026 (Ouest)
-
-*Aucune forcée restante — v43 : WANTSA 7 000 livrée (7 000/7 000) ; NGOMPE 59718 : 7 800/13 100 expédiées dans l'ERP (08/09), reliquat basculé au 09/09 (17 200).*
-
-### 09/09/2026 (Centre)
-
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 17 200 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (reliquat ERP : 7 800/25 000 expédiés) |
-| SO2606-58150 | DASSI TCHENEGHOM VICTOR ARMAND | 3 200 | BELGO-FAMLA | Assignée au 09/09 — ÉCHUE Ouest (17/07) |
-| SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Assignée au 09/09 — ÉCHUE Centre (29/07) |
-| SO2606-58898 | LEMOKEM ANDOLAIN | 1 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 09/09) |
-| SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 12/09) |
-
-*Total forcé 09/09 : 33 400 — dépassement +3 400 vs réel 30 000 (Ouest 23 400 + Centre 10 000). SO2606-59723 (5 600) livrée dans l'ERP — retirée (v43).*
-
 ### 11/09/2026 (Ouest, Centre)
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2607-62673 | YOUMSSI FEUKOUO JEAN BAUDOUIN | 3 000 | BELGO-MESSASSI | Assignée au 11/09 — ÉCHUE Centre (14/07) |
-| SO2607-62346 | KUETCHE FONGANG THOMAS | 3 050 | BELGO-MESSASSI | Assignée au 11/09 — ÉCHUE Centre (24/07) |
-| SO2607-61870 | TAKAMTSING PROSPER | 4 650 | BELGO-MESSASSI | Assignée au 11/09 — ÉCHUE Centre (04/08) |
-| SO2607-61869 | TAKAMTSING PROSPER | 1 500 | BELGO-MESSASSI | Assignée au 11/09 — ÉCHUE Centre (05/08) |
-| SO2606-59136 | AFRIQUE TOPO SARL (TCHINDA FOKOU GASTON JENNER) | 4 200 | BELGO AHALA | Assignée au 11/09 — ÉCHUE Centre (20/08) |
-| SO2603-50691 | PROVENDERIE L' ASSURANCE | 3 000 | BELGO-MESSASSI | Assignée au 11/09 — sur demande (NON ÉCHUE, prévue 07/10) |
+| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 17 200 | BELGO-FAMLA | Reliquat basculé du 09/09 — éclosion avortée (7 800/25 000 expédiés ERP) |
+| SO2606-58898 | LEMOKEM ANDOLAIN | 1 000 | BELGO-NDJELENG | Basculée du 09/09 — éclosion avortée (Validée/Payée) |
+| SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Basculée du 09/09 — éclosion avortée (Validée/Payée) |
+| SO2607-62698 | MAGNE JOSEPHINE | 1 250 | BELGO-NDJELENG | Forcée sur demande (v44) — ex-§13, Validée, 0 livré |
 
-*Total forcé 11/09 : 19 400 — reste 600 (Ouest/Centre). §13 : SO2607-62349 et SO2607-62698 exclues du 11/09.*
+*Éclosion du 09/09 avortée (v44) — total forcé 11/09 : 21 450, dépassement +1 450 vs réel 20 000 (tout Ouest). Journées passées 03/09 et 07/09 retirées. Le reste repasse en non planifié : DASSI 3 200 et WAFIN 10 000 (ex-09/09), et les 6 commandes Centre ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE). §13 : seule SO2607-62349 reste exclue du 11/09.*
 
 ---
 
@@ -260,12 +234,14 @@ Le script exclut automatiquement :
 
 ---
 
-## 19. Fichiers Source (v43)
+## 19. Fichiers Source (v44)
 
 | Fichier | Rôle |
 |---------|------|
 | NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx | AT principal — 09/09/2026 — 1 439 lignes |
 | NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx | EXP principal — 09/09/2026 — 1 288 lignes |
+
+**v44** : Éclosion du 09/09 avortée — pas de nouvelles extractions. Reconfiguration : §1/§6 réduits au 11/09 (03/09 et 07/09 passées retirées), §4 réf = 11/09. §13 : 62698 retirée. §14 11/09 : NGOMPE 59718 reliquat 17 200 + LEMOKEM 1 000 + 2 000 (basculées du 09/09) + MAGNE JOSEPHINE 62698 1 250 forcée — 21 450 (+1 450). Le reste (DASSI, WAFIN, 6 ex-11/09) repasse en non planifié.
 
 **v43** : Nouvelles extractions du 09/09/2026 (AT 35, EXP 10). Mise à jour des statuts ERP : §14 03/09 vidé (5/5 livrées : MOTING, HAMIDOU, HASSAN ×2, NGOMPE 59723 complète 15 000/15 000), §14 07/09 vidé (WANTSA 7 000/7 000 ; NGOMPE 59718 7 800 expédiés → reliquat 17 200 basculé au 09/09), §14 09/09 : 59723 retirée (livrée), 59718 → 17 200 (jour inchangé à 33 400, +3 400). Plan non régénéré.
 
@@ -320,6 +296,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v44 | 09/09/2026 | Éclosion du 09/09 avortée : §1/§6 réduits au 11/09 (03/09 et 07/09 passées retirées), §4 réf = 11/09. §13 : 62698 retirée. §14 11/09 : NGOMPE 59718 reliquat 17 200 + LEMOKEM 1 000 + 2 000 (basculées du 09/09) + MAGNE JOSEPHINE 62698 1 250 forcée — 21 450 (+1 450 vs 20 000). Le reste (DASSI, WAFIN, 6 ex-11/09) repasse en non planifié. |
+| v45 | 09/09/2026 | Exécution automatique. Planifié 21,450/20,000. 399 exclusions. |
 | v43 | 09/09/2026 | Statuts ERP AT(35)+EXP(10) du 09/09 : §14 03/09 vidé (5/5 livrées), §14 07/09 vidé (WANTSA 7 000/7 000, NGOMPE 59718 7 800 expédiés → reliquat basculé 09/09), §14 09/09 : 59723 retirée (livrée 15 000/15 000), 59718 → 17 200. Jour inchangé à 33 400 (+3 400). Plan non régénéré. |
 | v41 | 08/09/2026 | 09/09 : NGOMPE 59723/59718 passées en reliquats (5 600 + 11 600 — 9 400/15 000 et 13 400/25 000 livrés) ; SO2606-58898 (1 000) et SO2606-59675 (2 000) forcées — jour à 33 400 (+3 400). |
 | v42 | 08/09/2026 | Exécution automatique. Planifié 93,900/90,000. 391 exclusions. |
@@ -833,37 +811,36 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **08/09/2026** — Réf: **07/09/2026**
+> Exécutée le **09/09/2026** — Réf: **11/09/2026**
 
 ### Résumé
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 233 |
+| Commandes PONTE | 240 |
 | Commandes COQ | 18 |
-| Exclusions | 391 |
-| Planifié Réel | 93,900 / 90,000 |
-| Planifié Marge | 92,850 / 85,500 |
-| Non planifiées (marge) | 217 |
-| Nouvelles auto-exclusions | 376 |
+| Exclusions | 399 |
+| Planifié Réel | 21,450 / 20,000 |
+| Planifié Marge | 21,450 / 19,000 |
+| Non planifiées (marge) | 236 |
+| Nouvelles auto-exclusions | 384 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 03/09/2026 | Jeu | Nord, Ouest | 21,000 | 21,000 | 100% |
-| 07/09/2026 | Lun | Ouest | 20,100 | 19,000 | 106% |
-| 09/09/2026 | Mer | Centre, Ouest | 33,400 | 30,000 | 111% |
-| 11/09/2026 | Ven | Centre | 19,400 | 20,000 | 97% |
+| 11/09/2026 | Ven | Ouest | 21,450 | 20,000 | 107% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 16 | 84,900 |
-| NON ÉCHUE | 142 | 1,047,450 |
-| RECLASSÉE | 8 | 76,900 |
-| ÉCHUE | 60 | 514,450 |
-| ÉCHUE RECLASSÉE | 7 | 88,750 |
+| IMMINENTE | 20 | 62,400 |
+| NON ÉCHUE | 134 | 1,049,650 |
+| RECLASSÉE | 13 | 102,800 |
+| ÉCHUE | 64 | 559,050 |
+| ÉCHUE RECLASSÉE | 9 | 117,750 |

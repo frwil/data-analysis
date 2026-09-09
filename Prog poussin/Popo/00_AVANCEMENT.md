@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **09/09/2026** — v43 : Statuts ERP AT(35)+EXP(10) — §14 03/09 et 07/09 vidés (livrées), 09/09 : 59723 retirée (livrée 15 000/15 000), 59718 → reliquat 17 200. Plan non régénéré.
+> Dernière mise à jour : **09/09/2026** — v45 : Éclosion du 09/09 avortée — plan recentré sur le 11/09 (21 450/20 000, 107%) : NGOMPE 17 200 + LEMOKEM 1 000 + 2 000 + MAGNE 62698 1 250. Journées passées retirées, le reste repasse en non planifié. Échues/reclassées régénérés (AT35).
 
 ---
 
@@ -22,14 +22,15 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v43)
+## 📊 Fichiers Source (v45)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
 | `NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx` | AT — 09/09 | 1 439 |
 | `NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx` | EXP — 09/09 | 1 288 |
 
-> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v43).
+> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v45).
+> 📄 `output/Commandes_echuees_13-09.xlsx` régénéré le 09/09 (AT35) : 101 échues au 13/09 + 25 reclassées.
 
 ---
 
@@ -88,6 +89,16 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 3. **§14 07/09 vidé** : WANTSA 7 000/7 000 livrée ; NGOMPE 59718 : 7 800 expédiés ERP (pas 13 400) → reliquat 17 200 basculé au 09/09
 4. **§14 09/09** : 59723 retirée (livrée) ; 59718 → 17 200 — jour inchangé à 33 400 (+3 400)
 5. **Plan non régénéré** (sur demande)
+
+---
+
+### 🔄 Chronologie v44/v45 (09/09)
+
+1. **Éclosion du 09/09 avortée** : §1/§6 réduits au 11/09 (03/09 et 07/09 passées retirées), §4 réf = 11/09
+2. **§14 11/09** : NGOMPE 59718 reliquat 17 200 + LEMOKEM 1 000 + 2 000 basculées du 09/09 + MAGNE JOSEPHINE SO2607-62698 (1 250) forcée (ex-§13) — 21 450 forcés, dépassement +1 450
+3. **Le reste repasse en non planifié** : DASSI 3 200, WAFIN 10 000 (ex-09/09) et les 6 ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE)
+4. **Exécution (v45)** : 11/09 = 21 450/20 000 (107%, Ouest) ; 399 exclusions ; 236 non planifiées (marge)
+5. **Échues/reclassées régénéré** (`output/Commandes_echuees_13-09.xlsx`, AT35) : 101 échues au 13/09 — 840 500 sujets (dont 10 ÉCHUE RECLASSÉE, 11 exclues §12) + 25 reclassées (13 non livrées, 149 950 sujets)
 
 ---
 
