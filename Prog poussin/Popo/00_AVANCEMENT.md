@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **08/09/2026** — v41/v42 : 09/09 à 33 400 (+3 400) — NGOMPE passée en reliquats (5 600 + 11 600), LEMOKEM ×2 (1 000 + 2 000) forcées. Plan régénéré avec AT(29)+EXP(9).
+> Dernière mise à jour : **09/09/2026** — v43 : Statuts ERP AT(35)+EXP(10) — §14 03/09 et 07/09 vidés (livrées), 09/09 : 59723 retirée (livrée 15 000/15 000), 59718 → reliquat 17 200. Plan non régénéré.
 
 ---
 
@@ -22,14 +22,14 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v40)
+## 📊 Fichiers Source (v43)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
-| `NJS GROUP ERP - Lignes de commandes + multicompany (29).xlsx` | AT — 04/09 | 1 406 |
-| `NJS GROUP ERP - Lignes des expeditions + multicompany (9).xlsx` | EXP — 04/09 | 1 252 |
+| `NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx` | AT — 09/09 | 1 439 |
+| `NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx` | EXP — 09/09 | 1 288 |
 
-> ✅ **Extractions à jour** (04/09/2026) — statuts ERP mis à jour dans le `.md` (v40).
+> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v43).
 
 ---
 
@@ -78,6 +78,16 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 1. **09/09 — NGOMPE reliquats** : SO2606-59723 (9 400/15 000 livrés → reliquat 5 600) et SO2606-59718 (13 400/25 000 livrés → reliquat 11 600) — §14 mis à jour (−600)
 2. **09/09 — +2 forcées** : LEMOKEM ANDOLAIN SO2606-58898 (1 000, prévue 09/09) et LEMOKEM TIODOU ZEPHIRIN SO2606-59675 (2 000, prévue 12/09) — Validées/Payées, BELGO-NDJELENG
 3. **Exécution (v42)** : 09/09 = 33 400/30 000 (111%, +3 400) ; total réel 93 900/90 000 ; marge 92 850/85 500 ; 391 exclusions ; 217 non planifiées (marge)
+
+---
+
+### 🔄 Chronologie v43 (09/09)
+
+1. **Extraits AT(35)+EXP(10) du 09/09** : croisement des refs du `.md` avec l'ERP
+2. **§14 03/09 vidé** : 5/5 livrées dans l'ERP — MOTING 3 200, HAMIDOU 1 000, HASSAN 300 + 2 200, NGOMPE 59723 complète (15 000/15 000)
+3. **§14 07/09 vidé** : WANTSA 7 000/7 000 livrée ; NGOMPE 59718 : 7 800 expédiés ERP (pas 13 400) → reliquat 17 200 basculé au 09/09
+4. **§14 09/09** : 59723 retirée (livrée) ; 59718 → 17 200 — jour inchangé à 33 400 (+3 400)
+5. **Plan non régénéré** (sur demande)
 
 ---
 

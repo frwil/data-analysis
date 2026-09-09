@@ -191,37 +191,23 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 ### 03/09/2026 (Nord, Centre, Ouest)
 
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2607-62693 | MOTING NOUBISSI STEPHANE ULRICH | 3 200 | BELGO-NDERE | Assignée au 03/09 — ÉCHUE Nord |
-| SO2605-57161 | HAMIDOU MOUSSA | 1 000 | BELGO-NDERE | Assignée au 03/09 — ÉCHUE Nord |
-| SO2606-59940 | HASSAN HAROUNA | 300 | BELGO-NDERE | Assignée au 03/09 — ÉCHUE Nord |
-| SO2604-52671 | HASSAN HAROUNA | 2 200 | BELGO-NDERE | Assignée au 03/09 — ÉCHUE Nord |
-| SO2606-59723 | NGOMPE SOB ERIC BRUNO | 9 100 | BELGO-FAMLA | Assignée au 03/09 — PREMIUM Ouest (NGOMPE BRUNO, split 1/2 : 9 100/15 000) |
-
-*Total forcé 03/09 restant : 15 800 (Nord 6 700 + Ouest 9 100) — KAMTA 5 200/5 200 et Kamgang reliquat 300 (1 500/1 500) livrées dans l'ERP au 04/09, retirées (v40).*
+*Aucune forcée restante — 5/5 livrées dans l'ERP au 09/09 (v43) : MOTING 3 200, HAMIDOU 1 000, HASSAN 300 + 2 200, NGOMPE 59723 complète (15 000/15 000).*
 
 ### 07/09/2026 (Ouest)
 
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 13 100 | BELGO-FAMLA | Assignée au 07/09 — PREMIUM Ouest (NGOMPE BRUNO, split 1/2 : 13 100/25 000) |
-| SO2606-60227 | WANTSA GILBERT | 7 000 | BELGO MBOUDA | Assignée au 07/09 — ÉCHUE MBOUDA (11/07), livrée en totalité (pas de split), remplace MOFFO BERTIN |
-
-*Total forcé 07/09 : 20 100 — dépassement +1 100 vs réel 19 000 (WANTSA 7 000 en totalité).*
+*Aucune forcée restante — v43 : WANTSA 7 000 livrée (7 000/7 000) ; NGOMPE 59718 : 7 800/13 100 expédiées dans l'ERP (08/09), reliquat basculé au 09/09 (17 200).*
 
 ### 09/09/2026 (Centre)
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2606-59723 | NGOMPE SOB ERIC BRUNO | 5 600 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, reliquat : 9 400/15 000 livrés) |
-| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 11 600 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, reliquat : 13 400/25 000 livrés) |
+| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 17 200 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (reliquat ERP : 7 800/25 000 expédiés) |
 | SO2606-58150 | DASSI TCHENEGHOM VICTOR ARMAND | 3 200 | BELGO-FAMLA | Assignée au 09/09 — ÉCHUE Ouest (17/07) |
 | SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Assignée au 09/09 — ÉCHUE Centre (29/07) |
 | SO2606-58898 | LEMOKEM ANDOLAIN | 1 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 09/09) |
 | SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 12/09) |
 
-*Total forcé 09/09 : 33 400 — dépassement +3 400 vs réel 30 000 (Ouest 23 400 + Centre 10 000).*
+*Total forcé 09/09 : 33 400 — dépassement +3 400 vs réel 30 000 (Ouest 23 400 + Centre 10 000). SO2606-59723 (5 600) livrée dans l'ERP — retirée (v43).*
 
 ### 11/09/2026 (Ouest, Centre)
 
@@ -274,12 +260,14 @@ Le script exclut automatiquement :
 
 ---
 
-## 19. Fichiers Source (v40)
+## 19. Fichiers Source (v43)
 
 | Fichier | Rôle |
 |---------|------|
-| NJS GROUP ERP - Lignes de commandes + multicompany (29).xlsx | AT principal — 04/09/2026 — 1 406 lignes |
-| NJS GROUP ERP - Lignes des expeditions + multicompany (9).xlsx | EXP principal — 04/09/2026 — 1 252 lignes |
+| NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx | AT principal — 09/09/2026 — 1 439 lignes |
+| NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx | EXP principal — 09/09/2026 — 1 288 lignes |
+
+**v43** : Nouvelles extractions du 09/09/2026 (AT 35, EXP 10). Mise à jour des statuts ERP : §14 03/09 vidé (5/5 livrées : MOTING, HAMIDOU, HASSAN ×2, NGOMPE 59723 complète 15 000/15 000), §14 07/09 vidé (WANTSA 7 000/7 000 ; NGOMPE 59718 7 800 expédiés → reliquat 17 200 basculé au 09/09), §14 09/09 : 59723 retirée (livrée), 59718 → 17 200 (jour inchangé à 33 400, +3 400). Plan non régénéré.
 
 **v32** : Nouvelles extractions du 01/09/2026. Mise à jour des statuts ERP : §14 vidé (10/10 forcées livrées — PEKA ×2 et Gic Emocolit confirmées hors ERP), §10 vidé (PEKA 9 250 livrée hors ERP), §13 −1 livrée (Manfouo Mathieu 4 100), §12 −1 redevenue active (Mogum Fossi 2 500) + LEMOKEM SO2606-59715 ré-exclue définitivement (remplacée par SO2607-64515 PONTE PREMIUM livrée 28 000/28 000) + 3 livrées hors ERP (PEKA 9 250, PEKA 12 750, Gic Emocolit 5 500).
 
@@ -332,6 +320,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v43 | 09/09/2026 | Statuts ERP AT(35)+EXP(10) du 09/09 : §14 03/09 vidé (5/5 livrées), §14 07/09 vidé (WANTSA 7 000/7 000, NGOMPE 59718 7 800 expédiés → reliquat basculé 09/09), §14 09/09 : 59723 retirée (livrée 15 000/15 000), 59718 → 17 200. Jour inchangé à 33 400 (+3 400). Plan non régénéré. |
 | v41 | 08/09/2026 | 09/09 : NGOMPE 59723/59718 passées en reliquats (5 600 + 11 600 — 9 400/15 000 et 13 400/25 000 livrés) ; SO2606-58898 (1 000) et SO2606-59675 (2 000) forcées — jour à 33 400 (+3 400). |
 | v42 | 08/09/2026 | Exécution automatique. Planifié 93,900/90,000. 391 exclusions. |
 | v40 | 04/09/2026 | Nouvelles extractions AT(29)+EXP(9) du 04/09. Statuts ERP : §14 03/09 −2 livrées (KAMTA 5 200/5 200, Kamgang 1 500/1 500), §12 −4 livrées dans l'ERP (Gic Emocolit ×2, Quay's Idriss, NJOSSI). 17 nouvelles commandes depuis le 01/09. Plan non régénéré. |
