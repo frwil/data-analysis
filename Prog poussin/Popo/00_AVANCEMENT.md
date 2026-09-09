@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **04/09/2026** — v40 : Nouvelles extractions AT(29)+EXP(9). Statuts ERP mis à jour : §14 03/09 −2 livrées (KAMTA, Kamgang), §12 −4 livrées ERP. Plan non régénéré (sur demande).
+> Dernière mise à jour : **08/09/2026** — v41/v42 : 09/09 à 33 400 (+3 400) — NGOMPE passée en reliquats (5 600 + 11 600), LEMOKEM ×2 (1 000 + 2 000) forcées. Plan régénéré avec AT(29)+EXP(9).
 
 ---
 
@@ -70,6 +70,14 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 3. **§12 −4** : Gic Emocolit 5 500 + 500, Quay's Idriss 1 100, NJOSSI 50 désormais **Livrée** dans l'ERP → retirées (auto-exclusion État=Livrée)
 4. **Nouvelles commandes depuis le 01/09** : 17 (dont Tengemne 25 000 + 13 000 + 12 000) — prises en compte au prochain run
 5. **Plan non régénéré** (sur demande)
+
+---
+
+### 🔄 Chronologie v41 (08/09)
+
+1. **09/09 — NGOMPE reliquats** : SO2606-59723 (9 400/15 000 livrés → reliquat 5 600) et SO2606-59718 (13 400/25 000 livrés → reliquat 11 600) — §14 mis à jour (−600)
+2. **09/09 — +2 forcées** : LEMOKEM ANDOLAIN SO2606-58898 (1 000, prévue 09/09) et LEMOKEM TIODOU ZEPHIRIN SO2606-59675 (2 000, prévue 12/09) — Validées/Payées, BELGO-NDJELENG
+3. **Exécution (v42)** : 09/09 = 33 400/30 000 (111%, +3 400) ; total réel 93 900/90 000 ; marge 92 850/85 500 ; 391 exclusions ; 217 non planifiées (marge)
 
 ---
 

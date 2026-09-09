@@ -214,12 +214,14 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 | Réf. | Client | Qté | Agence | Raison |
 |------|--------|-----|--------|--------|
-| SO2606-59723 | NGOMPE SOB ERIC BRUNO | 5 900 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, split 2/2 : 5 900/15 000) |
-| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 11 900 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, split 2/2 : 11 900/25 000) |
+| SO2606-59723 | NGOMPE SOB ERIC BRUNO | 5 600 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, reliquat : 9 400/15 000 livrés) |
+| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 11 600 | BELGO-FAMLA | Assignée au 09/09 — PREMIUM Ouest (NGOMPE BRUNO, reliquat : 13 400/25 000 livrés) |
 | SO2606-58150 | DASSI TCHENEGHOM VICTOR ARMAND | 3 200 | BELGO-FAMLA | Assignée au 09/09 — ÉCHUE Ouest (17/07) |
 | SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Assignée au 09/09 — ÉCHUE Centre (29/07) |
+| SO2606-58898 | LEMOKEM ANDOLAIN | 1 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 09/09) |
+| SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Assignée au 09/09 — sur demande (Validée/Payée, prévue 12/09) |
 
-*Total forcé 09/09 : 31 000 — dépassement +1 000 vs réel 30 000 (Ouest 21 000 + Centre 10 000).*
+*Total forcé 09/09 : 33 400 — dépassement +3 400 vs réel 30 000 (Ouest 23 400 + Centre 10 000).*
 
 ### 11/09/2026 (Ouest, Centre)
 
@@ -330,6 +332,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v41 | 08/09/2026 | 09/09 : NGOMPE 59723/59718 passées en reliquats (5 600 + 11 600 — 9 400/15 000 et 13 400/25 000 livrés) ; SO2606-58898 (1 000) et SO2606-59675 (2 000) forcées — jour à 33 400 (+3 400). |
+| v42 | 08/09/2026 | Exécution automatique. Planifié 93,900/90,000. 391 exclusions. |
 | v40 | 04/09/2026 | Nouvelles extractions AT(29)+EXP(9) du 04/09. Statuts ERP : §14 03/09 −2 livrées (KAMTA 5 200/5 200, Kamgang 1 500/1 500), §12 −4 livrées dans l'ERP (Gic Emocolit ×2, Quay's Idriss, NJOSSI). 17 nouvelles commandes depuis le 01/09. Plan non régénéré. |
 | v38 | 02/09/2026 | 11/09 : KUETCHE SO2607-62349 retirée, exclue §13 avec MAGNE JOSEPHINE SO2607-62698 (ex-11/09) ; PROVENDERIE L' ASSURANCE SO2603-50691 (3 000) forcée à la place — 19 400 forcés, reste 600. |
 | v39 | 02/09/2026 | Exécution automatique. Planifié 91,800/90,000. 384 exclusions. |
@@ -838,37 +842,39 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **02/09/2026** — Réf: **07/09/2026**
+> Exécutée le **08/09/2026** — Réf: **07/09/2026**
 
 ### Résumé
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 225 |
-| Commandes COQ | 21 |
-| Exclusions | 384 |
-| Planifié Réel | 91,800 / 90,000 |
-| Planifié Marge | 91,800 / 85,500 |
-| Non planifiées (marge) | 209 |
-| Nouvelles auto-exclusions | 365 |
+| Commandes PONTE | 233 |
+| Commandes COQ | 18 |
+| Exclusions | 391 |
+| Planifié Réel | 93,900 / 90,000 |
+| Planifié Marge | 92,850 / 85,500 |
+| Non planifiées (marge) | 217 |
+| Nouvelles auto-exclusions | 376 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 03/09/2026 | Jeu | Centre, Nord, Ouest | 21,300 | 21,000 | 101% |
+| 03/09/2026 | Jeu | Nord, Ouest | 21,000 | 21,000 | 100% |
 | 07/09/2026 | Lun | Ouest | 20,100 | 19,000 | 106% |
-| 09/09/2026 | Mer | Centre, Ouest | 31,000 | 30,000 | 103% |
+| 09/09/2026 | Mer | Centre, Ouest | 33,400 | 30,000 | 111% |
 | 11/09/2026 | Ven | Centre | 19,400 | 20,000 | 97% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 13 | 84,700 |
-| NON ÉCHUE | 137 | 1,035,050 |
-| RECLASSÉE | 6 | 35,900 |
-| ÉCHUE | 62 | 514,900 |
+| IMMINENTE | 16 | 84,900 |
+| NON ÉCHUE | 142 | 1,047,450 |
+| RECLASSÉE | 8 | 76,900 |
+| ÉCHUE | 60 | 514,450 |
 | ÉCHUE RECLASSÉE | 7 | 88,750 |
