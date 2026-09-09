@@ -280,19 +280,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var selAnnee = document.querySelector('select[name="annee"]');
     var badges = Array.prototype.slice.call(document.querySelectorAll('.imp[data-imp]'));
     function badgeTexte(s) {
-      if (!s) { return ''; }
-      var p = [];
-      if (s.directe > 0) { p.push('🖨' + s.directe); }
-      if (s.echecs > 0) { p.push('✗' + s.echecs); }
-      if (s.pdf > 0) { p.push('📄' + s.pdf); }
-      return p.join(' ');
+      /* toujours visible — identique au rendu PHP badge_imp() */
+      var d = s ? (s.directe || 0) : 0;
+      var x = s ? (s.echecs || 0) : 0;
+      var p = s ? (s.pdf || 0) : 0;
+      var t = '🖨' + d + ' 📄' + p;
+      if (x > 0) { t += ' ✗' + x; }
+      return t;
     }
     function majBadges() {
       var annee = selAnnee ? selAnnee.value : '';
       badges.forEach(function (b) {
         var data = {};
         try { data = JSON.parse(b.getAttribute('data-imp') || '{}'); } catch (e) { /* ignore */ }
-        b.textContent = badgeTexte(data[annee] || null);
+        var s = data[annee] || null;
+        b.textContent = badgeTexte(s);
+        b.classList.toggle('imp-alerte', !!(s && s.echecs > 0));
       });
     }
     if (selAnnee && badges.length) {
@@ -313,6 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var idsHidden = form.querySelector('input[name="ids"]');
   var btnTous = document.getElementById('btn-tous');
   var btnAucun = document.getElementById('btn-aucun');
+  var btnZero = document.getElementById('btn-zero');
 
   function mode() {
     for (var i = 0; i < radios.length; i++) {
@@ -344,6 +348,10 @@ document.addEventListener('DOMContentLoaded', function () {
       btnAucun.disabled = un;
       btnTous.style.opacity = un ? '.45' : '';
       btnAucun.style.opacity = un ? '.45' : '';
+      if (btnZero) {
+        btnZero.disabled = un;
+        btnZero.style.opacity = un ? '.45' : '';
+      }
     }
   }
 
@@ -377,6 +385,29 @@ document.addEventListener('DOMContentLoaded', function () {
   btnAucun.addEventListener('click', function () {
     Array.prototype.forEach.call(choixs(), function (c) { c.checked = false; });
     majCompteur();
+  });
+
+  /* « Non imprimés » : ne cocher que les clients dont les compteurs
+     d'impression sont à 0 (directe et PDF) pour l'année choisie.
+     Les échecs/annulations laissent le compteur à 0 : le client
+     reste sélectionnable, car il reste à imprimer. */
+  btnZero.addEventListener('click', function () {
+    var annee = selAnnee ? selAnnee.value : '';
+    var n = 0;
+    Array.prototype.forEach.call(choixs(), function (c) {
+      var lab = c.closest('label');
+      var b = lab ? lab.querySelector('.imp[data-imp]') : null;
+      var data = {};
+      if (b) { try { data = JSON.parse(b.getAttribute('data-imp') || '{}'); } catch (e) { /* ignore */ } }
+      var s = data[annee] || null;
+      var zero = !s || ((s.directe || 0) === 0 && (s.pdf || 0) === 0);
+      c.checked = zero;
+      if (zero) { n++; }
+    });
+    majCompteur();
+    if (!n) {
+      alert('Aucun client non imprimé pour l\'année ' + annee + '.');
+    }
   });
 
   /* À l'envoi : renseigner id / ids selon le mode, et retirer choix[] de l'URL */

@@ -1,3 +1,6 @@
 # Clé privée de signature des QR — ne JAMAIS committer, copier ni partager :
 # sa détention permet d'émettre des documents « authentiques ».
 data/sign.key
+
+# Log du serveur de dev local (php -S) — jamais versionné
+php_server.log

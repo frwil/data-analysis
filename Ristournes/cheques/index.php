@@ -70,7 +70,7 @@ function charger_documents(): array
             $sql .= ($args ? ' AND' : ' WHERE') . ' 0';
         }
     }
-    $sql .= ' ORDER BY tiers COLLATE NOCASE, agence';
+    $sql .= ' ORDER BY agence COLLATE NOCASE, tiers COLLATE NOCASE';
     $st = $db->prepare($sql);
     $st->execute($args);
     $clients = $st->fetchAll();
@@ -358,7 +358,8 @@ function render_form(): void
     ?>
     <div class="wrap-form">
       <h1>Chèques &amp; listings de ristournes</h1>
-      <p class="sous-titre">BELGOCAM S.A. — édition des chèques et listings d'achat · format A4 portrait, 2 documents par page (½ A4 chacun)</p>
+      <p class="sous-titre">BELGOCAM S.A. — édition des chèques et listings d'achat · format A4 portrait, 2 documents par page (½ A4 chacun)
+        · <a href="index.php?p=analyses">🔎 Analyses clients</a> · <a href="index.php?p=suivi">📊 Suivi des impressions</a></p>
 
       <form id="filtres" method="get" action="index.php">
         <input type="hidden" name="p" value="apercu">
@@ -408,6 +409,8 @@ function render_form(): void
               <span class="spacer"></span>
               <button type="button" class="btn-mini" id="btn-tous">Tout</button>
               <button type="button" class="btn-mini" id="btn-aucun">Aucun</button>
+              <button type="button" class="btn-mini" id="btn-zero"
+                      title="Sélectionner uniquement les clients dont les compteurs d'impression (🖨 directe et 📄 PDF) sont à 0 pour l'année choisie">Non imprimés</button>
             </div>
             <div class="picklist" id="liste-clients">
               <?php foreach ($clients as $c): $q = function_exists('mb_strtolower') ? mb_strtolower($c['code'] . ' ' . $c['tiers'] . ' ' . $c['agence'], 'UTF-8') : strtolower($c['code'] . ' ' . $c['tiers'] . ' ' . $c['agence']); $cle = $c['tiers'] . '|' . $c['agence']; ?>
@@ -417,8 +420,10 @@ function render_form(): void
                   <span class="code"><?= e($c['code']) ?></span>
                   <span class="tiers"><?= e($c['tiers']) ?></span>
                   <span class="ag"><?= e($c['agence']) ?></span>
-                  <span class="imp" title="Impressions : directes · échecs · PDF"
-                        data-imp="<?= e(json_encode($stats[$cle] ?? new stdClass(), JSON_UNESCAPED_UNICODE)) ?>"><?= e(badge_imp($stats[$cle][$annee] ?? null)) ?></span>
+                  <?php $stAn = $stats[$cle][$annee] ?? null; ?>
+                  <span class="imp<?= ($stAn['echecs'] ?? 0) > 0 ? ' imp-alerte' : '' ?>"
+                        title="Impressions : 🖨 directes · ✗ échecs/annulées · 📄 PDF"
+                        data-imp="<?= e(json_encode($stats[$cle] ?? new stdClass(), JSON_UNESCAPED_UNICODE)) ?>"><?= e(badge_imp($stAn)) ?></span>
                 </label>
               <?php endforeach; ?>
             </div>
@@ -451,6 +456,7 @@ function render_documents(array $res, bool $auto_print): void
       <a class="lien-retour" href="index.php?p=form&amp;annee=<?= (int) $res['annee'] ?>&amp;mois=<?= e($res['mois']) ?>&amp;sel=<?= e($_GET['sel'] ?? 'tous') ?>&amp;id=<?= e($_GET['id'] ?? '') ?>&amp;ids=<?= e($_GET['ids'] ?? '') ?>&amp;cheques=<?= $res['avec_cheques'] ? '1' : '0' ?>&amp;listings=<?= $res['avec_listings'] ? '1' : '0' ?>">← Retour au formulaire</a>
       <a class="lien-retour" href="index.php?p=verifier">🔎 Vérifier un document</a>
       <a class="lien-retour" href="index.php?p=suivi&amp;annee=<?= (int) $res['annee'] ?>">📊 Suivi des impressions</a>
+      <a class="lien-retour" href="index.php?p=analyses">🔎 Analyses clients</a>
       <span class="tb-info"><?= count($docs) ?> client(s) · <?= $n_docs ?> document(s) · <?= e($res['periode']) ?></span>
       <span class="spacer"></span>
       <button class="btn-principal" onclick="lancerImpression()">🖨 Imprimer (Ctrl+P)</button>
@@ -508,7 +514,13 @@ function trouver_navigateur(): ?string
     return null;
 }
 
-function render_pdf(): void
+/** Exporte une page HTML complète (avec les <link>/<script> de page_debut)
+ *  en PDF via le navigateur headless, puis la sert en téléchargement.
+ *  Le serveur intégré de PHP est mono-thread : le navigateur headless ne peut
+ *  pas rappeler http://localhost pendant la requête — la page est donc écrite
+ *  dans un fichier HTML temporaire (assets en file://), même rendu.
+ *  $apresGeneration (optionnel) est appelé juste avant l'envoi (audit serveur). */
+function html_vers_pdf(string $html, string $nom, ?callable $apresGeneration = null): void
 {
     if (!function_exists('exec')) {
         http_response_code(500);
@@ -521,14 +533,6 @@ function render_pdf(): void
         echo "Navigateur introuvable pour la génération PDF. Utilisez l'aperçu puis Ctrl+P → « Enregistrer au format PDF ».";
         return;
     }
-    /* Le serveur intégré de PHP est mono-thread : le navigateur headless ne peut
-       pas rappeler http://localhost pendant la requête PDF. On écrit donc
-       l'aperçu dans un fichier HTML temporaire (assets en file://) et on
-       imprime ce fichier — même rendu, aucun aller-retour réseau. */
-    $res = charger_documents();
-    ob_start();
-    render_documents($res, false);
-    $html = ob_get_clean();
     /* CSS et JS inlinés : une page HTML locale ne peut pas charger ses
        sous-ressources en mode headless (PDF vide ou non stylé). */
     $css = file_get_contents(__DIR__ . '/assets/app.css');
@@ -546,7 +550,7 @@ function render_pdf(): void
     if (!is_dir($dirHtml)) {
         mkdir($dirHtml, 0777, true);
     }
-    $fhtml = $dirHtml . DIRECTORY_SEPARATOR . 'apercu_' . bin2hex(random_bytes(6)) . '.html';
+    $fhtml = $dirHtml . DIRECTORY_SEPARATOR . 'page_' . bin2hex(random_bytes(6)) . '.html';
     file_put_contents($fhtml, $html);
     $pdf = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'bcp_' . bin2hex(random_bytes(6)) . '.pdf';
     $profil = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'bcp-headless';
@@ -575,18 +579,31 @@ function render_pdf(): void
             return;
         }
     }
-    /* Suivi : le PDF est généré et téléchargé — écriture d'audit (delta 0).
-       La confirmation d'impression est demandée côté navigateur. */
-    foreach ($res['docs'] as $d) {
-        suivi_log((string) $d['uuid'], 'pdf', 'telecharge', 0);
+    if ($apresGeneration !== null) {
+        $apresGeneration();
     }
-    $nom = 'Ristournes_' . ((int) ($_GET['annee'] ?? 2025)) . '_BLP.pdf';
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $nom . '"');
     header('Content-Length: ' . filesize($pdf));
     readfile($pdf);
     @unlink($pdf);
     @unlink($fhtml);
+}
+
+function render_pdf(): void
+{
+    $res = charger_documents();
+    ob_start();
+    render_documents($res, false);
+    $html = ob_get_clean();
+    $docs = $res['docs'];
+    html_vers_pdf($html, 'Ristournes_' . ((int) ($_GET['annee'] ?? 2025)) . '_BLP.pdf', function () use ($docs): void {
+        /* Suivi : le PDF est généré et téléchargé — écriture d'audit (delta 0).
+           La confirmation d'impression est demandée côté navigateur. */
+        foreach ($docs as $d) {
+            suivi_log((string) $d['uuid'], 'pdf', 'telecharge', 0);
+        }
+    });
 }
 
 /* ---------------------------------------------------------------
@@ -970,6 +987,260 @@ function render_verif_resultat(array $res): void
     }
 }
 
+/* ---------------------------------------------------------------
+ * Analyses clients : ristournes multi-agences, homonymes,
+ * noms incomplets (prénom seul). Export PDF et CSV.
+ * --------------------------------------------------------------- */
+
+/** Remarque heuristique pour un nom à un seul mot : titre « M./MME » devant
+ *  un nom seul, ou suffixe d'entité typique (CAM, PRO) — le reste est
+ *  « à vérifier » à la main. */
+function analyse_nom_remarque(string $tiers): string
+{
+    $t = trim($tiers);
+    $rem = [];
+    if (preg_match('/^M\./i', $t)) {
+        $rem[] = 'titre « M. » devant un seul nom';
+    } elseif (preg_match('/^MME\.?/i', $t)) {
+        $rem[] = 'titre « MME » devant un seul nom';
+    }
+    $base = preg_replace('/^(M\.|MME\.?)\s*/i', '', $t);
+    if ($base !== '' && preg_match('/(CAM|PRO)$/i', $base)) {
+        $rem[] = 'entité probable (suffixe ' . strtoupper(substr($base, -3)) . ')';
+    }
+    return $rem ? implode(' · ', $rem) : 'à vérifier';
+}
+
+function page_analyses(): void
+{
+    $db = db();
+    $annees = $db->query('SELECT DISTINCT substr(mois,1,4) FROM detail ORDER BY 1')
+                 ->fetchAll(PDO::FETCH_COLUMN);
+    $annee = (int) ($_GET['annee'] ?? (int) end($annees));
+    if (!in_array((string) $annee, $annees, true)) {
+        $annee = (int) end($annees);
+    }
+
+    /* Montants de l'exercice : SUM(total_mois) par (tiers, agence) —
+       c'est le montant imprimé sur les chèques. */
+    $st = $db->prepare('SELECT tiers, agence, SUM(total_mois) AS m FROM detail
+                        WHERE mois LIKE ? GROUP BY tiers, agence');
+    $st->execute([$annee . '-%']);
+    $montant = [];
+    foreach ($st->fetchAll() as $r) {
+        $montant[$r['tiers'] . '|' . $r['agence']] = (float) $r['m'];
+    }
+    $mnt = function (string $tiers, string $agence) use ($montant): float {
+        return $montant[$tiers . '|' . $agence] ?? 0.0;
+    };
+
+    /* 1. Multi-agences : regroupement par code client — plus fiable que le nom,
+       il capture aussi les variantes d'orthographe d'un même client. */
+    $multi = $db->query("SELECT rowid AS id, tiers, agence, code FROM clients
+                         WHERE code IS NOT NULL AND TRIM(code) <> ''
+                           AND code IN (SELECT code FROM clients
+                                        WHERE code IS NOT NULL AND TRIM(code) <> ''
+                                        GROUP BY code HAVING COUNT(DISTINCT agence) > 1)
+                         ORDER BY code, tiers COLLATE NOCASE, agence")->fetchAll();
+    $parCode = [];
+    foreach ($multi as $r) {
+        $parCode[$r['code']][] = $r;
+    }
+    foreach ($parCode as $code => $rows) {
+        $noms = array_values(array_unique(array_column($rows, 'tiers')));
+        $total = 0.0;
+        foreach ($rows as $r) {
+            $total += $mnt($r['tiers'], $r['agence']);
+        }
+        $parCode[$code] = ['rows' => $rows, 'noms' => $noms,
+                           'variantes' => count($noms) > 1, 'total' => $total];
+    }
+    ksort($parCode, SORT_NATURAL);
+
+    /* 2. Homonymes à vérifier : même nom dans plusieurs agences mais codes
+       différents (ou manquants) — même client sous deux codes, ou deux
+       clients distincts portant le même nom. */
+    $homoNoms = $db->query("SELECT tiers FROM clients GROUP BY tiers
+                            HAVING COUNT(DISTINCT agence) > 1
+                               AND (COUNT(DISTINCT code) > 1 OR MIN(code IS NULL) = 1)
+                            ORDER BY tiers COLLATE NOCASE")->fetchAll(PDO::FETCH_COLUMN);
+    $homonymes = [];
+    if ($homoNoms) {
+        $in = implode(',', array_fill(0, count($homoNoms), '?'));
+        $st = $db->prepare("SELECT rowid AS id, tiers, agence, code FROM clients
+                            WHERE tiers IN ($in) ORDER BY tiers COLLATE NOCASE, agence");
+        $st->execute($homoNoms);
+        $homonymes = $st->fetchAll();
+    }
+
+    /* 3. Noms à un seul mot : probablement un prénom sans nom de famille. */
+    $unMot = $db->query("SELECT rowid AS id, tiers, agence, code FROM clients
+                         WHERE tiers NOT LIKE '% %'
+                         ORDER BY tiers COLLATE NOCASE, agence")->fetchAll();
+
+    /* ---- Export CSV ---- */
+    $export = (string) ($_GET['export'] ?? '');
+    if ($export !== '') {
+        $lignes = $entetes = [];
+        if ($export === 'multi') {
+            $entetes = ['Code', 'Nom', 'Agence', 'Montant (BLP)', 'Noms différents'];
+            foreach ($parCode as $code => $g) {
+                foreach ($g['rows'] as $r) {
+                    $lignes[] = [$code, $r['tiers'], $r['agence'],
+                                 (int) round($mnt($r['tiers'], $r['agence'])),
+                                 $g['variantes'] ? 'OUI' : ''];
+                }
+            }
+            $nomFichier = 'Analyses_multiagences_' . $annee . '.csv';
+        } elseif ($export === 'homo') {
+            $entetes = ['Nom', 'Code', 'Agence', 'Montant (BLP)'];
+            foreach ($homonymes as $r) {
+                $lignes[] = [$r['tiers'], (string) ($r['code'] ?? ''), $r['agence'],
+                             (int) round($mnt($r['tiers'], $r['agence']))];
+            }
+            $nomFichier = 'Analyses_homonymes_' . $annee . '.csv';
+        } elseif ($export === 'prenom') {
+            $entetes = ['Nom', 'Code', 'Agence', 'Montant (BLP)', 'Remarque'];
+            foreach ($unMot as $r) {
+                $lignes[] = [$r['tiers'], (string) ($r['code'] ?? ''), $r['agence'],
+                             (int) round($mnt($r['tiers'], $r['agence'])),
+                             analyse_nom_remarque($r['tiers'])];
+            }
+            $nomFichier = 'Analyses_prenoms_seuls_' . $annee . '.csv';
+        } else {
+            http_response_code(404);
+            echo 'Export inconnu.';
+            return;
+        }
+        analyses_csv($entetes, $lignes, $nomFichier);
+        return;
+    }
+
+    page_debut('Analyses clients — Ristournes');
+    ?>
+    <div class="toolbar no-print">
+      <a class="lien-retour" href="index.php?p=form">← Retour au formulaire</a>
+      <a class="btn-pdf" href="index.php?p=analyses_pdf&amp;annee=<?= $annee ?>"
+         title="Génère le PDF via le navigateur (peut prendre quelques secondes)">⬇ Télécharger PDF</a>
+      <button class="btn-principal" onclick="window.print()">🖨 Imprimer</button>
+      <span class="spacer"></span>
+    </div>
+    <div class="wrap-suivi">
+      <h1>🔎 Analyses clients — Ristournes <?= $annee ?></h1>
+      <p class="sous-titre">Contrôles sur la base des clients : ristournes à retirer dans plusieurs
+        agences, homonymes, et noms réduits à un seul mot (prénom sans nom de famille).</p>
+
+      <h2>1. Ristournes à retirer dans plusieurs agences — <?= count($parCode) ?> client(s)</h2>
+      <p class="note">Regroupement par <b>code client</b> — plus fiable que le nom, il détecte aussi
+        les variantes d'orthographe d'un même client (signalées ⚠). Montants de l'exercice
+        <?= $annee ?>. <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=multi">⬇ CSV</a></p>
+      <?php if (!$parCode): ?>
+        <div class="vide">Aucun client multi-agences.</div>
+      <?php else: ?>
+        <table class="tab">
+          <thead><tr>
+            <th>Code</th><th>Client</th><th>Agence</th><th class="num">Montant (BLP)</th><th class="no-print">Aperçu</th>
+          </tr></thead>
+          <tbody>
+            <?php foreach ($parCode as $code => $g): ?>
+              <?php foreach ($g['rows'] as $r): ?>
+                <tr>
+                  <td><?= e($code) ?></td>
+                  <td><?= e($r['tiers']) ?><?php if ($g['variantes']): ?> <span class="noms-differents">⚠ noms différents</span><?php endif; ?></td>
+                  <td><?= e($r['agence']) ?></td>
+                  <td class="num"><?= fmt_f($mnt($r['tiers'], $r['agence'])) ?></td>
+                  <td class="no-print"><a class="btn-mini" href="index.php?p=apercu&amp;annee=<?= $annee ?>&amp;mois=all&amp;sel=un&amp;id=<?= (int) $r['id'] ?>&amp;cheques=1&amp;listings=1">Aperçu</a></td>
+                </tr>
+              <?php endforeach; ?>
+              <tr class="tot">
+                <td>Total <?= e($code) ?></td>
+                <td colspan="2"><?= count($g['rows']) ?> agence(s)</td>
+                <td class="num"><?= fmt_f($g['total']) ?></td>
+                <td class="no-print"></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+
+      <h2>2. Même nom, codes différents — homonymes ou même client ? — <?= count($homoNoms) ?> nom(s)</h2>
+      <p class="note">Même nom dans plusieurs agences avec des codes différents ou manquants : à vérifier
+        dans l'ERP (même client enregistré sous deux codes, ou deux personnes distinctes ?).
+        <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=homo">⬇ CSV</a></p>
+      <?php if (!$homonymes): ?>
+        <div class="vide">Aucun.</div>
+      <?php else: ?>
+        <table class="tab">
+          <thead><tr>
+            <th>Client</th><th>Code</th><th>Agence</th><th class="num">Montant (BLP)</th><th class="no-print">Aperçu</th>
+          </tr></thead>
+          <tbody>
+            <?php foreach ($homonymes as $r): ?>
+              <tr>
+                <td><?= e($r['tiers']) ?></td>
+                <td><?= $r['code'] !== null ? e($r['code']) : '<i>— manquant —</i>' ?></td>
+                <td><?= e($r['agence']) ?></td>
+                <td class="num"><?= fmt_f($mnt($r['tiers'], $r['agence'])) ?></td>
+                <td class="no-print"><a class="btn-mini" href="index.php?p=apercu&amp;annee=<?= $annee ?>&amp;mois=all&amp;sel=un&amp;id=<?= (int) $r['id'] ?>&amp;cheques=1&amp;listings=1">Aperçu</a></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+
+      <h2>3. Noms à un seul mot — prénom seul probable — <?= count($unMot) ?> ligne(s)</h2>
+      <p class="note">Nom sans espace (les mentions entre parenthèses sont exclues). Les noms
+        d'entreprise sont signalés quand un suffixe typique (CAM, PRO) ou un titre (M./MME) est
+        détecté ; le reste est « à vérifier » à la main dans l'ERP.
+        <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=prenom">⬇ CSV</a></p>
+      <?php if (!$unMot): ?>
+        <div class="vide">Aucun.</div>
+      <?php else: ?>
+        <table class="tab">
+          <thead><tr>
+            <th>Client</th><th>Agence</th><th>Code</th><th class="num">Montant (BLP)</th><th>Remarque</th><th class="no-print">Aperçu</th>
+          </tr></thead>
+          <tbody>
+            <?php foreach ($unMot as $r): ?>
+              <tr>
+                <td><?= e($r['tiers']) ?></td>
+                <td><?= e($r['agence']) ?></td>
+                <td><?= $r['code'] !== null ? e($r['code']) : '<i>— manquant —</i>' ?></td>
+                <td class="num"><?= fmt_f($mnt($r['tiers'], $r['agence'])) ?></td>
+                <td class="mineur"><?= e(analyse_nom_remarque($r['tiers'])) ?></td>
+                <td class="no-print"><a class="btn-mini" href="index.php?p=apercu&amp;annee=<?= $annee ?>&amp;mois=all&amp;sel=un&amp;id=<?= (int) $r['id'] ?>&amp;cheques=1&amp;listings=1">Aperçu</a></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    </div>
+    <?php
+    page_fin();
+}
+
+function page_analyses_pdf(): void
+{
+    ob_start();
+    page_analyses();
+    $html = ob_get_clean();
+    html_vers_pdf($html, 'Analyses_clients_' . ((int) ($_GET['annee'] ?? 2025)) . '.pdf');
+}
+
+/** Envoie un CSV (BOM UTF-8, séparateur « ; » — Excel FR) en téléchargement. */
+function analyses_csv(array $entetes, array $lignes, string $nom): void
+{
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $nom . '"');
+    $out = fopen('php://output', 'w');
+    fwrite($out, "\xEF\xBB\xBF");
+    fputcsv($out, $entetes, ';');
+    foreach ($lignes as $l) {
+        fputcsv($out, $l, ';');
+    }
+    fclose($out);
+}
+
 function page_verifier(): void
 {
     $code = trim((string) ($_GET['code'] ?? ''));
@@ -1007,6 +1278,10 @@ if ($p === 'form') {
     render_documents(charger_documents(), $p === 'imprimer');
 } elseif ($p === 'suivi') {
     page_suivi();
+} elseif ($p === 'analyses') {
+    page_analyses();
+} elseif ($p === 'analyses_pdf') {
+    page_analyses_pdf();
 } elseif ($p === 'suivi_api') {
     header('Content-Type: application/json; charset=UTF-8');
     $req = json_decode((string) file_get_contents('php://input'), true);

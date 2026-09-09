@@ -113,13 +113,24 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .vide { max-width: 900px; margin: 40px auto; text-align: center; color: var(--mineur); }
 
 /* ---------------------------------------------------------------
- * Badge d'impressions dans le picker (suivi)
+ * Badge d'impressions dans le picker (suivi) : pastille toujours
+ * visible « 🖨n 📄n » (+ « ✗n » si échecs/annulations)
  * --------------------------------------------------------------- */
 .imp {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 10.5px;
+  line-height: 16px;
+  padding: 0 6px;
+  background: #f0f4f0;
+  border: 1px solid var(--grille-clair);
+  border-radius: 9px;
   color: var(--accent);
   white-space: nowrap;
+}
+.imp.imp-alerte {
+  background: #fdf3e4;
+  border-color: #d8b25e;
+  color: #7a5200;
 }
 
 /* ---------------------------------------------------------------
@@ -218,7 +229,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .entete-infos div:not(.nom):not(.slogan) { font-size: 5.8pt; line-height: 1.05; color: var(--mineur); }
 .entete-titre { text-align: right; }
 .entete-titre .titre { font-size: 9.5pt; font-weight: 700; letter-spacing: .05em; }
-.entete-titre .docno, .entete-titre .docdate { font-size: 5.8pt; color: var(--mineur); }
+.entete-titre .docno, .entete-titre .docdate { font-size: 5.8pt; font-weight: 700; color: var(--encre); }
 
 /* Corps du chèque */
 .corps { flex: 1; display: flex; flex-direction: column; padding-top: .5mm; }
@@ -230,7 +241,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
   overflow-wrap: break-word; line-height: 1.15;
 }
 .ligne-client .code {
-  font-size: 8pt; font-weight: 600; text-transform: none; color: var(--mineur);
+  font-size: 8pt; font-weight: 700; text-transform: none; color: var(--mineur);
 }
 .ligne { font-size: 8pt; margin: .4mm 0; }
 .ligne-somme { font-size: 8pt; margin-top: 1.2mm; }
@@ -253,7 +264,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 
 /* Nota bene du chèque */
 .nb {
-  margin-top: auto; margin-bottom: 0;
+  margin-top: auto; margin-bottom: 1.5mm;
   font-size: 6.1pt; line-height: 1.25;
   border: .8px solid var(--grille); background: #fbfbfb;
   padding: .7mm 1.6mm;
@@ -390,3 +401,29 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
   body.mode-lot .feuille.impression-active { display: flex !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---- Page Analyses clients ---- */
+.wrap-suivi h2 {
+  margin: 26px 0 2px;
+  font-size: 15px;
+}.wrap-suivi .note {
+  margin: 2px 0 10px;
+  font-size: 12px;
+  color: #667;
+}
+.noms-differents {
+  color: #7a5200;
+  background: #fdf3e4;
+  border-radius: 4px;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+@media print {
+  .no-print { display: none !important; }
+  .wrap-suivi h2 { page-break-after: avoid; }
+  .wrap-suivi .tab tr { page-break-inside: avoid; }
+  .wrap-suivi .tab { page-break-inside: auto; }
+}
+
+/* ---- Entête et pied de page des documents : tout le texte en gras ---- */
+.entete div, .pied div { font-weight: 700; }

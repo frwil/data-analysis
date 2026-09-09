@@ -137,21 +137,16 @@ function suivi_histo(int $limite = 60): array
 }
 
 /** Badge compact des compteurs d'un client pour une année donnée :
- *  « 🖨2 ✗1 📄1 » — chaîne vide si aucun événement. */
+ *  « 🖨2 ✗1 📄1 » — toujours visible : « 🖨0 📄0 » quand aucun événement
+ *  (élément visuel du compteur dans la liste des clients). */
 function badge_imp(?array $s): string
 {
-    if (!$s) {
-        return '';
-    }
-    $parts = [];
-    if ($s['directe'] > 0) {
-        $parts[] = '🖨' . $s['directe'];
-    }
-    if ($s['echecs'] > 0) {
-        $parts[] = '✗' . $s['echecs'];
-    }
-    if ($s['pdf'] > 0) {
-        $parts[] = '📄' . $s['pdf'];
+    $d = (int) ($s['directe'] ?? 0);
+    $x = (int) ($s['echecs'] ?? 0);
+    $p = (int) ($s['pdf'] ?? 0);
+    $parts = ['🖨' . $d, '📄' . $p];
+    if ($x > 0) {
+        $parts[] = '✗' . $x;
     }
     return implode(' ', $parts);
 }
