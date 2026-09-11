@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **09/09/2026** — v45 : Éclosion du 09/09 avortée — plan recentré sur le 11/09 (21 450/20 000, 107%) : NGOMPE 17 200 + LEMOKEM 1 000 + 2 000 + MAGNE 62698 1 250. Journées passées retirées, le reste repasse en non planifié. Échues/reclassées régénérés (AT35).
+> Dernière mise à jour : **11/09/2026** — v51 : 15/09 — MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600) + TAKAMTSING 51282 forcée en totalité 5 800. Plan : 11/09 = 21 450 (107%), 15/09 = 41 350 (110%, +3 850) — 8 forcées.
 
 ---
 
@@ -22,15 +22,15 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v45)
+## 📊 Fichiers Source (v47)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
 | `NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx` | AT — 09/09 | 1 439 |
 | `NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx` | EXP — 09/09 | 1 288 |
 
-> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v45).
-> 📄 `output/Commandes_echuees_13-09.xlsx` régénéré le 09/09 (AT35) : 101 échues au 13/09 + 25 reclassées.
+> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v47).
+> 📄 `output/Commandes_echuees_03-10.xlsx` généré le 11/09 (AT35) : 145 échues au 03/10 + 13 reclassées non livrées.
 
 ---
 
@@ -99,6 +99,34 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 3. **Le reste repasse en non planifié** : DASSI 3 200, WAFIN 10 000 (ex-09/09) et les 6 ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE)
 4. **Exécution (v45)** : 11/09 = 21 450/20 000 (107%, Ouest) ; 399 exclusions ; 236 non planifiées (marge)
 5. **Échues/reclassées régénéré** (`output/Commandes_echuees_13-09.xlsx`, AT35) : 101 échues au 13/09 — 840 500 sujets (dont 10 ÉCHUE RECLASSÉE, 11 exclues §12) + 25 reclassées (13 non livrées, 149 950 sujets)
+
+---
+
+### 🔄 Chronologie v46/v47 (11/09)
+
+1. **Nouvelle éclosion 15/09/2026** (Mardi, Centre — 37 500 réel / 35 650 marge) : §1/§6 mis à jour
+2. **§14 15/09** : les 6 ex-11/09 (YOUMSSI 3 000, KUETCHE 3 050, TAKAMTSING 4 650 + 1 500, AFRIQUE TOPO 4 200, PROVENDERIE 3 000) + WAFIN GAELLE 10 000 (ex-09/09) — 29 400 forcés, 8 100 libres
+3. **Exécution (v47)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = 37 950/37 500 (101%, Centre) ; 399 exclusions ; 228 non planifiées (marge)
+4. **Échues au 03/10 + reclassées non livrées** (`output/Commandes_echuees_03-10.xlsx`, AT35) : 145 échues — 976 700 sujets (dont 18 ÉCHUE RECLASSÉE, 13 exclues §12) + 13 reclassées non livrées (149 950 sujets)
+
+---
+
+### 🔄 Chronologie v48/v49 (11/09)
+
+1. **15/09 — KUETCHE remplacée** : SO2607-62349 (reliquat Proctor Ai 2 750) retirée de §14 → remplacée par **KAFAB SO2604-53917** (2 300, MESSASSI, ÉCHUE 04/09, PREMIUM, Payée)
+2. **15/09 — TAKAMTSING remplacée** : SO2607-61870 (4 650) + SO2607-61869 (1 500) retirées de §14 → remplacées par **MEKA FOKO SO2607-63332** (10 000, PREMIUM, Payée) **splitée 6 600 le 15/09**, reste 3 400 pour une date ultérieure
+3. **§13** : 62349, 61870, 61869 exclues du 15/09 ; **63332 exclue du 15/09** (protège le reste du split — l'Étape 0 forcée ignore §13, la Phase 1 le respecte)
+4. **§14 15/09** : 7 forcées = 32 150 (5 350 libres réel / 3 500 marge)
+5. **Exécution (v49)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = 37 950/37 500 (101%, Centre) — l'algo a rempli la place libre avec TAKAMTSING SO2604-51282 (5 800) ; **vérifié : 63332 n'apparaît qu'à 6 600, le reste 3 400 n'est pas planifié** ✓
+
+---
+
+### 🔄 Chronologie v50/v51 (11/09)
+
+1. **MEKA FOKO 63332 en totalité** : split 6 600/10 000 annulé — **10 000 forcés le 15/09**, §13 retirée (plus de reste à protéger)
+2. **TAKAMTSING 51282 en totalité** : **5 800 forcés le 15/09** (NKOABANG, ÉCHUE 22/08, En cours, 0 livré, Payée) — ex-ajout algo, forcée sur demande
+3. **61870/61869 restent exclues §13** du 15/09
+4. **Exécution (v51)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = **41 350/37 500 (110%, +3 850)** — 8 forcées, aucune commande ajoutée par l'algo (capacité dépassée)
 
 ---
 

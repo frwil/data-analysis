@@ -5,14 +5,16 @@
 | Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
 |------|------|-------------|------|-------------|-------------------|
 | 11/09/2026 | Vendredi | — | 20 000 | 19 000 | Ouest, Centre |
+| 15/09/2026 | Mardi | — | 37 500 | 35 650 | Centre |
 
 - **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 20 000
-- Capacité totale Marge : 19 000
+- Capacité totale Réelle : 57 500
+- Capacité totale Marge : 54 650
 - Capacité totale Annoncée : —
-- **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée — seule reste la date du 11/09
+- **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée
+- **v46** : nouvelle éclosion 15/09/2026 (Mardi, Centre) — 37 500 réel / 35 650 marge
 
 ---
 
@@ -97,6 +99,7 @@ Classification :
 | Date | Régions autorisées |
 |------|--------------------|
 | 11/09/2026 | Ouest, Centre |
+| 15/09/2026 | Centre |
 
 - 03/09, 07/09 passées et 09/09 avortée retirées (v44)
 
@@ -175,9 +178,11 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 | Réf. | Dates exclues |
 |------|---------------|
-| SO2607-62349 | 11/09/2026 |
+| SO2607-62349 | 11/09/2026, 15/09/2026 |
+| SO2607-61870 | 15/09/2026 |
+| SO2607-61869 | 15/09/2026 |
 
-*Cycle 03–11/09 (v38) : KUETCHE SO2607-62349 exclue du 11/09 (sur demande). MAGNE JOSEPHINE SO2607-62698 réintégrée et forcée au 11/09 (v44).*
+*Cycle 03–11/09 (v38) : KUETCHE SO2607-62349 exclue du 11/09 (sur demande). MAGNE JOSEPHINE SO2607-62698 réintégrée et forcée au 11/09 (v44). v48 : 62349 (remplacée par KAFAB 53917) et TAKAMTSING 61870/61869 exclues du 15/09. v50 : 63332 retirée de §13 — forcée en totalité 10 000 le 15/09 (plus de reste à protéger).*
 
 ---
 
@@ -194,7 +199,22 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Basculée du 09/09 — éclosion avortée (Validée/Payée) |
 | SO2607-62698 | MAGNE JOSEPHINE | 1 250 | BELGO-NDJELENG | Forcée sur demande (v44) — ex-§13, Validée, 0 livré |
 
-*Éclosion du 09/09 avortée (v44) — total forcé 11/09 : 21 450, dépassement +1 450 vs réel 20 000 (tout Ouest). Journées passées 03/09 et 07/09 retirées. Le reste repasse en non planifié : DASSI 3 200 et WAFIN 10 000 (ex-09/09), et les 6 commandes Centre ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE). §13 : seule SO2607-62349 reste exclue du 11/09.*
+*Éclosion du 09/09 avortée (v44) — total forcé 11/09 : 21 450, dépassement +1 450 vs réel 20 000 (tout Ouest). Journées passées 03/09 et 07/09 retirées. Les 6 commandes Centre ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE) et WAFIN 10 000 (ex-09/09) basculées au 15/09 (v46) ; DASSI 3 200 (ex-09/09) repasse en non planifié. §13 : seule SO2607-62349 reste exclue du 11/09.*
+
+### 15/09/2026 (Centre)
+
+| Réf. | Client | Qté | Agence | Raison |
+|------|--------|-----|--------|--------|
+| SO2607-62673 | YOUMSSI FEUKOUO JEAN BAUDOUIN | 3 000 | BELGO-MESSASSI | Basculée du 11/09 (v46) — ÉCHUE Centre (14/07) |
+| SO2607-62346 | KUETCHE FONGANG THOMAS | 3 050 | BELGO-MESSASSI | Basculée du 11/09 (v46) — ÉCHUE Centre (24/07) |
+| SO2606-59136 | AFRIQUE TOPO SARL (TCHINDA FOKOU GASTON JENNER) | 4 200 | BELGO AHALA | Basculée du 11/09 (v46) — ÉCHUE Centre (20/08) |
+| SO2603-50691 | PROVENDERIE L' ASSURANCE | 3 000 | BELGO-MESSASSI | Basculée du 11/09 (v46) — NON ÉCHUE (07/10), sur demande |
+| SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Basculée du 09/09 (v46) — ÉCHUE Centre (29/07) |
+| SO2604-53917 | ETABLISSEMENT KAFAB SARL (KAMDEM FOTSO ACHILLE BERTRAND) | 2 300 | BELGO-MESSASSI | Remplace SO2607-62349 (v48) — ÉCHUE Centre (04/09), PREMIUM, Payée |
+| SO2607-63332 | MEKA FOKO Mme | 10 000 | BELGO-MESSASSI | Forcée en totalité (v50) — ex-split 6 600/10 000 (v48), PREMIUM, Payée |
+| SO2604-51282 | TAKAMTSING PROSPER | 5 800 | BELGO-NKOABANG | Forcée en totalité (v50) — ÉCHUE Centre (22/08), En cours, 0 livré, Payée |
+
+*Total forcé 15/09 : 41 350 — dépassement +3 850 vs réel 37 500 (Centre). v50 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 forcée en totalité 5 800 (ex-ajout algo). 61870/61869 restent exclues §13. v48 : TAKAMTSING 61870/61869 retirées et exclues §13 du 15/09 ; KUETCHE 62349 retirée (exclue §13) et remplacée par KAFAB 53917.*
 
 ---
 
@@ -234,12 +254,18 @@ Le script exclut automatiquement :
 
 ---
 
-## 19. Fichiers Source (v44)
+## 19. Fichiers Source (v48)
 
 | Fichier | Rôle |
 |---------|------|
 | NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx | AT principal — 09/09/2026 — 1 439 lignes |
 | NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx | EXP principal — 09/09/2026 — 1 288 lignes |
+
+**v50** : 15/09 — MEKA FOKO SO2607-63332 forcée en totalité 10 000 (ex-split 6 600/10 000, §13 retirée) ; TAKAMTSING SO2604-51282 (5 800, NKOABANG) forcée en totalité (ex-ajout algo). Total forcé 15/09 : 41 350 (dépassement +3 850 vs 37 500). 61870/61869 restent exclues §13.
+
+**v48** : Remplacements sur le 15/09 — TAKAMTSING 61870 (4 650) et 61869 (1 500) retirées et exclues §13 du 15/09, remplacées par MEKA FOKO SO2607-63332 splitée 6 600/10 000 (reste 3 400 pour date ultérieure, exclu §13 du 15/09) ; KUETCHE 62349 remplacée par KAFAB SO2604-53917 (2 300, PREMIUM) — exclue §13 du 15/09. Total forcé 15/09 : 32 150.
+
+**v46** : Nouvelle éclosion 15/09/2026 (Mardi, Centre — 37 500 réel / 35 650 marge). §1/§6 + 15/09 Centre. §14 15/09 : les 6 commandes Centre ex-11/09 (YOUMSSI 3 000, KUETCHE 3 050, TAKAMTSING 4 650 + 1 500, AFRIQUE TOPO 4 200, PROVENDERIE 3 000) + WAFIN GAELLE 10 000 (ex-09/09) — 29 400 forcés, 8 100 libres.
 
 **v44** : Éclosion du 09/09 avortée — pas de nouvelles extractions. Reconfiguration : §1/§6 réduits au 11/09 (03/09 et 07/09 passées retirées), §4 réf = 11/09. §13 : 62698 retirée. §14 11/09 : NGOMPE 59718 reliquat 17 200 + LEMOKEM 1 000 + 2 000 (basculées du 09/09) + MAGNE JOSEPHINE 62698 1 250 forcée — 21 450 (+1 450). Le reste (DASSI, WAFIN, 6 ex-11/09) repasse en non planifié.
 
@@ -296,6 +322,12 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v50 | 11/09/2026 | 15/09 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 (5 800, NKOABANG) forcée en totalité (ex-ajout algo). Total forcé 15/09 : 41 350 (+3 850 vs 37 500). 61870/61869 restent exclues §13. |
+| v51 | 11/09/2026 | Exécution automatique. Planifié 62,800/57,500. 399 exclusions. |
+| v48 | 11/09/2026 | 15/09 : TAKAMTSING 61870/61869 retirées (exclues §13) remplacées par MEKA FOKO 63332 splitée 6 600/10 000 (reste 3 400 date ultérieure, exclu §13) ; KUETCHE 62349 remplacée par KAFAB 53917 (2 300). Total forcé 15/09 : 32 150. |
+| v49 | 11/09/2026 | Exécution automatique. Planifié 59,400/57,500. 399 exclusions. |
+| v46 | 11/09/2026 | Nouvelle éclosion 15/09/2026 (Mardi, Centre — 37 500 réel / 35 650 marge). §1/§6 + 15/09 Centre. §14 15/09 : 6 ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE = 19 400) + WAFIN GAELLE 10 000 (ex-09/09) — 29 400 forcés, 8 100 libres. |
+| v47 | 11/09/2026 | Exécution automatique. Planifié 59,400/57,500. 399 exclusions. |
 | v44 | 09/09/2026 | Éclosion du 09/09 avortée : §1/§6 réduits au 11/09 (03/09 et 07/09 passées retirées), §4 réf = 11/09. §13 : 62698 retirée. §14 11/09 : NGOMPE 59718 reliquat 17 200 + LEMOKEM 1 000 + 2 000 (basculées du 09/09) + MAGNE JOSEPHINE 62698 1 250 forcée — 21 450 (+1 450 vs 20 000). Le reste (DASSI, WAFIN, 6 ex-11/09) repasse en non planifié. |
 | v45 | 09/09/2026 | Exécution automatique. Planifié 21,450/20,000. 399 exclusions. |
 | v43 | 09/09/2026 | Statuts ERP AT(35)+EXP(10) du 09/09 : §14 03/09 vidé (5/5 livrées), §14 07/09 vidé (WANTSA 7 000/7 000, NGOMPE 59718 7 800 expédiés → reliquat basculé 09/09), §14 09/09 : 59723 retirée (livrée 15 000/15 000), 59718 → 17 200. Jour inchangé à 33 400 (+3 400). Plan non régénéré. |
@@ -813,9 +845,15 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
+---
+
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **09/09/2026** — Réf: **11/09/2026**
+> Exécutée le **11/09/2026** — Réf: **11/09/2026**
 
 ### Résumé
 
@@ -824,9 +862,9 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 240 |
 | Commandes COQ | 18 |
 | Exclusions | 399 |
-| Planifié Réel | 21,450 / 20,000 |
-| Planifié Marge | 21,450 / 19,000 |
-| Non planifiées (marge) | 236 |
+| Planifié Réel | 62,800 / 57,500 |
+| Planifié Marge | 62,800 / 54,650 |
+| Non planifiées (marge) | 228 |
 | Nouvelles auto-exclusions | 384 |
 
 ### Plan Réel par date
@@ -834,6 +872,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 11/09/2026 | Ven | Ouest | 21,450 | 20,000 | 107% |
+| 15/09/2026 | Mar | Centre | 41,350 | 37,500 | 110% |
 
 ### Répartition par priorité
 
