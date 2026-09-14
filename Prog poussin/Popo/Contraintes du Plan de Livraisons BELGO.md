@@ -212,9 +212,9 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Basculée du 09/09 (v46) — ÉCHUE Centre (29/07) |
 | SO2604-53917 | ETABLISSEMENT KAFAB SARL (KAMDEM FOTSO ACHILLE BERTRAND) | 2 300 | BELGO-MESSASSI | Remplace SO2607-62349 (v48) — ÉCHUE Centre (04/09), PREMIUM, Payée |
 | SO2607-63332 | MEKA FOKO Mme | 10 000 | BELGO-MESSASSI | Forcée en totalité (v50) — ex-split 6 600/10 000 (v48), PREMIUM, Payée |
-| SO2604-51282 | TAKAMTSING PROSPER | 5 800 | BELGO-NKOABANG | Forcée en totalité (v50) — ÉCHUE Centre (22/08), En cours, 0 livré, Payée |
+| SO2604-52017 | BOUKAR ISAIE | 3 100 | BELGO-BERI | Remplace TAKAMTSING 51282 (v52) — prévue 12/09, En cours, 0 livré, Payée |
 
-*Total forcé 15/09 : 41 350 — dépassement +3 850 vs réel 37 500 (Centre). v50 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 forcée en totalité 5 800 (ex-ajout algo). 61870/61869 restent exclues §13. v48 : TAKAMTSING 61870/61869 retirées et exclues §13 du 15/09 ; KUETCHE 62349 retirée (exclue §13) et remplacée par KAFAB 53917.*
+*Total forcé 15/09 : 38 650 — dépassement +1 150 vs réel 37 500 (Centre). v52 : TAKAMTSING 51282 retirée (repasse en non planifiée), remplacée par BOUKAR ISAIE 52017 (3 100, BELGO-BERI — Littoral minime ≤25%, exempté du verrouillage Centre). v50 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 forcée en totalité 5 800 (ex-ajout algo). 61870/61869 restent exclues §13. v48 : TAKAMTSING 61870/61869 retirées et exclues §13 du 15/09 ; KUETCHE 62349 retirée (exclue §13) et remplacée par KAFAB 53917.*
 
 ---
 
@@ -260,6 +260,8 @@ Le script exclut automatiquement :
 |---------|------|
 | NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx | AT principal — 09/09/2026 — 1 439 lignes |
 | NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx | EXP principal — 09/09/2026 — 1 288 lignes |
+
+**v52** : 15/09 — TAKAMTSING SO2604-51282 (5 800, NKOABANG) retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime, Payée, 0 livré, prévue 12/09). Total forcé 15/09 : 38 650 (+1 150 vs 37 500).
 
 **v50** : 15/09 — MEKA FOKO SO2607-63332 forcée en totalité 10 000 (ex-split 6 600/10 000, §13 retirée) ; TAKAMTSING SO2604-51282 (5 800, NKOABANG) forcée en totalité (ex-ajout algo). Total forcé 15/09 : 41 350 (dépassement +3 850 vs 37 500). 61870/61869 restent exclues §13.
 
@@ -322,6 +324,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v52 | 14/09/2026 | 15/09 : TAKAMTSING 51282 retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime). Total forcé 15/09 : 38 650 (+1 150 vs 37 500). |
+| v53 | 14/09/2026 | Exécution automatique. Planifié 60,100/57,500. 399 exclusions. |
 | v50 | 11/09/2026 | 15/09 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 (5 800, NKOABANG) forcée en totalité (ex-ajout algo). Total forcé 15/09 : 41 350 (+3 850 vs 37 500). 61870/61869 restent exclues §13. |
 | v51 | 11/09/2026 | Exécution automatique. Planifié 62,800/57,500. 399 exclusions. |
 | v48 | 11/09/2026 | 15/09 : TAKAMTSING 61870/61869 retirées (exclues §13) remplacées par MEKA FOKO 63332 splitée 6 600/10 000 (reste 3 400 date ultérieure, exclu §13) ; KUETCHE 62349 remplacée par KAFAB 53917 (2 300). Total forcé 15/09 : 32 150. |
@@ -851,9 +855,11 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **11/09/2026** — Réf: **11/09/2026**
+> Exécutée le **14/09/2026** — Réf: **11/09/2026**
 
 ### Résumé
 
@@ -862,8 +868,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 240 |
 | Commandes COQ | 18 |
 | Exclusions | 399 |
-| Planifié Réel | 62,800 / 57,500 |
-| Planifié Marge | 62,800 / 54,650 |
+| Planifié Réel | 60,100 / 57,500 |
+| Planifié Marge | 60,100 / 54,650 |
 | Non planifiées (marge) | 228 |
 | Nouvelles auto-exclusions | 384 |
 
@@ -872,7 +878,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 11/09/2026 | Ven | Ouest | 21,450 | 20,000 | 107% |
-| 15/09/2026 | Mar | Centre | 41,350 | 37,500 | 110% |
+| 15/09/2026 | Mar | Centre, Littoral | 38,650 | 37,500 | 103% |
 
 ### Répartition par priorité
 

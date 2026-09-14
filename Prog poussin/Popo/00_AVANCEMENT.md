@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **11/09/2026** — v51 : 15/09 — MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600) + TAKAMTSING 51282 forcée en totalité 5 800. Plan : 11/09 = 21 450 (107%), 15/09 = 41 350 (110%, +3 850) — 8 forcées.
+> Dernière mise à jour : **14/09/2026** — v52/v53 : 15/09 — TAKAMTSING 51282 retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime). Plan : 11/09 = 21 450 (107%), 15/09 = 38 650 (103%, +1 150) — 8 forcées.
 
 ---
 
@@ -127,6 +127,14 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 2. **TAKAMTSING 51282 en totalité** : **5 800 forcés le 15/09** (NKOABANG, ÉCHUE 22/08, En cours, 0 livré, Payée) — ex-ajout algo, forcée sur demande
 3. **61870/61869 restent exclues §13** du 15/09
 4. **Exécution (v51)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = **41 350/37 500 (110%, +3 850)** — 8 forcées, aucune commande ajoutée par l'algo (capacité dépassée)
+
+---
+
+### 🔄 Chronologie v52/v53 (14/09)
+
+1. **15/09 — TAKAMTSING retirée** : SO2604-51282 (5 800, NKOABANG) retirée de §14 → repasse en non planifiée (vérifié dans le plan)
+2. **15/09 — remplacée par BOUKAR ISAIE** : **SO2604-52017** (3 100, BELGO-BERI — Littoral minime ≤25%, exempté du verrouillage Centre) forcée sur demande — En cours, 0 livré, Payée, prévue 12/09 → classée ÉCHUE au 15/09 (équité X+1)
+3. **Exécution (v53)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = **38 650/37 500 (103%, +1 150)** — 8 forcées, aucune commande ajoutée par l'algo (capacité dépassée)
 
 ---
 
