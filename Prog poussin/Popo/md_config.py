@@ -586,8 +586,8 @@ if __name__ == '__main__':
         print(f"  {ref}: {config['excluded_from_date'][ref]}")
 
     print(f"\nFORCED_ASSIGNMENTS ({len(config['forced_assignments'])} refs):")
-    for ref, dt in sorted(config['forced_assignments'].items()):
-        print(f"  {ref}: {dt.strftime('%d/%m/%Y')}")
+    for ref, entries in sorted(config['forced_assignments'].items()):
+        print(f"  {ref}: {entries}")
 
     print(f"\nSPECIAL_INCLUDE ({len(config['special_include'])} refs):")
     for ref, info in config['special_include'].items():

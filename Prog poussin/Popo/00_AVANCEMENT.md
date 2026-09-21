@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **14/09/2026** — v52/v53 : 15/09 — TAKAMTSING 51282 retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime). Plan : 11/09 = 21 450 (107%), 15/09 = 38 650 (103%, +1 150) — 8 forcées.
+> Dernière mise à jour : **21/09/2026** — v55/v56 : nouveau cycle 23/09 (15 000 réels, Ouest + Centre) — 4 forcées (LEMOKEM 2 000, TAJOUO 10 000/12 000, BIEPIP reliquat 250 PREMIUM, GIC MOS 3 500) = 15 750 (105%). Extraits AT(44)+EXP(15) du 21/09.
 
 ---
 
@@ -22,15 +22,16 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v47)
+## 📊 Fichiers Source (v55)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
-| `NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx` | AT — 09/09 | 1 439 |
-| `NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx` | EXP — 09/09 | 1 288 |
+| `NJS GROUP ERP - Lignes de commandes + multicompany (44).xlsx` | AT — 21/09 | 1 540 |
+| `NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx` | EXP — 21/09 | 1 380 |
 
-> ✅ **Extractions à jour** (09/09/2026) — statuts ERP mis à jour dans le `.md` (v47).
-> 📄 `output/Commandes_echuees_03-10.xlsx` généré le 11/09 (AT35) : 145 échues au 03/10 + 13 reclassées non livrées.
+> ✅ **Extractions à jour** (21/09/2026 13:50) — statuts ERP mis à jour dans le `.md` (v55) et plan régénéré (v56).
+> ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44).
+> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 21/09 (v56) : 23/09 = 15 750/15 000 (105%) — 4 forcées, aucune commande ajoutée par l'algo.
 
 ---
 
@@ -135,6 +136,30 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 1. **15/09 — TAKAMTSING retirée** : SO2604-51282 (5 800, NKOABANG) retirée de §14 → repasse en non planifiée (vérifié dans le plan)
 2. **15/09 — remplacée par BOUKAR ISAIE** : **SO2604-52017** (3 100, BELGO-BERI — Littoral minime ≤25%, exempté du verrouillage Centre) forcée sur demande — En cours, 0 livré, Payée, prévue 12/09 → classée ÉCHUE au 15/09 (équité X+1)
 3. **Exécution (v53)** : 11/09 = 21 450/20 000 (107%) ; 15/09 = **38 650/37 500 (103%, +1 150)** — 8 forcées, aucune commande ajoutée par l'algo (capacité dépassée)
+
+---
+
+### 🔄 Chronologie v54 (17/09)
+
+1. **Extraits AT(39) du 16/09 + EXP(12) du 17/09** : croisement des refs du `.md` avec l'ERP
+2. **§14 11/09 vidé 3/4** : NGOMPE 59718 livrée en totalité (25 000/25 000, reste 0), LEMOKEM ANDOLAIN 1 000/1 000, LEMOKEM TIODOU 2 000/2 000 — retirées
+3. **MAGNE JOSEPHINE 62698 (1 250) NON livrée** (0/1 250, En cours) → repasse en non planifiée (à repositionner)
+4. **§14 15/09 vidé 8/8 livrées** : YOUMSSI, KUETCHE, AFRIQUE TOPO, PROVENDERIE, WAFIN, KAFAB, MEKA FOKO, BOUKAR ISAIE — 38 650 livrés, cycle 11/09–15/09 entièrement exécuté
+5. **§12 inchangé** : aucune exclusion devenue livrée dans l'ERP
+6. **§13** : 62349 désormais État=Livrée (1 550/2 750, reste 1 200) ; 61870/61869 toujours En cours, 0 livré — dates exclues passées, §13 à redéfinir au prochain cycle
+7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
+8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
+9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v55/v56 (21/09)
+
+1. **Nouveau cycle 23/09/2026** (Mercredi, Ouest + Centre — 15 000 réel / 14 250 marge) : §1/§4/§6 mis à jour, 11/09 et 15/09 passées retirées, §13 vidé
+2. **Extraits AT(44)+EXP(15) du 21/09 13:50** : BIEPIP SO2606-60194 = **7 550/7 800 livrés dans l'ERP** (expédition SH2608-1631 Traitée, facture IN2609-68336) → reliquat **250 PONTE PREMIUM** ; COQ SO2609-69601 livrée (150/150) ; LEMOKEM 2 000 En cours ; TAJOUO 12 000 Validée ; GIC MOS 3 500 Validée
+3. **§14 23/09** : LEMOKEM 2 000 + TAJOUO 10 000/12 000 + BIEPIP reliquat 250 + GIC MOS 3 500 — **15 750 forcés (105%, +750)**
+4. **Correctif script (§17)** : Proctor Ai « En cours » + livraisons réelles dans l'AT (Quantité deja livrée > 0) → confiance à l'AT — impacte BIEPIP 60194 et PENKA DEFFO 62511 (3 700/4 250 livrés) ; GIC AMOUR déjà exclue §12
+5. **Exécution (v56)** : 23/09 = **15 750/15 000 (105%, Centre+Ouest)** — aucune commande ajoutée par l'algo (capacité dépassée) ; 254 PONTE, 17 COQ, 427 exclusions, 251 non planifiées (marge) ; ÉCHUE 74 (606 800), ÉCHUE RECLASSÉE 8 (120 750), RECLASSÉE 14 (97 400), IMMINENTE 24 (78 200)
 
 ---
 

@@ -4,17 +4,16 @@
 
 | Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
 |------|------|-------------|------|-------------|-------------------|
-| 11/09/2026 | Vendredi | — | 20 000 | 19 000 | Ouest, Centre |
-| 15/09/2026 | Mardi | — | 37 500 | 35 650 | Centre |
+| 23/09/2026 | Mercredi | — | 15 000 | 14 250 | Ouest, Centre |
 
 - **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 57 500
-- Capacité totale Marge : 54 650
+- Capacité totale Réelle : 15 000
+- Capacité totale Marge : 14 250
 - Capacité totale Annoncée : —
 - **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée
-- **v46** : nouvelle éclosion 15/09/2026 (Mardi, Centre) — 37 500 réel / 35 650 marge
+- **v55** : nouvelle éclosion 23/09/2026 (Mercredi, Ouest + Centre) — 15 000 réel / 14 250 marge ; 11/09 et 15/09 passées retirées
 
 ---
 
@@ -55,7 +54,7 @@ Ordre de tri strict : priorité > ≤1000 > FIFO > quantité
 
 ## 4. Recalcul Échéance (Colonne K)
 
-- Date de référence = 11/09/2026 (seule date d'éclosion restante — 03/09 et 07/09 passées, 09/09 avortée)
+- Date de référence = 23/09/2026 (éclosion du 23/09 — cycle 11/09–15/09 clôturé)
 - **Équité de programmation (v20)** : pour une commande programmée à une date X, le statut d'échéance est recalculé par rapport à **X + 1 jour** (et non à aujourd'hui). Cela évite de pénaliser une commande repoussée à une date ultérieure et tient compte du délai de mise à disposition post-éclosion.
 
 Classification :
@@ -98,10 +97,9 @@ Classification :
 
 | Date | Régions autorisées |
 |------|--------------------|
-| 11/09/2026 | Ouest, Centre |
-| 15/09/2026 | Centre |
+| 23/09/2026 | Ouest, Centre |
 
-- 03/09, 07/09 passées et 09/09 avortée retirées (v44)
+- 11/09 et 15/09 passées retirées (v55) — 23/09 verrouillée Ouest + Centre
 
 - **Le Littoral est exempté** de tous les verrouillages — il peut s'insérer partout (minime ≤25% du jour)
 - Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible
@@ -178,11 +176,8 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 | Réf. | Dates exclues |
 |------|---------------|
-| SO2607-62349 | 11/09/2026, 15/09/2026 |
-| SO2607-61870 | 15/09/2026 |
-| SO2607-61869 | 15/09/2026 |
 
-*Cycle 03–11/09 (v38) : KUETCHE SO2607-62349 exclue du 11/09 (sur demande). MAGNE JOSEPHINE SO2607-62698 réintégrée et forcée au 11/09 (v44). v48 : 62349 (remplacée par KAFAB 53917) et TAKAMTSING 61870/61869 exclues du 15/09. v50 : 63332 retirée de §13 — forcée en totalité 10 000 le 15/09 (plus de reste à protéger).*
+*Cycle 23/09 (v55) : §13 vidé — les exclusions portaient sur des dates passées (11/09, 15/09). 62349 désormais État=Livrée (auto-exclue). 61870/61869 restent éligibles (aucune protection demandée pour le 23/09).*
 
 ---
 
@@ -192,29 +187,24 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 ### 11/09/2026 (Ouest, Centre)
 
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2606-59718 | NGOMPE SOB ERIC BRUNO | 17 200 | BELGO-FAMLA | Reliquat basculé du 09/09 — éclosion avortée (7 800/25 000 expédiés ERP) |
-| SO2606-58898 | LEMOKEM ANDOLAIN | 1 000 | BELGO-NDJELENG | Basculée du 09/09 — éclosion avortée (Validée/Payée) |
-| SO2606-59675 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG | Basculée du 09/09 — éclosion avortée (Validée/Payée) |
-| SO2607-62698 | MAGNE JOSEPHINE | 1 250 | BELGO-NDJELENG | Forcée sur demande (v44) — ex-§13, Validée, 0 livré |
+*Section vidée (v54) — extraits AT(39) du 16/09 : 3/4 livrées dans l'ERP — NGOMPE 59718 en totalité (25 000/25 000, reste 0), LEMOKEM ANDOLAIN 1 000/1 000, LEMOKEM TIODOU 2 000/2 000 retirées. MAGNE JOSEPHINE SO2607-62698 (1 250) **NON livrée** (0/1 250, En cours) → repasse en non planifiée (à repositionner).*
 
-*Éclosion du 09/09 avortée (v44) — total forcé 11/09 : 21 450, dépassement +1 450 vs réel 20 000 (tout Ouest). Journées passées 03/09 et 07/09 retirées. Les 6 commandes Centre ex-11/09 (YOUMSSI, KUETCHE, TAKAMTSING ×2, AFRIQUE TOPO, PROVENDERIE) et WAFIN 10 000 (ex-09/09) basculées au 15/09 (v46) ; DASSI 3 200 (ex-09/09) repasse en non planifié. §13 : seule SO2607-62349 reste exclue du 11/09.*
+*Historique : éclosion du 09/09 avortée (v44) — total forcé 11/09 : 21 450, dépassement +1 450 vs réel 20 000 (tout Ouest). Les 6 commandes Centre ex-11/09 et WAFIN 10 000 basculées au 15/09 (v46) ; DASSI 3 200 repasse en non planifié.*
 
 ### 15/09/2026 (Centre)
 
-| Réf. | Client | Qté | Agence | Raison |
-|------|--------|-----|--------|--------|
-| SO2607-62673 | YOUMSSI FEUKOUO JEAN BAUDOUIN | 3 000 | BELGO-MESSASSI | Basculée du 11/09 (v46) — ÉCHUE Centre (14/07) |
-| SO2607-62346 | KUETCHE FONGANG THOMAS | 3 050 | BELGO-MESSASSI | Basculée du 11/09 (v46) — ÉCHUE Centre (24/07) |
-| SO2606-59136 | AFRIQUE TOPO SARL (TCHINDA FOKOU GASTON JENNER) | 4 200 | BELGO AHALA | Basculée du 11/09 (v46) — ÉCHUE Centre (20/08) |
-| SO2603-50691 | PROVENDERIE L' ASSURANCE | 3 000 | BELGO-MESSASSI | Basculée du 11/09 (v46) — NON ÉCHUE (07/10), sur demande |
-| SO2603-49436 | WAFIN GAELLE | 10 000 | BELGO-MESSASSI | Basculée du 09/09 (v46) — ÉCHUE Centre (29/07) |
-| SO2604-53917 | ETABLISSEMENT KAFAB SARL (KAMDEM FOTSO ACHILLE BERTRAND) | 2 300 | BELGO-MESSASSI | Remplace SO2607-62349 (v48) — ÉCHUE Centre (04/09), PREMIUM, Payée |
-| SO2607-63332 | MEKA FOKO Mme | 10 000 | BELGO-MESSASSI | Forcée en totalité (v50) — ex-split 6 600/10 000 (v48), PREMIUM, Payée |
-| SO2604-52017 | BOUKAR ISAIE | 3 100 | BELGO-BERI | Remplace TAKAMTSING 51282 (v52) — prévue 12/09, En cours, 0 livré, Payée |
+*Section vidée (v54) — extraits AT(39) du 16/09 + EXP(12) du 17/09 : **8/8 forcées livrées** — YOUMSSI 3 000/3 000, KUETCHE 3 050/3 050, AFRIQUE TOPO 4 200/4 200, PROVENDERIE 3 000/3 000, WAFIN 10 000/10 000, KAFAB 2 300/2 300, MEKA FOKO 10 000/10 000, BOUKAR ISAIE 3 100/3 100. Cycle 11/09–15/09 entièrement exécuté (38 650 livrés le 15/09).*
 
-*Total forcé 15/09 : 38 650 — dépassement +1 150 vs réel 37 500 (Centre). v52 : TAKAMTSING 51282 retirée (repasse en non planifiée), remplacée par BOUKAR ISAIE 52017 (3 100, BELGO-BERI — Littoral minime ≤25%, exempté du verrouillage Centre). v50 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 forcée en totalité 5 800 (ex-ajout algo). 61870/61869 restent exclues §13. v48 : TAKAMTSING 61870/61869 retirées et exclues §13 du 15/09 ; KUETCHE 62349 retirée (exclue §13) et remplacée par KAFAB 53917.*
+### 23/09/2026 (Ouest, Centre)
+
+| Réf. | Client | Qté | Agence |
+|------|--------|-----|--------|
+| SO2606-59894 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG |
+| SO2606-60657 | TAJOUO DAVID | 10 000 | BELGO-FAMLA |
+| SO2606-60194 | Biepip Ngoufo Dolf Brice | 250 | BELGO-NDJELENG |
+| SO2609-69619 | GIC MOS (NDJANA YVES BERTRAND NOEL) | 3 500 | BELGO-MESSASSI |
+
+*Total forcé : 15 750 (+750 vs 15 000 — 105%). TAJOUO 10 000/12 000 (solde 2 000 → production ultérieure). BIEPIP reliquat 250 PONTE PREMIUM (7 550/7 800 livrés dans l'ERP — AT(44), expédition SH2608-1631 Traitée). LEMOKEM et GIC MOS en totalité.*
 
 ---
 
@@ -239,7 +229,7 @@ Commandes non-BELGO incluses exceptionnellement avec surcharge de région et age
 
 Règle de classification des expéditions Proctor Ai :
 - **Proctor Ai + Status "Livrée"** = livraison réelle → les quantités déjà livrées sont comptées
-- **Proctor Ai + Status "En cours"** = mouvement système uniquement → la commande est considérée comme non livrée (qte_restante = qte_commandée)
+- **Proctor Ai + Status "En cours"** = mouvement système uniquement → la commande est considérée comme non livrée (qte_restante = qte_commandée) — **sauf si l'AT enregistre des quantités déjà livrées** (Quantité deja livrée > 0, ex : expéditions Traitées avec facture) : dans ce cas, faire confiance à l'AT (v55)
 
 ---
 
@@ -254,12 +244,16 @@ Le script exclut automatiquement :
 
 ---
 
-## 19. Fichiers Source (v48)
+## 19. Fichiers Source (v55)
 
 | Fichier | Rôle |
 |---------|------|
-| NJS GROUP ERP - Lignes de commandes + multicompany (35).xlsx | AT principal — 09/09/2026 — 1 439 lignes |
-| NJS GROUP ERP - Lignes des expeditions + multicompany (10).xlsx | EXP principal — 09/09/2026 — 1 288 lignes |
+| NJS GROUP ERP - Lignes de commandes + multicompany (44).xlsx | AT principal — 21/09/2026 — 1 540 lignes |
+| NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx | EXP principal — 21/09/2026 — 1 380 lignes |
+
+**v55** : Extraits AT(44) + EXP(15) du 21/09/2026 (13:50). Nouveau cycle 23/09 (15 000 réels). BIEPIP SO2606-60194 : 7 550/7 800 livrés dans l'ERP (expédition SH2608-1631 Traitée) → reliquat 250 PONTE PREMIUM forcé. COQ SO2609-69601 livrée (150/150). §17 affiné : Proctor Ai « En cours » + livraisons réelles dans l'AT → confiance à l'AT.
+
+**v54** : Extraits AT(39) du 16/09 + EXP(12) du 17/09. Statuts ERP : §14 11/09 vidé 3/4 (NGOMPE 25 000/25 000, LEMOKEM ×2 livrées ; MAGNE JOSEPHINE 1 250 NON livrée → non planifiée), §14 15/09 vidé 8/8 livrées (38 650). §12 inchangé. 62349 désormais État=Livrée. 72 nouvelles commandes depuis le 09/09 (33 BELGO — dont TEIKING 26 000 FAMLA, IBII OTTO 10 150 PK11, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3). ⚠ AT(35) retéléchargé le 17/09 contient des données figées au 09/09 — ne pas l'utiliser (AT de référence : (39)).
 
 **v52** : 15/09 — TAKAMTSING SO2604-51282 (5 800, NKOABANG) retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime, Payée, 0 livré, prévue 12/09). Total forcé 15/09 : 38 650 (+1 150 vs 37 500).
 
@@ -324,6 +318,9 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v55 | 21/09/2026 | Nouveau cycle 23/09/2026 (Mercredi, Ouest + Centre — 15 000 réel / 14 250 marge). Extraits AT(44)+EXP(15) du 21/09. 11/09 et 15/09 retirées (§1/§4/§6), §13 vidé. §14 23/09 : LEMOKEM 2 000 + TAJOUO 10 000/12 000 + BIEPIP reliquat 250 + GIC MOS 3 500 — 15 750 forcés (105%). §17 affiné (confiance AT si livraisons réelles). |
+| v56 | 21/09/2026 | Exécution automatique. Planifié 15,750/15,000. 427 exclusions. |
+| v54 | 17/09/2026 | Statuts ERP AT(39) 16/09 + EXP(12) 17/09 : §14 11/09 vidé 3/4 livrées (MAGNE JOSEPHINE 1 250 non livrée → non planifiée), §14 15/09 vidé 8/8 livrées (38 650). §12 inchangé. 62349 désormais État=Livrée. 72 nouvelles commandes (33 BELGO). Plan non régénéré. |
 | v52 | 14/09/2026 | 15/09 : TAKAMTSING 51282 retirée de §14 (repasse en non planifiée), remplacée par BOUKAR ISAIE SO2604-52017 (3 100, BELGO-BERI — Littoral minime). Total forcé 15/09 : 38 650 (+1 150 vs 37 500). |
 | v53 | 14/09/2026 | Exécution automatique. Planifié 60,100/57,500. 399 exclusions. |
 | v50 | 11/09/2026 | 15/09 : MEKA FOKO 63332 forcée en totalité 10 000 (ex-split 6 600, §13 retirée) ; TAKAMTSING 51282 (5 800, NKOABANG) forcée en totalité (ex-ajout algo). Total forcé 15/09 : 41 350 (+3 850 vs 37 500). 61870/61869 restent exclues §13. |
@@ -857,35 +854,36 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **14/09/2026** — Réf: **11/09/2026**
+> Exécutée le **21/09/2026** — Réf: **23/09/2026**
 
 ### Résumé
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 240 |
-| Commandes COQ | 18 |
-| Exclusions | 399 |
-| Planifié Réel | 60,100 / 57,500 |
-| Planifié Marge | 60,100 / 54,650 |
-| Non planifiées (marge) | 228 |
-| Nouvelles auto-exclusions | 384 |
+| Commandes PONTE | 254 |
+| Commandes COQ | 17 |
+| Exclusions | 427 |
+| Planifié Réel | 15,750 / 15,000 |
+| Planifié Marge | 15,750 / 14,250 |
+| Non planifiées (marge) | 251 |
+| Nouvelles auto-exclusions | 412 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 11/09/2026 | Ven | Ouest | 21,450 | 20,000 | 107% |
-| 15/09/2026 | Mar | Centre, Littoral | 38,650 | 37,500 | 103% |
+| 23/09/2026 | Mer | Centre, Ouest | 15,750 | 15,000 | 105% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 20 | 62,400 |
-| NON ÉCHUE | 134 | 1,049,650 |
-| RECLASSÉE | 13 | 102,800 |
-| ÉCHUE | 64 | 559,050 |
-| ÉCHUE RECLASSÉE | 9 | 117,750 |
+| IMMINENTE | 24 | 78,200 |
+| NON ÉCHUE | 134 | 1,128,950 |
+| RECLASSÉE | 14 | 97,400 |
+| ÉCHUE | 74 | 606,800 |
+| ÉCHUE RECLASSÉE | 8 | 120,750 |

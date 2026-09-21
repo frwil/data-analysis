@@ -339,14 +339,22 @@ for _, row in df_atr.iterrows():
     # Ajustement Proctor Ai avec Status Commande
     # IMPORTANT: Si qte_restante_sys = 0, on fait confiance à l'AT
     # (la commande est réellement livrée, même si Proctor Ai est "En cours")
+    proctor_only = False
     if qte_restante_sys <= 0:
         qte_livree_reelle = qte_livree_sys
         qte_restante = qte_restante_sys
     elif ref in proctor_en_cours_refs:
-        # Proctor Ai "En cours" = mouvement système → les qtés "livrées" sont gonflées
-        # On réinitialise: rien n'a été réellement livré
-        qte_livree_reelle = 0
-        qte_restante = qte_commandee
+        if qte_livree_sys > 0:
+            # v55: l'AT enregistre des livraisons réelles (expéditions Traitées)
+            # → faire confiance à l'AT malgré le Status Commande "En cours"
+            qte_livree_reelle = qte_livree_sys
+            qte_restante = qte_restante_sys
+        else:
+            # Proctor Ai "En cours" = mouvement système → les qtés "livrées" sont gonflées
+            # On réinitialise: rien n'a été réellement livré
+            qte_livree_reelle = 0
+            qte_restante = qte_commandee
+            proctor_only = True
     elif ref in proctor_livree_refs:
         # Proctor Ai "Livrée" = livraison réelle → les quantités système sont correctes
         qte_livree_reelle = qte_livree_sys
@@ -422,7 +430,7 @@ for _, row in df_atr.iterrows():
         'date_modif': date_modif,
         'priority_num': priority_num,
         'priority_label': priority_label,
-        'proctor_only': ref in proctor_en_cours_refs,
+        'proctor_only': proctor_only,
         'forced_date': FORCED_ASSIGNMENTS.get(ref, [(None,)])[0][0],
         'is_tamatio': TAMATIO_CLIENT in tiers.upper(),
         'is_coq': is_coq,
