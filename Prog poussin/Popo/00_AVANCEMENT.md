@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **21/09/2026** — v55/v56 : nouveau cycle 23/09 (15 000 réels, Ouest + Centre) — 4 forcées (LEMOKEM 2 000, TAJOUO 10 000/12 000, BIEPIP reliquat 250 PREMIUM, GIC MOS 3 500) = 15 750 (105%). Extraits AT(44)+EXP(15) du 21/09.
+> Dernière mise à jour : **21/09/2026** — v57 : TAJOUO forcée **12 000/12 000 en totalité** (ex-10 000/12 000) → plan 23/09 = **17 750/15 000 (118%)**, dépassement d'éclosion assumé. Extraits AT(44)+EXP(15) du 21/09.
 
 ---
 
@@ -31,7 +31,7 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 > ✅ **Extractions à jour** (21/09/2026 13:50) — statuts ERP mis à jour dans le `.md` (v55) et plan régénéré (v56).
 > ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44).
-> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 21/09 (v56) : 23/09 = 15 750/15 000 (105%) — 4 forcées, aucune commande ajoutée par l'algo.
+> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 21/09 (v57) : 23/09 = 17 750/15 000 (118%) — 4 forcées (TAJOUO 12 000 en totalité), aucune commande ajoutée par l'algo.
 
 ---
 
@@ -150,6 +150,13 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
 8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
 9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v57 (21/09)
+
+1. **TAJOUO SO2606-60657 passée à 12 000/12 000 en totalité** dans §14 (ex-10 000/12 000) — dépassement d'éclosion assumé : **17 750/15 000 (118%, +2 750)**
+2. **Exécution (v57)** : 23/09 = **17 750/15 000** — 4 forcées (LEMOKEM 2 000, TAJOUO 12 000, BIEPIP 250, GIC MOS 3 500), aucune commande ajoutée par l'algo (capacité dépassée) ; ⚠ DÉPASSEMENT +2 750 (réel) / +3 500 (marge)
 
 ---
 

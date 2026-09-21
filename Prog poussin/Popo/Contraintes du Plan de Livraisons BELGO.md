@@ -200,11 +200,11 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | Réf. | Client | Qté | Agence |
 |------|--------|-----|--------|
 | SO2606-59894 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG |
-| SO2606-60657 | TAJOUO DAVID | 10 000 | BELGO-FAMLA |
+| SO2606-60657 | TAJOUO DAVID | 12 000 | BELGO-FAMLA |
 | SO2606-60194 | Biepip Ngoufo Dolf Brice | 250 | BELGO-NDJELENG |
 | SO2609-69619 | GIC MOS (NDJANA YVES BERTRAND NOEL) | 3 500 | BELGO-MESSASSI |
 
-*Total forcé : 15 750 (+750 vs 15 000 — 105%). TAJOUO 10 000/12 000 (solde 2 000 → production ultérieure). BIEPIP reliquat 250 PONTE PREMIUM (7 550/7 800 livrés dans l'ERP — AT(44), expédition SH2608-1631 Traitée). LEMOKEM et GIC MOS en totalité.*
+*Total forcé : 17 750 (+2 750 vs 15 000 — 118%). TAJOUO 12 000/12 000 en totalité (dépassement d'éclosion assumé). BIEPIP reliquat 250 PONTE PREMIUM (7 550/7 800 livrés dans l'ERP — AT(44), expédition SH2608-1631 Traitée). LEMOKEM et GIC MOS en totalité.*
 
 ---
 
@@ -318,6 +318,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v57 | 21/09/2026 | §14 23/09 : TAJOUO 12 000/12 000 en totalité (ex-10 000/12 000) — dépassement d'éclosion assumé. Total forcé : 17 750 (118% vs 15 000). |
+| v58 | 21/09/2026 | Exécution automatique. Planifié 17,750/15,000. 427 exclusions. |
 | v55 | 21/09/2026 | Nouveau cycle 23/09/2026 (Mercredi, Ouest + Centre — 15 000 réel / 14 250 marge). Extraits AT(44)+EXP(15) du 21/09. 11/09 et 15/09 retirées (§1/§4/§6), §13 vidé. §14 23/09 : LEMOKEM 2 000 + TAJOUO 10 000/12 000 + BIEPIP reliquat 250 + GIC MOS 3 500 — 15 750 forcés (105%). §17 affiné (confiance AT si livraisons réelles). |
 | v56 | 21/09/2026 | Exécution automatique. Planifié 15,750/15,000. 427 exclusions. |
 | v54 | 17/09/2026 | Statuts ERP AT(39) 16/09 + EXP(12) 17/09 : §14 11/09 vidé 3/4 livrées (MAGNE JOSEPHINE 1 250 non livrée → non planifiée), §14 15/09 vidé 8/8 livrées (38 650). §12 inchangé. 62349 désormais État=Livrée. 72 nouvelles commandes (33 BELGO). Plan non régénéré. |
@@ -856,6 +858,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **21/09/2026** — Réf: **23/09/2026**
@@ -867,16 +871,16 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 254 |
 | Commandes COQ | 17 |
 | Exclusions | 427 |
-| Planifié Réel | 15,750 / 15,000 |
-| Planifié Marge | 15,750 / 14,250 |
-| Non planifiées (marge) | 251 |
+| Planifié Réel | 17,750 / 15,000 |
+| Planifié Marge | 17,750 / 14,250 |
+| Non planifiées (marge) | 250 |
 | Nouvelles auto-exclusions | 412 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 23/09/2026 | Mer | Centre, Ouest | 15,750 | 15,000 | 105% |
+| 23/09/2026 | Mer | Centre, Ouest | 17,750 | 15,000 | 118% |
 
 ### Répartition par priorité
 
