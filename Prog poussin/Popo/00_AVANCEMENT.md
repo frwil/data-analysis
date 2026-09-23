@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **23/09/2026** — v61/v62 : 25/09 remanié — OTANG 500 + Alfred Fon Ja-Ai 5 300 (BUEA) retirées (§13), remplacées par ALEMAWO 4 000 (BERI) + WAYAP 2 200 (FAMLA) forcées → **29 100/29 000 (100%)**. 23/09 = 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
+> Dernière mise à jour : **23/09/2026** — v63/v64 : 25/09 remanié — WAYAP SO2606-59891 (2 200) + MAGDALENE + WETE MANGA + PENKA + DJUISSI retirées (§13), remplacées par TUMENTA SO2604-53701 2 000 + LEMNYUY SO2606-59760 1 000 + WAYAP SO2609-69790 2 700 (MBOUDA) forcées → **28 950/29 000 (100%)**, 7 forcées uniquement. 23/09 = 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
 
 ---
 
@@ -150,6 +150,14 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
 8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
 9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v63 (23/09)
+
+1. **25/09 — 5 retirées (§13)** : WAYAP SO2606-59891 (2 200, forcée — retirée de §14 + exclue), MAGDALENE SO2605-57737 1 000, WETE MANGA SO2607-62419 1 100, PENKA SO2607-62511 550 (reliquat), DJUISSI SO2609-68591 1 000 — toutes repassent en non planifiées (vérifié dans le plan)
+2. **25/09 — remplacées par 3 forcées (§14)** : TUMENTA GRACE SO2604-53701 2 000 (prévue 04/09, ÉCHUE), LEMNYUY BETILLA SO2606-59760 1 000 (prévue 23/09, ÉCHUE), WAYAP SO2609-69790 2 700 (prévue 25/09, IMMINENTE) — toutes **BELGO MBOUDA (Ouest)**, Payées, 0 livré — total forcé 25/09 : **28 950 (99,8%)**
+3. **Exécution (v64)** : 23/09 = 17 750/15 000 (118%) ; 25/09 = **28 950/29 000 (100%, Littoral+Ouest)** — les 7 forcées uniquement, 0 ajoutée par l'algo ; 427 exclusions ; 243 non planifiées (marge)
 
 ---
 

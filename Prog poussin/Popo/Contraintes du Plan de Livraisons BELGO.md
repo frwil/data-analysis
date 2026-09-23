@@ -182,6 +182,13 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 |------|---------------|
 | SO2609-69647 | 25/09/2026 |
 | SO2609-69666 | 25/09/2026 |
+| SO2606-59891 | 25/09/2026 |
+| SO2605-57737 | 25/09/2026 |
+| SO2607-62419 | 25/09/2026 |
+| SO2607-62511 | 25/09/2026 |
+| SO2609-68591 | 25/09/2026 |
+
+**v63** : 25/09 — WAYAP SO2606-59891 (2 200) retirée de §14 et exclue ; MAGDALENE 1 000, WETE MANGA 1 100, PENKA reliquat 550 et DJUISSI 1 000 exclues — remplacées par TUMENTA 2 000 + LEMNYUY 1 000 + WAYAP SO2609-69790 2 700 forcées (§14, toutes MBOUDA).
 
 **v61** : OTANG VALENTINE SO2609-69647 (500) et Alfred Fon Ja-Ai SO2609-69666 (5 300) — BELGO-BUEA, Littoral — retirées du 25/09, remplacées par ALEMAWO 4 000 + WAYAP 2 200 forcées (§14).
 
@@ -222,9 +229,11 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2606-58404 | KAMGANG EMMANUEL | 5 800 | BELGO-NDJELENG |
 | SO2606-61310 | TESEHKOUE CHARLES | 10 150 | BELGO-FAMLA |
 | SO2607-61638 | Alemawo Oben Boris | 4 000 | BELGO-BERI |
-| SO2606-59891 | Wayap Guy Merlin | 2 200 | BELGO-FAMLA |
+| SO2604-53701 | TUMENTA GRACE | 2 000 | BELGO MBOUDA |
+| SO2606-59760 | LEMNYUY BETILLA | 1 000 | BELGO MBOUDA |
+| SO2609-69790 | Wayap Guy Merlin | 2 700 | BELGO MBOUDA |
 
-*Total forcé : 25 450 (88% de 29 000). Ouest : KAMGANG 5 800 (NDJELENG), TESEHKOUE 10 150 + WAYAP 2 200 (FAMLA). Littoral : NGOUADJEU 3 300 (NKONGSAMBA, minime) + ALEMAWO 4 000 (BERI). Les 5 : Payées, 0 livré, ÉCHUE (prévues 04/09, 12/09, 08/07, 23/09, 04/08). v61 : OTANG 500 + Alfred Fon Ja-Ai 5 300 (BUEA) retirées (§13), remplacées par ALEMAWO + WAYAP.*
+*Total forcé : 28 950 (99,8% de 29 000). v63 : WAYAP 59891 (2 200, FAMLA) remplacée par TUMENTA 2 000 + LEMNYUY 1 000 + WAYAP SO2609-69790 2 700 — toutes MBOUDA, Payées, 0 livré (ÉCHUE 04/09 et 23/09, IMMINENTE 25/09) ; MAGDALENE, WETE MANGA, PENKA et DJUISSI retirées (§13). Ouest : KAMGANG 5 800, TESEHKOUE 10 150, TUMENTA 2 000, LEMNYUY 1 000, WAYAP 2 700. Littoral : NGOUADJEU 3 300 (minime) + ALEMAWO 4 000.*
 
 ---
 
@@ -340,6 +349,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v64 | 23/09/2026 | Exécution automatique. Planifié 46,700/44,000. 427 exclusions. |
+| v63 | 23/09/2026 | 25/09 : WAYAP SO2606-59891 retirée, MAGDALENE + WETE MANGA + PENKA + DJUISSI exclues (§13) — remplacées par TUMENTA SO2604-53701 2 000 + LEMNYUY SO2606-59760 1 000 + WAYAP SO2609-69790 2 700 (MBOUDA) forcées (§14). Total forcé 25/09 : 28 950. |
 | v62 | 23/09/2026 | Exécution automatique. Planifié 46,850/44,000. 427 exclusions. |
 | v61 | 23/09/2026 | 25/09 : OTANG 500 et Alfred Fon Ja-Ai 5 300 (BUEA, Littoral) retirées du 25/09 (§13), remplacées par ALEMAWO SO2607-61638 4 000 (BERI) + WAYAP SO2606-59891 2 200 (FAMLA) forcées (§14). Total forcé 25/09 : 25 450 (88%). |
 | v60 | 23/09/2026 | Exécution automatique. Planifié 47,250/44,000. 427 exclusions. |
@@ -890,6 +901,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **23/09/2026** — Réf: **23/09/2026**
@@ -901,8 +914,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 254 |
 | Commandes COQ | 17 |
 | Exclusions | 427 |
-| Planifié Réel | 46,850 / 44,000 |
-| Planifié Marge | 45,300 / 41,800 |
+| Planifié Réel | 46,700 / 44,000 |
+| Planifié Marge | 46,700 / 41,800 |
 | Non planifiées (marge) | 243 |
 | Nouvelles auto-exclusions | 412 |
 
@@ -911,7 +924,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 23/09/2026 | Mer | Centre, Ouest | 17,750 | 15,000 | 118% |
-| 25/09/2026 | Ven | Littoral, Ouest | 29,100 | 29,000 | 100% |
+| 25/09/2026 | Ven | Littoral, Ouest | 28,950 | 29,000 | 100% |
 
 ### Répartition par priorité
 
