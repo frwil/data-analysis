@@ -457,9 +457,9 @@ def _update_history(md_text, results):
     planified = results.get('total_reel', 0)
     cap = results.get('cap_reelle', 0)
 
-    # Extraire la dernière version
+    # Extraire la dernière version (max, pas la 1ère ligne — l'ordre du tableau n'est pas garanti)
     last_v = re.findall(r'\| v(\d+) \|', section21)
-    next_v = int(last_v[0]) + 1 if last_v else 16
+    next_v = (max(int(v) for v in last_v) + 1) if last_v else 16
 
     new_entry = f'| v{next_v} | {today} | Exécution automatique. Planifié {planified:,}/{cap:,}. {results.get("total_exclusions", 0)} exclusions. |'
 
@@ -470,9 +470,9 @@ def _update_history(md_text, results):
         if line.startswith('## 21.'):
             in_s21 = True
             continue
-        if in_s21 and line.startswith('| v') and i + 1 < len(lines):
-            # Insérer après cette ligne
-            lines.insert(i + 1, new_entry)
+        if in_s21 and line.startswith('| v') and i < len(lines):
+            # Insérer avant cette ligne (plus récente en tête)
+            lines.insert(i, new_entry)
             break
 
     return '\n'.join(lines)

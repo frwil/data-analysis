@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **23/09/2026** — v59/v60 : nouvelle éclosion **25/09 (Vendredi, Ouest — 29 000 réel / 27 550 marge)**, 3 forcées (NGOUADJEU 3 300 NKONGSAMBA + KAMGANG 5 800 NDJELENG + TESEHKOUE 10 150 FAMLA) + 7 900 Littoral échue par l'algo → **29 500/29 000 (102%)**. 23/09 conservée : 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
+> Dernière mise à jour : **23/09/2026** — v61/v62 : 25/09 remanié — OTANG 500 + Alfred Fon Ja-Ai 5 300 (BUEA) retirées (§13), remplacées par ALEMAWO 4 000 (BERI) + WAYAP 2 200 (FAMLA) forcées → **29 100/29 000 (100%)**. 23/09 = 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
 
 ---
 
@@ -31,7 +31,7 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 > ✅ **Extractions à jour** (21/09/2026 13:50) — statuts ERP mis à jour dans le `.md` (v55) et plan régénéré (v56).
 > ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44). Re-téléchargé à nouveau le 21/09 15:38 (toujours figé au 09/09) → **déplacé vers `extractions/archive/`** (v59) pour que le script ne le choisisse pas par mtime.
-> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 23/09 (v60) : 23/09 = 17 750/15 000 (118%, 4 forcées) ; 25/09 = 29 500/29 000 (102%, 3 forcées + 7 900 Littoral échue + 2 350 Ouest ≤1000).
+> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 23/09 (v62) : 23/09 = 17 750/15 000 (118%, 4 forcées) ; 25/09 = 29 100/29 000 (100%, 5 forcées + 2 100 Littoral + 1 550 Ouest ≤1000).
 
 ---
 
@@ -150,6 +150,15 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
 8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
 9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v61 (23/09)
+
+1. **25/09 — OTANG + Alfred Fon retirées (§13)** : SO2609-69647 OTANG VALENTINE (500) et SO2609-69666 Alfred Fon Ja-Ai (5 300) — BELGO-BUEA, Littoral — exclues du 25/09, repassent en non planifiées (vérifié dans le plan)
+2. **25/09 — remplacées par 2 forcées (§14)** : ALEMAWO SO2607-61638 4 000 (BERI, Littoral — prévue 23/09, Payée) + WAYAP SO2606-59891 2 200 (FAMLA, Ouest — prévue 04/08, Payée) — total forcé 25/09 : **25 450 (88%)**
+3. **Correctif `md_config.py`** : numérotation §21 calculée sur le **max** des versions (plus de doublon) + nouvelle entrée insérée **en tête** de l'historique
+4. **Exécution (v62)** : 23/09 = 17 750/15 000 (118%) ; 25/09 = **29 100/29 000 (100%, Littoral+Ouest)** — 5 forcées + MAGDALENE 1 000, WETE MANGA 1 100 (BERI) + PENKA 550, DJUISSI 1 000 (FAMLA) ; 427 exclusions ; 242 non planifiées (marge)
 
 ---
 

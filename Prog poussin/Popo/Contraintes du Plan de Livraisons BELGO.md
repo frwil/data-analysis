@@ -180,6 +180,10 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 | Réf. | Dates exclues |
 |------|---------------|
+| SO2609-69647 | 25/09/2026 |
+| SO2609-69666 | 25/09/2026 |
+
+**v61** : OTANG VALENTINE SO2609-69647 (500) et Alfred Fon Ja-Ai SO2609-69666 (5 300) — BELGO-BUEA, Littoral — retirées du 25/09, remplacées par ALEMAWO 4 000 + WAYAP 2 200 forcées (§14).
 
 *Cycle 23/09 (v55) : §13 vidé — les exclusions portaient sur des dates passées (11/09, 15/09). 62349 désormais État=Livrée (auto-exclue). 61870/61869 restent éligibles (aucune protection demandée pour le 23/09).*
 
@@ -217,8 +221,10 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2605-56216 | Ngouadjeu Paul | 3 300 | BELGO-NKONGSAMBA |
 | SO2606-58404 | KAMGANG EMMANUEL | 5 800 | BELGO-NDJELENG |
 | SO2606-61310 | TESEHKOUE CHARLES | 10 150 | BELGO-FAMLA |
+| SO2607-61638 | Alemawo Oben Boris | 4 000 | BELGO-BERI |
+| SO2606-59891 | Wayap Guy Merlin | 2 200 | BELGO-FAMLA |
 
-*Total forcé : 19 250 (66% de 29 000). KAMGANG 5 800 (NDJELENG) et TESEHKOUE 10 150 (FAMLA) = Ouest ; NGOUADJEU 3 300 (NKONGSAMBA) = Littoral minime (11,4% ≤ 25%, exemptée du verrouillage Ouest). Les 3 : Payées, 0 livré, ÉCHUE (prévues 04/09, 12/09 et 08/07) — intégrées en totalité sur demande (v59).*
+*Total forcé : 25 450 (88% de 29 000). Ouest : KAMGANG 5 800 (NDJELENG), TESEHKOUE 10 150 + WAYAP 2 200 (FAMLA). Littoral : NGOUADJEU 3 300 (NKONGSAMBA, minime) + ALEMAWO 4 000 (BERI). Les 5 : Payées, 0 livré, ÉCHUE (prévues 04/09, 12/09, 08/07, 23/09, 04/08). v61 : OTANG 500 + Alfred Fon Ja-Ai 5 300 (BUEA) retirées (§13), remplacées par ALEMAWO + WAYAP.*
 
 ---
 
@@ -334,10 +340,12 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
-| v57 | 21/09/2026 | §14 23/09 : TAJOUO 12 000/12 000 en totalité (ex-10 000/12 000) — dépassement d'éclosion assumé. Total forcé : 17 750 (118% vs 15 000). |
-| v59 | 23/09/2026 | Nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge). §1/§6 + 25/09 Ouest ; 23/09 conservée. §14 25/09 : NGOUADJEU 3 300 (NKONGSAMBA, Littoral minime) + KAMGANG 5 800 (NDJELENG) + TESEHKOUE 10 150 (FAMLA) — 19 250 forcés, toutes Payées/ÉCHUE. AT(35) figé archivé (hors extractions/). |
+| v62 | 23/09/2026 | Exécution automatique. Planifié 46,850/44,000. 427 exclusions. |
+| v61 | 23/09/2026 | 25/09 : OTANG 500 et Alfred Fon Ja-Ai 5 300 (BUEA, Littoral) retirées du 25/09 (§13), remplacées par ALEMAWO SO2607-61638 4 000 (BERI) + WAYAP SO2606-59891 2 200 (FAMLA) forcées (§14). Total forcé 25/09 : 25 450 (88%). |
 | v60 | 23/09/2026 | Exécution automatique. Planifié 47,250/44,000. 427 exclusions. |
+| v59 | 23/09/2026 | Nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge). §1/§6 + 25/09 Ouest ; 23/09 conservée. §14 25/09 : NGOUADJEU 3 300 (NKONGSAMBA, Littoral minime) + KAMGANG 5 800 (NDJELENG) + TESEHKOUE 10 150 (FAMLA) — 19 250 forcés, toutes Payées/ÉCHUE. AT(35) figé archivé (hors extractions/). |
 | v58 | 21/09/2026 | Exécution automatique. Planifié 17,750/15,000. 427 exclusions. |
+| v57 | 21/09/2026 | §14 23/09 : TAJOUO 12 000/12 000 en totalité (ex-10 000/12 000) — dépassement d'éclosion assumé. Total forcé : 17 750 (118% vs 15 000). |
 | v55 | 21/09/2026 | Nouveau cycle 23/09/2026 (Mercredi, Ouest + Centre — 15 000 réel / 14 250 marge). Extraits AT(44)+EXP(15) du 21/09. 11/09 et 15/09 retirées (§1/§4/§6), §13 vidé. §14 23/09 : LEMOKEM 2 000 + TAJOUO 10 000/12 000 + BIEPIP reliquat 250 + GIC MOS 3 500 — 15 750 forcés (105%). §17 affiné (confiance AT si livraisons réelles). |
 | v56 | 21/09/2026 | Exécution automatique. Planifié 15,750/15,000. 427 exclusions. |
 | v54 | 17/09/2026 | Statuts ERP AT(39) 16/09 + EXP(12) 17/09 : §14 11/09 vidé 3/4 livrées (MAGNE JOSEPHINE 1 250 non livrée → non planifiée), §14 15/09 vidé 8/8 livrées (38 650). §12 inchangé. 62349 désormais État=Livrée. 72 nouvelles commandes (33 BELGO). Plan non régénéré. |
@@ -880,6 +888,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
 > Exécutée le **23/09/2026** — Réf: **23/09/2026**
@@ -891,9 +901,9 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 254 |
 | Commandes COQ | 17 |
 | Exclusions | 427 |
-| Planifié Réel | 47,250 / 44,000 |
-| Planifié Marge | 45,450 / 41,800 |
-| Non planifiées (marge) | 242 |
+| Planifié Réel | 46,850 / 44,000 |
+| Planifié Marge | 45,300 / 41,800 |
+| Non planifiées (marge) | 243 |
 | Nouvelles auto-exclusions | 412 |
 
 ### Plan Réel par date
@@ -901,7 +911,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 23/09/2026 | Mer | Centre, Ouest | 17,750 | 15,000 | 118% |
-| 25/09/2026 | Ven | Littoral, Ouest | 29,500 | 29,000 | 102% |
+| 25/09/2026 | Ven | Littoral, Ouest | 29,100 | 29,000 | 100% |
 
 ### Répartition par priorité
 
