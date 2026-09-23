@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **21/09/2026** — v57 : TAJOUO forcée **12 000/12 000 en totalité** (ex-10 000/12 000) → plan 23/09 = **17 750/15 000 (118%)**, dépassement d'éclosion assumé. Extraits AT(44)+EXP(15) du 21/09.
+> Dernière mise à jour : **23/09/2026** — v59/v60 : nouvelle éclosion **25/09 (Vendredi, Ouest — 29 000 réel / 27 550 marge)**, 3 forcées (NGOUADJEU 3 300 NKONGSAMBA + KAMGANG 5 800 NDJELENG + TESEHKOUE 10 150 FAMLA) + 7 900 Littoral échue par l'algo → **29 500/29 000 (102%)**. 23/09 conservée : 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
 
 ---
 
@@ -22,7 +22,7 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v55)
+## 📊 Fichiers Source (v60)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
@@ -30,8 +30,8 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 | `NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx` | EXP — 21/09 | 1 380 |
 
 > ✅ **Extractions à jour** (21/09/2026 13:50) — statuts ERP mis à jour dans le `.md` (v55) et plan régénéré (v56).
-> ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44).
-> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 21/09 (v57) : 23/09 = 17 750/15 000 (118%) — 4 forcées (TAJOUO 12 000 en totalité), aucune commande ajoutée par l'algo.
+> ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44). Re-téléchargé à nouveau le 21/09 15:38 (toujours figé au 09/09) → **déplacé vers `extractions/archive/`** (v59) pour que le script ne le choisisse pas par mtime.
+> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 23/09 (v60) : 23/09 = 17 750/15 000 (118%, 4 forcées) ; 25/09 = 29 500/29 000 (102%, 3 forcées + 7 900 Littoral échue + 2 350 Ouest ≤1000).
 
 ---
 
@@ -150,6 +150,16 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
 8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
 9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v59 (23/09)
+
+1. **Nouvelle éclosion 25/09/2026** (Vendredi, Ouest — 29 000 réel / 27 550 marge) : §1/§6 mis à jour, **23/09 conservée** dans le cycle (sur demande)
+2. **§14 25/09 — 3 forcées (19 250, 66%)** : NGOUADJEU SO2605-56216 3 300 (NKONGSAMBA — Littoral minime 11,4% ≤ 25%), KAMGANG SO2606-58404 5 800 (NDJELENG), TESEHKOUE SO2606-61310 10 150 (FAMLA) — toutes Payées, 0 livré, ÉCHUE (prévues 04/09, 12/09, 08/07)
+3. **Étape 0b — Littoral échue 7 900** pré-planifiées le 25/09 (MAGDALENE KUKU 1 000, WETE MANGA 1 100, OTANG 500, Alfred Fon Ja-Ai 5 300 — BERI/BUEA) : **gardées sur validation** (journée dédiée Littoral §5, Littoral total 11 200 = 38% du jour)
+4. ⚠ **AT(35) re-téléchargé le 21/09 15:38** (mtime le plus récent du dossier) mais **toujours figé au 09/09** → déplacé vers `extractions/archive/` pour que le script reprenne AT(44) par mtime
+5. **Exécution (v60)** : 23/09 = 17 750/15 000 (118%) ; 25/09 = **29 500/29 000 (102%, Littoral+Ouest)** — 3 forcées + 7 900 Littoral échue + 2 350 Ouest ≤1000 ; 427 exclusions ; 242 non planifiées (marge)
 
 ---
 

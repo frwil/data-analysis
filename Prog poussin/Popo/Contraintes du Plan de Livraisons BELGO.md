@@ -5,15 +5,17 @@
 | Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
 |------|------|-------------|------|-------------|-------------------|
 | 23/09/2026 | Mercredi | — | 15 000 | 14 250 | Ouest, Centre |
+| 25/09/2026 | Vendredi | — | 29 000 | 27 550 | Ouest |
 
 - **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 15 000
-- Capacité totale Marge : 14 250
+- Capacité totale Réelle : 44 000
+- Capacité totale Marge : 41 800
 - Capacité totale Annoncée : —
 - **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée
 - **v55** : nouvelle éclosion 23/09/2026 (Mercredi, Ouest + Centre) — 15 000 réel / 14 250 marge ; 11/09 et 15/09 passées retirées
+- **v59** : nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge) ; 23/09 conservée dans le cycle
 
 ---
 
@@ -98,8 +100,10 @@ Classification :
 | Date | Régions autorisées |
 |------|--------------------|
 | 23/09/2026 | Ouest, Centre |
+| 25/09/2026 | Ouest |
 
 - 11/09 et 15/09 passées retirées (v55) — 23/09 verrouillée Ouest + Centre
+- **v59** : 25/09 verrouillée Ouest (éclosion réservée à l'Ouest ; Littoral exempté comme toujours)
 
 - **Le Littoral est exempté** de tous les verrouillages — il peut s'insérer partout (minime ≤25% du jour)
 - Les commandes d'autres régions ne peuvent pas y être planifiées, même en mode flexible
@@ -206,6 +210,16 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 *Total forcé : 17 750 (+2 750 vs 15 000 — 118%). TAJOUO 12 000/12 000 en totalité (dépassement d'éclosion assumé). BIEPIP reliquat 250 PONTE PREMIUM (7 550/7 800 livrés dans l'ERP — AT(44), expédition SH2608-1631 Traitée). LEMOKEM et GIC MOS en totalité.*
 
+### 25/09/2026 (Ouest)
+
+| Réf. | Client | Qté | Agence |
+|------|--------|-----|--------|
+| SO2605-56216 | Ngouadjeu Paul | 3 300 | BELGO-NKONGSAMBA |
+| SO2606-58404 | KAMGANG EMMANUEL | 5 800 | BELGO-NDJELENG |
+| SO2606-61310 | TESEHKOUE CHARLES | 10 150 | BELGO-FAMLA |
+
+*Total forcé : 19 250 (66% de 29 000). KAMGANG 5 800 (NDJELENG) et TESEHKOUE 10 150 (FAMLA) = Ouest ; NGOUADJEU 3 300 (NKONGSAMBA) = Littoral minime (11,4% ≤ 25%, exemptée du verrouillage Ouest). Les 3 : Payées, 0 livré, ÉCHUE (prévues 04/09, 12/09 et 08/07) — intégrées en totalité sur demande (v59).*
+
 ---
 
 ## 15. Inclusions Exceptionnelles (SPECIAL_INCLUDE)
@@ -250,6 +264,8 @@ Le script exclut automatiquement :
 |---------|------|
 | NJS GROUP ERP - Lignes de commandes + multicompany (44).xlsx | AT principal — 21/09/2026 — 1 540 lignes |
 | NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx | EXP principal — 21/09/2026 — 1 380 lignes |
+
+**v59** : Nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge), 23/09 conservée. Extraits inchangés : AT(44) + EXP(15) du 21/09. ⚠ AT(35) (re-téléchargé le 21/09 15:38 mais données figées au 09/09) déplacé vers `extractions/archive/` — le script pointait dessus par mtime.
 
 **v55** : Extraits AT(44) + EXP(15) du 21/09/2026 (13:50). Nouveau cycle 23/09 (15 000 réels). BIEPIP SO2606-60194 : 7 550/7 800 livrés dans l'ERP (expédition SH2608-1631 Traitée) → reliquat 250 PONTE PREMIUM forcé. COQ SO2609-69601 livrée (150/150). §17 affiné : Proctor Ai « En cours » + livraisons réelles dans l'AT → confiance à l'AT.
 
@@ -319,6 +335,8 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Version | Date | Changement |
 |---------|------|------------|
 | v57 | 21/09/2026 | §14 23/09 : TAJOUO 12 000/12 000 en totalité (ex-10 000/12 000) — dépassement d'éclosion assumé. Total forcé : 17 750 (118% vs 15 000). |
+| v59 | 23/09/2026 | Nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge). §1/§6 + 25/09 Ouest ; 23/09 conservée. §14 25/09 : NGOUADJEU 3 300 (NKONGSAMBA, Littoral minime) + KAMGANG 5 800 (NDJELENG) + TESEHKOUE 10 150 (FAMLA) — 19 250 forcés, toutes Payées/ÉCHUE. AT(35) figé archivé (hors extractions/). |
+| v60 | 23/09/2026 | Exécution automatique. Planifié 47,250/44,000. 427 exclusions. |
 | v58 | 21/09/2026 | Exécution automatique. Planifié 17,750/15,000. 427 exclusions. |
 | v55 | 21/09/2026 | Nouveau cycle 23/09/2026 (Mercredi, Ouest + Centre — 15 000 réel / 14 250 marge). Extraits AT(44)+EXP(15) du 21/09. 11/09 et 15/09 retirées (§1/§4/§6), §13 vidé. §14 23/09 : LEMOKEM 2 000 + TAJOUO 10 000/12 000 + BIEPIP reliquat 250 + GIC MOS 3 500 — 15 750 forcés (105%). §17 affiné (confiance AT si livraisons réelles). |
 | v56 | 21/09/2026 | Exécution automatique. Planifié 15,750/15,000. 427 exclusions. |
@@ -860,9 +878,11 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **21/09/2026** — Réf: **23/09/2026**
+> Exécutée le **23/09/2026** — Réf: **23/09/2026**
 
 ### Résumé
 
@@ -871,9 +891,9 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Commandes PONTE | 254 |
 | Commandes COQ | 17 |
 | Exclusions | 427 |
-| Planifié Réel | 17,750 / 15,000 |
-| Planifié Marge | 17,750 / 14,250 |
-| Non planifiées (marge) | 250 |
+| Planifié Réel | 47,250 / 44,000 |
+| Planifié Marge | 45,450 / 41,800 |
+| Non planifiées (marge) | 242 |
 | Nouvelles auto-exclusions | 412 |
 
 ### Plan Réel par date
@@ -881,6 +901,7 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
 | 23/09/2026 | Mer | Centre, Ouest | 17,750 | 15,000 | 118% |
+| 25/09/2026 | Ven | Littoral, Ouest | 29,500 | 29,000 | 102% |
 
 ### Répartition par priorité
 
