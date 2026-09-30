@@ -74,7 +74,7 @@ EXCLUSIONS = dict(config['exclusions'])
 # Stockage pour les nouvelles auto-exclusions découvertes lors de l'exécution
 NEW_AUTO_EXCLUSIONS = {}
 
-CLIENT_EXCLU = 'TEDONGMO YEMDJI FRANCK'
+CLIENT_EXCLU = ('TEDONGMO YEMDJI FRANCK', 'COMPTE TEMPORAIRE')
 
 # FORCED_ASSIGNMENTS chargées depuis le .md
 FORCED_ASSIGNMENTS_RAW = dict(config['forced_assignments'])
@@ -93,6 +93,12 @@ SPECIAL_INCLUDE = dict(config['special_include'])
 
 # NO_SPLIT chargé depuis le .md
 NO_SPLIT = set(config['no_split'])
+
+# Commandes traitées comme ÉCHUE pure (détection « reclassée » ignorée) — §4
+FORCE_ECHUE_PURE = set(config['force_echue_pure'])
+
+# Commandes à ne pas programmer avant une date donnée — §13 (MIN_DATES)
+MIN_DATES = dict(config['min_dates'])
 
 # ============================================================================
 # RÈGLE DE SPLIT (Contrainte n°13)
@@ -315,7 +321,7 @@ for _, row in df_atr.iterrows():
         continue
     
     tiers = str(row.get('Tiers', '')).strip()
-    if CLIENT_EXCLU in tiers:
+    if any(c in tiers for c in CLIENT_EXCLU):
         continue
     
     statut_facture = str(row.get('StatutFacture', '')).strip()
@@ -326,7 +332,9 @@ for _, row in df_atr.iterrows():
     # Utiliser État pour filtrer les commandes déjà livrées ou en brouillon
     etat_atr = str(row.get('État', '')).strip()
     if etat_atr == 'Brouillon' or statut_facture == 'Brouillon':
-        continue
+        # v78: une commande forcée (§14) par l'utilisateur passe malgré le Brouillon
+        if ref not in FORCED_ASSIGNMENTS:
+            continue
     
     qte_commandee = float(row.get('Qté commandée', 0))
     ref_produit = str(row.get('Réf. produit', '')).strip()
@@ -396,7 +404,9 @@ for _, row in df_atr.iterrows():
             prevue_date = date_prevue.date()
             if modif_date > cmd_date and modif_date < prevue_date - timedelta(days=5):
                 is_reclassee = True
-        
+        # §4: commande forcée en ÉCHUE pure (détection reclassée ignorée)
+        if ref in FORCE_ECHUE_PURE:
+            is_reclassee = False
         is_echue = date_prevue <= REF_DATE
         is_imminente = not is_echue and (date_prevue - REF_DATE).days <= 10
         
@@ -438,6 +448,25 @@ for _, row in df_atr.iterrows():
     })
 
 df_orders = pd.DataFrame(orders)
+
+# v76: Agréger les lignes multiples d'une même réf. (une commande = une réf.)
+# ex: MARSHAL FARMERS SO2605-54941 = 18 000 PONTE + 200 COQ
+# Sans agrégation, remaining_qty (dict) ne gardait que la dernière ligne
+# v80: agréger par (réf., PONTE/COQ) — les lignes COQ d'une commande mixte
+# restent distinctes (elles partent au plan COQ, pas au plan PONTE)
+multi_counts = df_orders.groupby('ref', sort=False).size()
+multi_refs = multi_counts[multi_counts > 1]
+if len(multi_refs) > 0:
+    print(f"  ⚠ {len(multi_refs)} réf. multi-lignes agrégées (somme des qtés par type PONTE/COQ): "
+          f"{', '.join(multi_refs.index)}")
+    agg_rows = []
+    for (ref, is_coq), grp in df_orders.groupby(['ref', 'is_coq'], sort=False):
+        row = grp.iloc[0].to_dict()
+        row['qte_commandee'] = int(grp['qte_commandee'].sum())
+        row['qte_livree_sys'] = int(grp['qte_livree_sys'].sum())
+        row['qte_restante'] = int(grp['qte_restante'].sum())
+        agg_rows.append(row)
+    df_orders = pd.DataFrame(agg_rows)
 
 # Rapporter les agences non trouvées
 if agence_not_found:
@@ -549,7 +578,7 @@ for i, (_, r) in enumerate(df_ponte.head(10).iterrows()):
     print(f"    {i+1}. {r['ref']} | {r['priority_label']:20s} | qte={r['qte_restante']:,} | date_prevue={dp} | region={r['region_norm']}")
 
 # Équité §4 : recalcul dynamique de l'échéance par rapport à la date de programmation
-def get_dynamic_priority(date_prevue, date_modif, date_commande, target_date):
+def get_dynamic_priority(date_prevue, date_modif, date_commande, target_date, order_ref=None):
     """
     Recalcule le statut d'échéance en utilisant target_date comme référence
     (au lieu de REF_DATE). Règle d'équité §4 : une commande programmée à une
@@ -570,6 +599,9 @@ def get_dynamic_priority(date_prevue, date_modif, date_commande, target_date):
         prevue_date = date_prevue.date()
         if modif_date > cmd_date and modif_date < prevue_date - timedelta(days=5):
             is_reclassee = True
+    # §4: commande forcée en ÉCHUE pure (détection reclassée ignorée)
+    if order_ref in FORCE_ECHUE_PURE:
+        is_reclassee = False
 
     is_echue = date_prevue <= ref
     is_imminente = not is_echue and (date_prevue - ref).days <= 10
@@ -657,6 +689,11 @@ def run_allocation(df_orders, capacity_key):
         Littoral 'conséquent' si qtés > 25% de la capacité du jour.
         Si minime, Littoral ne compte pas dans le total."""
         non_litt = len([r for r in regions_set if r != 'Littoral'])
+        # v76: sur une date verrouillée (REGION_LOCK_DATES), le Littoral ne
+        # compte jamais comme région effective (exempt du verrouillage, v28) —
+        # il ne doit pas bloquer l'ajout de la 2e région verrouillée
+        if date is not None and date in REGION_LOCK_DATES:
+            return non_litt
         # Vérifier si Littoral est conséquent
         if 'Littoral' in regions_set or additional_littoral_qty > 0:
             if is_littoral_significant(date, additional_littoral_qty):
@@ -812,6 +849,10 @@ def run_allocation(df_orders, capacity_key):
 
             # CONTRAINTE: commande exclue de cette date
             if ref in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[ref]:
+                continue
+
+            # CONTRAINTE: date minimale de programmation (MIN_DATES, §13)
+            if ref in MIN_DATES and date < MIN_DATES[ref]:
                 continue
 
             # CONTRAINTE: verrouillage régional (REGION_LOCK_DATES)
@@ -1045,6 +1086,11 @@ def run_allocation(df_orders, capacity_key):
                         qty_left = try_schedule_order(order, qty_left, flexible_region=False, prefer_early_dates=True)
                         continue
 
+                    # MIN_DATES: ne pas pré-planifier avant la date minimale
+                    if ref in MIN_DATES and best_date < MIN_DATES[ref]:
+                        qty_left = try_schedule_order(order, qty_left, flexible_region=False, prefer_early_dates=True)
+                        continue
+
                     # Essayer d'abord le jour dédié
                     cap = get_cap(best_date)
                     if cap > 0:
@@ -1274,6 +1320,8 @@ def run_allocation(df_orders, capacity_key):
                 # Vérifier aussi EXCLUDED_FROM_DATE et REGION_LOCK_DATES
                 if ref in EXCLUDED_FROM_DATE and date in EXCLUDED_FROM_DATE[ref]:
                     continue
+                if ref in MIN_DATES and date < MIN_DATES[ref]:
+                    continue
                 if date in REGION_LOCK_DATES and region != 'Littoral' and region not in REGION_LOCK_DATES[date]:
                     continue
                 if (get_cap(date) > 0 
@@ -1333,15 +1381,16 @@ def run_allocation(df_orders, capacity_key):
                 if get_cap(date) <= 0:
                     continue
                 dyn_prio, _ = get_dynamic_priority(order['date_prevue'], order['date_modif'],
-                                                    order['date_commande'], date)
+                                                    order['date_commande'], date, order['ref'])
                 if dyn_prio in (1, 2, 3, 4) and dyn_prio < best_dyn_prio:
                     # Cette commande devient prioritaire sur cette date
                     region = order['region_norm']
                     if (order['ref'] not in EXCLUDED_FROM_DATE or date not in EXCLUDED_FROM_DATE.get(order['ref'], set())):
-                        if (date not in REGION_LOCK_DATES or region == 'Littoral' or region in REGION_LOCK_DATES[date]):
-                            if is_day_allowed(region, date):
-                                best_dyn_prio = dyn_prio
-                                best_date = date
+                        if order['ref'] not in MIN_DATES or date >= MIN_DATES[order['ref']]:
+                            if (date not in REGION_LOCK_DATES or region == 'Littoral' or region in REGION_LOCK_DATES[date]):
+                                if is_day_allowed(region, date):
+                                    best_dyn_prio = dyn_prio
+                                    best_date = date
             if best_date is not None and best_dyn_prio <= 4:
                 qty_before = qty_left
                 # IMMINENTE dynamique : région stricte, préfère dates tôt
@@ -1687,7 +1736,7 @@ def run_allocation(df_orders, capacity_key):
             date_modif = o.get('_date_modif')
             date_commande = o.get('_date_commande')
             if date_prevue is not None and not pd.isna(date_prevue):
-                dyn_prio, dyn_label = get_dynamic_priority(date_prevue, date_modif, date_commande, date)
+                dyn_prio, dyn_label = get_dynamic_priority(date_prevue, date_modif, date_commande, date, o['ref'])
                 old_label = o.get('priority', '')
                 if dyn_label != old_label:
                     o['priority'] = dyn_label
@@ -1858,6 +1907,7 @@ subtotal_fill = PatternFill(start_color="E6F0FF", end_color="E6F0FF", fill_type=
 date_section_fill = PatternFill(start_color="D9E2F3", end_color="D9E2F3", fill_type="solid")
 total_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")
 legend_fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
+multi_cmd_fill = PatternFill(start_color="FCE4D6", end_color="FCE4D6", fill_type="solid")
 
 thin_border = Border(
     left=Side(style='thin'), right=Side(style='thin'),
@@ -1932,7 +1982,13 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         row += 1
         
         date_subtotal = 0
-        
+
+        # v71: détection des clients à livrer avec plusieurs commandes le même jour
+        tiers_count = {}
+        for order in alloc['orders']:
+            tiers_count[order['tiers']] = tiers_count.get(order['tiers'], 0) + 1
+        multi_tiers = {t for t, n in tiers_count.items() if n > 1}
+
         for order in alloc['orders']:
             date_eclosion = date.strftime('%d/%m/%Y')
             date_prevue_str = order['date_prevue'].strftime('%d/%m/%Y') if order.get('date_prevue') and not pd.isna(order['date_prevue']) else 'N/A'
@@ -2000,6 +2056,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
                 date_prevue_str, order['priority'], observation
             ]
 
+            is_multi = order['tiers'] in multi_tiers
             for col_idx, val in enumerate(values, 2):
                 cell = ws.cell(row=row, column=col_idx, value=val)
                 cell.border = thin_border
@@ -2008,6 +2065,8 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
                     cell.font = Font(size=9)
                 if order.get('forced'):
                     cell.font = forced_font
+                if is_multi:
+                    cell.fill = multi_cmd_fill
             
             date_subtotal += order['qte']
             row += 1
@@ -2080,6 +2139,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         ('FORCE MAJEURE', 'Commande imminente integree pour remplir la capacite'),
         ('EST+NORD', 'Est et Nord toujours programmes le meme jour (preference jeu/ven)'),
         ('MOUVEMENT SYSTEME', 'Mouvement automatique Proctor Ai "En cours" (pas de livraison reelle)'),
+        ('CLIENT MULTI-CMD', 'Meme client avec plusieurs commandes a livrer le meme jour — surbrillance orange'),
         ('QTE MANQUANTE', 'Capacite non utilisee — disponible pour insertion ulterieure (pas de split force)'),
     ]
     
@@ -2088,7 +2148,10 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
     row += 1
     
     for term, desc in legend_items:
-        ws.cell(row=row, column=2, value=term).font = Font(bold=True, size=9)
+        tc = ws.cell(row=row, column=2, value=term)
+        tc.font = Font(bold=True, size=9)
+        if term == 'CLIENT MULTI-CMD':
+            tc.fill = multi_cmd_fill
         ws.cell(row=row, column=4, value=desc).font = legend_font
         row += 1
     
@@ -2102,7 +2165,7 @@ def add_plan_sheet(wb, sheet_name, allocations, capacity_key):
         "2. Commandes <=1000 echues traitees en premier (sauf Est/Nord -> meme jour)",
         "3. Est et Nord TOUJOURS programmes le meme jour (preference jeu/ven pour eclosion)",
         "4. Une region principale par jour (completee si capacite restante)",
-        "5. Client TEDONGMO YEMDJI FRANCK exclu",
+        "5. Clients TEDONGMO YEMDJI FRANCK et COMPTE TEMPORAIRE exclus",
         "6. Commandes en statut Brouillon exclues",
         "7. Proctor Ai 'En cours' = mouvement systeme / Proctor Ai 'Livree' = livraison reelle",
         "8. Commandes non echues integrees uniquement en force majeure",
@@ -2414,6 +2477,12 @@ for date in prod_dates:
     cell.font = section_font
     row += 1
 
+    # v71: même client avec plusieurs commandes COQ le même jour
+    tiers_count6 = {}
+    for o in orders:
+        tiers_count6[o['tiers']] = tiers_count6.get(o['tiers'], 0) + 1
+    multi_tiers6 = {t for t, n in tiers_count6.items() if n > 1}
+
     # Trier par priorité puis par date prévue
     sorted_orders = sorted(orders, key=lambda o: (o['priority_num'], o['date_prevue'] if pd.notna(o['date_prevue']) else datetime(2099,1,1)))
 
@@ -2450,10 +2519,13 @@ for date in prod_dates:
             order['priority_label'], has_ponte, observation
         ]
 
+        is_multi6 = order['tiers'] in multi_tiers6
         for col_idx, val in enumerate(values, 2):
             cell = ws6.cell(row=row, column=col_idx, value=val)
             cell.border = thin_border
             cell.alignment = Alignment(wrap_text=True)
+            if is_multi6:
+                cell.fill = multi_cmd_fill
 
         total_coq += order['qte_restante']
         pl = order['priority_label']

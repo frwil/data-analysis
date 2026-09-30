@@ -4,15 +4,18 @@
 
 | Date | Jour | Plan annoncé | Réel | Marge (95%) | Région principale |
 |------|------|-------------|------|-------------|-------------------|
-| 23/09/2026 | Mercredi | — | 15 000 | 14 250 | Ouest, Centre |
-| 25/09/2026 | Vendredi | — | 29 000 | 27 550 | Ouest |
+| 29/09/2026 | Mardi | — | 38 000 | 36 100 | Centre |
+| 01/10/2026 | Jeudi | — | 38 000 | 36 100 | Nord, Centre |
+| 02/10/2026 | Vendredi | — | 30 000 | 28 500 | Littoral, Ouest |
 
 - **Plan annoncé** = Production prévue
 - **Réel** = Prévision à considérer pour le plan
 - **Marge** = 95% du réel, arrondi au multiple de 50
-- Capacité totale Réelle : 44 000
-- Capacité totale Marge : 41 800
+- Capacité totale Réelle : 106 000
+- Capacité totale Marge : 100 700
 - Capacité totale Annoncée : —
+- **v78** : nouvelle éclosion 02/10/2026 (Vendredi, Littoral + Ouest — 30 000 réel / 28 500 marge) ajoutée au cycle — MARSHAL FARMERS (reliquat 12 200) seul Littoral du jour, reste Ouest
+- **v69** : nouveau cycle 29/09 (Mardi, Centre — 38 000 réel / 36 100 marge ; Littoral minime toléré) et 01/10 (Jeudi, Nord + Centre — 38 000 réel / 36 100 marge) ; 23/09 et 25/09 passées retirées
 - **v44** : 03/09 et 07/09 passées retirées ; éclosion du 09/09 avortée
 - **v55** : nouvelle éclosion 23/09/2026 (Mercredi, Ouest + Centre) — 15 000 réel / 14 250 marge ; 11/09 et 15/09 passées retirées
 - **v59** : nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge) ; 23/09 conservée dans le cycle
@@ -56,7 +59,7 @@ Ordre de tri strict : priorité > ≤1000 > FIFO > quantité
 
 ## 4. Recalcul Échéance (Colonne K)
 
-- Date de référence = 23/09/2026 (éclosion du 23/09 — cycle 11/09–15/09 clôturé)
+- Date de référence = 29/09/2026 (éclosion du 29/09 — cycle 23/09–25/09 clôturé)
 - **Équité de programmation (v20)** : pour une commande programmée à une date X, le statut d'échéance est recalculé par rapport à **X + 1 jour** (et non à aujourd'hui). Cela évite de pénaliser une commande repoussée à une date ultérieure et tient compte du délai de mise à disposition post-éclosion.
 
 Classification :
@@ -66,6 +69,14 @@ Classification :
 - **IMMINENTE** : non échue ET date_prévue - ref_date ≤ 10j
 - **NON ÉCHUE** : non échue ET date_prévue - ref_date > 10j
 - **SANS DATE** : pas de date prévue
+
+### Commandes traitées comme ÉCHUE pure (non reclassées)
+
+Forçage utilisateur : la détection automatique « reclassée » est ignorée pour ces réf. — elles sont classées **ÉCHUE** dès que leur date prévue est dépassée (priorité 1, avant les ÉCHUE RECLASSÉE).
+
+| Réf. |
+|------|
+| SO2605-55433 |
 
 ---
 
@@ -99,9 +110,12 @@ Classification :
 
 | Date | Régions autorisées |
 |------|--------------------|
-| 23/09/2026 | Ouest, Centre |
-| 25/09/2026 | Ouest |
+| 29/09/2026 | Centre |
+| 01/10/2026 | Nord, Centre |
+| 02/10/2026 | Littoral, Ouest |
 
+- **v78** : 02/10 verrouillée Littoral + Ouest (éclosion dédiée — MARSHAL seul Littoral, reste Ouest)
+- **v69** : 29/09 verrouillée Centre ; 01/10 verrouillée Nord + Centre (Littoral exempté comme toujours) — 23/09 et 25/09 passées retirées
 - 11/09 et 15/09 passées retirées (v55) — 23/09 verrouillée Ouest + Centre
 - **v59** : 25/09 verrouillée Ouest (éclosion réservée à l'Ouest ; Littoral exempté comme toujours)
 
@@ -159,6 +173,7 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | Réf. | Client | Qté | Agence | Date prévue | Raison |
 |------|--------|-----|--------|-------------|--------|
 | SO2601-42244 | GIC AMOUR | 300 | BELGO-FAMLA | 25/02/2026 | Client exclu — 7 700/8 000 déjà livrés |
+| SO2601-42302 | METAFE GNITEYO SONYA MIGLANCHE | 38 000 | BELGO-BERI | 28/01/2026 | **Déjà livrée** — livraison confirmée hors ERP (reste 38 000 dans l'ERP) |
 | SO2507-25604 | — | — | — | — | Commande retirée (absente des extractions) |
 | SO2509-31314 | — | — | — | — | Échéance hors période : septembre (absente des extractions) |
 | SO2506-24935 | — | — | — | — | Commande non sûre (absente des extractions) |
@@ -167,10 +182,8 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 | SO2604-52480 | TAKAMTSING PROSPER | 200 | BELGO-MESSASSI | 21/04/2026 | **Déjà livrée** — livraison confirmée (COQ), hors ERP (reste 200 dans l'ERP) |
 | SO2604-53606 | PRODIPEL SARL | 16 000 | BELGO-NDJELENG | 23/09/2026 | **Non reclassée** — mise en non planifiée (2 lignes ERP : 15 700 + 300) |
 | SO2605-55242 | PEKA TAGNE IGNACE | 12 750 | BELGO-NDJELENG | 15/07/2026 | **Déjà livrée** — livraison confirmée hors ERP (reste 12 750 dans l'ERP) |
-| SO2606-58836 | TSAFACK ROBERT | 8 500 | BELGO-MESSASSI | 26/06/2026 | **En attente** — programmation ultérieure |
-| SO2607-62671 | BOGNING | 5 000 | BELGO-MESSASSI | 14/07/2026 | **En attente** — programmation ultérieure |
-| SO2606-61347 | COMPTE TEMPORAIRE | 50 | BELGO-MESSASSI | 24/07/2026 | **Retirée du plan** — sur demande |
-| SO2606-61062 | TEULONG YOTA IGOR | 9 100 | BELGO-MESSASSI | 08/07/2026 | **Retirée du plan** — remplacée par GIC FAMES (4 200) — 5 800/9 100 déjà livrés |
+| SO2606-60929 | COMPTE TEMPORAIRE | 700 | BELGO-MESSASSI | 26/09/2026 | Client COMPTE TEMPORAIRE — **à ne jamais programmer** |
+| SO2606-61347 | COMPTE TEMPORAIRE | 50 | BELGO-MESSASSI | 24/07/2026 | Client COMPTE TEMPORAIRE — **à ne jamais programmer** |
 | SO2606-59715 | LEMOKEM TIODOU ZEPHIRIN | 28 000 | BELGO-FAMLA | 20/06/2026 | **Livrée définitivement** — remplacée par SO2607-64515 PONTE PREMIUM (28 000/28 000 livrés) |
 | SO2604-51968 | MOGUM FOSSI LAURENCE LOR | 2 500 | BELGO-BERI | 04/09/2026 | **Déjà livrée** — commande modifiée en poussins chair (retirée définitivement du plan PONTE) |
 
@@ -180,13 +193,49 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 | Réf. | Dates exclues |
 |------|---------------|
-| SO2609-69647 | 25/09/2026 |
-| SO2609-69666 | 25/09/2026 |
-| SO2606-59891 | 25/09/2026 |
-| SO2605-57737 | 25/09/2026 |
-| SO2607-62419 | 25/09/2026 |
-| SO2607-62511 | 25/09/2026 |
-| SO2609-68591 | 25/09/2026 |
+| SO2609-69839 | 29/09/2026, 01/10/2026, 02/10/2026 |
+| SO2609-69890 | 29/09/2026, 01/10/2026, 02/10/2026 |
+| SO2608-66549 | 29/09/2026, 01/10/2026 |
+| SO2608-66550 | 29/09/2026, 01/10/2026 |
+| SO2608-66552 | 29/09/2026, 01/10/2026 |
+| SO2608-66553 | 29/09/2026, 01/10/2026 |
+| SO2609-69666 | 29/09/2026, 01/10/2026, 02/10/2026 |
+| SO2609-69647 | 29/09/2026, 01/10/2026, 02/10/2026 |
+| SO2607-61870 | 29/09/2026, 01/10/2026 |
+| SO2607-61869 | 29/09/2026, 01/10/2026 |
+| SO2609-69211 | 29/09/2026, 01/10/2026 |
+| SO2609-69158 | 29/09/2026, 01/10/2026 |
+| SO2609-69314 | 29/09/2026, 01/10/2026 |
+| SO2609-69306 | 29/09/2026, 01/10/2026 |
+| SO2609-69312 | 29/09/2026, 01/10/2026 |
+| SO2609-69316 | 29/09/2026, 01/10/2026 |
+| SO2605-57737 | 02/10/2026 |
+| SO2606-60066 | 01/10/2026 |
+| SO2609-70124 | 01/10/2026 |
+| SO2604-51281 | 29/09/2026 |
+| SO2604-52840 | 29/09/2026, 01/10/2026, 02/10/2026 |
+
+### Commandes à ne pas programmer avant une date (MIN_DATES)
+
+Contrainte durable : ces commandes ne peuvent être programmées qu'à partir de la date indiquée (toutes les dates antérieures sont interdites). **Ne pas vider cette table lors du nettoyage de §13** — elle ne dépend pas du cycle en cours.
+
+| Réf. | Date minimale |
+|------|---------------|
+| SO2607-62419 | 20/10/2026 |
+
+**v81** : 01/10 — SO2606-60066 (1 500) et SO2609-70124 (2 150) retirées du 01/10 (demande utilisateur), remplacées par GIC MOS SO2609-69619 (3 500) forcée §14 → non planifiées pour ce cycle (29/09 et 02/10 déjà pleins).
+
+**30/09** : SO2604-52840 (MEMGBA MESSI ALBERTINE FLEUR, 5 300, MESSASSI) doit rester **non planifiée pour le moment** (décision utilisateur) — exclue des 3 dates du cycle, à replacer sur un futur cycle.
+
+**v76** : restructuration 29/09–01/10 (demande utilisateur) — Alfred Fon Ja-Ai SO2609-69666 (5 300), OTANG VALENTINE SO2609-69647 (500) et TAKAMTSING PROSPER SO2607-61870 (4 650) + SO2607-61869 (1 500) retirées du 29/09 → non planifiées, remplacées par MARSHAL FARMERS SO2605-54941 (split forcé §14 : 5 800 le 29/09 + 12 200 le 01/10) et Fotie Tagoumtse SO2607-63625 (10 000, totalité, 29/09). 01/10 réservé Nord : seules SCOOPS DYFER CAM SO2607-65229 (5 200) gardée, forcée §14 — les 6 autres Nord (69211 1 000, 69158 2 700, 69314 900, 69306 3 000, 69312 2 000, 69316 1 100) → non planifiées. TEULONG YOTA IGOR SO2606-61062 (3 300) forcée le 01/10 (§14). MARSHAL retirée de §13. Correctif script : agrégation des réf. multi-lignes (54941 = 18 000 + 200) + Littoral non compté comme région sur date verrouillée (v28 étendu).
+
+**v75** : WETE MANGA WILLIAM SO2607-62419 (BELGO-BERI, Littoral, 1 100) — à programmer **à partir du 20/10/2026** (demande utilisateur) → MIN_DATES, retirée du 29/09.
+
+**v72** : MIAKAUG EPSE SODEA DIANE (Nord, NDERE) — les 4 commandes (SO2608-66549 1 200 + SO2608-66550 1 000 + SO2608-66552 1 400 + SO2608-66553 1 800 = 5 400, échues 26/09) retirées du cycle 29/09–01/10 → **non planifiées, à intégrer dans un programme à partir de la semaine prochaine** (demande utilisateur).
+
+**v69** : 29/09 et 01/10 Centre/Nord prioritaires (choix utilisateur) — Littoral limité au minime : MARSHAL FARMERS SO2605-54941 (18 000), NGNIMPEYE SO2609-69839 (4 200) et TCHANTCHOU SO2609-69890 (3 100) exclues du cycle 29/09–01/10 → restent en attente (Littoral 29/09 = 7 900 ≤ 9 500 minime ; sans exclusion des deux dates elles se déversaient sur le 01/10 à 66% du jour). §13 vidé des exclusions du 25/09 (date passée, précédent v55) : OTANG VALENTINE, ALFRED FON JA-AI, WAYAP SO2606-59891, MAGDALENE, WETE MANGA et PENKA redeviennent éligibles sur le cycle 29/09–01/10.
+
+**v68** : DJUISSI SO2609-68591 retirée — **livrée** (1 000/1 000, expédition SH2609-5217 Traitée, AT(46)+EXP(13) du 26/09) → désormais auto-exclue (État=Livrée).
 
 **v63** : 25/09 — WAYAP SO2606-59891 (2 200) retirée de §14 et exclue ; MAGDALENE 1 000, WETE MANGA 1 100, PENKA reliquat 550 et DJUISSI 1 000 exclues — remplacées par TUMENTA 2 000 + LEMNYUY 1 000 + WAYAP SO2609-69790 2 700 forcées (§14, toutes MBOUDA).
 
@@ -212,28 +261,43 @@ Commandes totalement exclues du plan (hors commandes déjà livrées = auto-excl
 
 ### 23/09/2026 (Ouest, Centre)
 
-| Réf. | Client | Qté | Agence |
-|------|--------|-----|--------|
-| SO2606-59894 | LEMOKEM TIODOU ZEPHIRIN | 2 000 | BELGO-NDJELENG |
-| SO2606-60657 | TAJOUO DAVID | 12 000 | BELGO-FAMLA |
-| SO2606-60194 | Biepip Ngoufo Dolf Brice | 250 | BELGO-NDJELENG |
-| SO2609-69619 | GIC MOS (NDJANA YVES BERTRAND NOEL) | 3 500 | BELGO-MESSASSI |
-
-*Total forcé : 17 750 (+2 750 vs 15 000 — 118%). TAJOUO 12 000/12 000 en totalité (dépassement d'éclosion assumé). BIEPIP reliquat 250 PONTE PREMIUM (7 550/7 800 livrés dans l'ERP — AT(44), expédition SH2608-1631 Traitée). LEMOKEM et GIC MOS en totalité.*
+*Section vidée (v68) — extraits AT(46) + EXP(13) du 26/09 : LEMOKEM SO2606-59894 **livrée** (2 000/2 000, SH2609-1744 Traitée), TAJOUO SO2606-60657 **livrée** (12 000/12 000, SH2609-5320 Traitée). GIC MOS SO2609-69619 **NON livrée** (0/3 500, Validée, prévue désormais au 03/02/2027) → repasse en non planifiée (à repositionner sur un futur cycle).*
 
 ### 25/09/2026 (Ouest)
 
-| Réf. | Client | Qté | Agence |
-|------|--------|-----|--------|
-| SO2605-56216 | Ngouadjeu Paul | 3 300 | BELGO-NKONGSAMBA |
-| SO2606-58404 | KAMGANG EMMANUEL | 5 800 | BELGO-NDJELENG |
-| SO2606-61310 | TESEHKOUE CHARLES | 10 150 | BELGO-FAMLA |
-| SO2607-61638 | Alemawo Oben Boris | 4 000 | BELGO-BERI |
-| SO2604-53701 | TUMENTA GRACE | 2 000 | BELGO MBOUDA |
-| SO2606-59760 | LEMNYUY BETILLA | 1 000 | BELGO MBOUDA |
-| SO2609-69790 | Wayap Guy Merlin | 2 700 | BELGO MBOUDA |
+*Section vidée (v68) — extraits AT(46) + EXP(13) du 26/09 : **8/8 forcées livrées** — NGOUADJEU 3 300 (SH2609-1705), KAMGANG 5 800 (SH2609-1702), BIEPIP reliquat 250 (SH2609-1809, 7 800/7 800 au total), TESEHKOUE 10 150 (SH2607-5344), ALEMAWO 4 000 (SH2609-4187), TUMENTA 2 000 (SH2609-2951), LEMNYUY 1 000 (SH2609-2983), WAYAP SO2609-69790 2 700 (SH2609-2986). Cycle 23/09–25/09 exécuté (10/11 forcées livrées au total ; GIC MOS non livrée → non planifiée).*
 
-*Total forcé : 28 950 (99,8% de 29 000). v63 : WAYAP 59891 (2 200, FAMLA) remplacée par TUMENTA 2 000 + LEMNYUY 1 000 + WAYAP SO2609-69790 2 700 — toutes MBOUDA, Payées, 0 livré (ÉCHUE 04/09 et 23/09, IMMINENTE 25/09) ; MAGDALENE, WETE MANGA, PENKA et DJUISSI retirées (§13). Ouest : KAMGANG 5 800, TESEHKOUE 10 150, TUMENTA 2 000, LEMNYUY 1 000, WAYAP 2 700. Littoral : NGOUADJEU 3 300 (minime) + ALEMAWO 4 000.*
+### 29/09/2026 (Centre, Littoral, Ouest)
+
+| Réf. | Client | Qté | Notes |
+|------|--------|-----|-------|
+| SO2605-54941 | MARSHAL FARMERS | 5 800 | Split part 1 — remplace 69666 + 69647 (mêmes qtés) |
+| SO2607-63625 | Fotie Tagoumtse Constantin Legrand | 10 000 | Totalité — remplace 61870 + 61869 |
+| SO2605-55433 | Groupe D'initiative Commune Des Jeunes Producteurs Agropastoraux De L'est (Gic/Jepro-Agro) | 6 500 | Totalité le 29/09 (demande utilisateur — ex-split 2 700 + 3 800) |
+| SO2606-60066 | Kemajou Dorette | 1 500 | Totalité le 29/09 (demande utilisateur — restaure l'ancien plan, ex-38 500 avec les 200 coqs) |
+
+### 01/10/2026 (Nord, Centre)
+
+| Réf. | Client | Qté | Notes |
+|------|--------|-----|-------|
+| SO2606-61062 | TEULONG YOTA IGOR | 3 300 | Reliquat livré le 01/10 (5 800/9 100 déjà livrés) |
+| SO2607-65229 | SCOOPS DYFER CAM (SILEDJE MBOUGANG RICHARD) | 5 200 | Seule commande Nord gardée le 01/10 (demande utilisateur) |
+| SO2604-52011 | SOFAB PROVENDERIE | 4 400 | Totalité le 01/10 (demande utilisateur — ex-split 3 700/700) |
+| SO2604-51270 | KENNE TCHUENTE JILDAS ANICET | 3 000 | Remplace MARSHAL (part) — demande utilisateur |
+| SO2606-59829 | MOFFO FOBOU MERLIN | 5 600 | Remplace MARSHAL (part) — demande utilisateur |
+| SO2605-55637 | Moromte Oscar | 2 500 | Remplace MARSHAL (part) — demande utilisateur |
+| SO2606-61428 | TAMATIO | 1 100 | Remplace MARSHAL (part) — demande utilisateur |
+| SO2609-69619 | GIC MOS (NDJANA YVES BERTRAND NOEL) | 3 500 | Totalité le 01/10 — remplace 60066 + 70124 (demande utilisateur) |
+| SO2604-51281 | SANDJONG ELIE | 1 000 | Part 1 000 le 01/10 — restaure l'ancien plan (reste 1 200 non planifié, 29/09 exclu §13) |
+| SO2604-51756 | PIEBJOU MICHEL | 2 100 | Totalité le 01/10 — restaure l'ancien plan (ex-split 1 400 + 700) |
+
+### 02/10/2026 (Littoral, Ouest)
+
+| Réf. | Client | Qté | Notes |
+|------|--------|-----|-------|
+| SO2605-54941 | MARSHAL FARMERS | 12 200 | Split part 2 — déplacée au 02/10, seul Littoral du jour (demande utilisateur) |
+| SO2605-57744 | Kenne Manfouo Idrice | 16 000 | Totalité le 02/10 — à la place des autres commandes du jour (demande utilisateur) |
+| SO2606-58801 | DJIDJOU ETIENNE ARLEX | 2 000 | Totalité le 02/10 — à la place des autres commandes du jour (demande utilisateur) |
 
 ---
 
@@ -251,6 +315,7 @@ Commandes non-BELGO incluses exceptionnellement avec surcharge de région et age
 - SPC et PDC ne sont PAS des agences BELGO
 - Les agences non-BELGO sont exclues sauf inclusion exceptionnelle via SPECIAL_INCLUDE
 - Client exclu : TEDONGMO YEMDJI FRANCK (GIC AMOUR) — toutes ses commandes exclues
+- Client exclu : COMPTE TEMPORAIRE — à ne **jamais** programmer (toutes ses commandes exclues)
 
 ---
 
@@ -271,14 +336,18 @@ Le script exclut automatiquement :
 - Quantité restante à livrer = 0
 - Status Commande = "Livrée" dans le fichier EXP (si absente de AT)
 
+**Exception (v78)** : une commande **forcée par l'utilisateur (§14)** passe malgré État = "Brouillon" ou StatutFacture = "Brouillon" — le forcing exprime la volonté de l'utilisateur et prime sur l'auto-exclusion.
+
 ---
 
-## 19. Fichiers Source (v55)
+## 19. Fichiers Source (v68)
 
 | Fichier | Rôle |
 |---------|------|
-| NJS GROUP ERP - Lignes de commandes + multicompany (44).xlsx | AT principal — 21/09/2026 — 1 540 lignes |
-| NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx | EXP principal — 21/09/2026 — 1 380 lignes |
+| NJS GROUP ERP - Lignes de commandes + multicompany (46).xlsx | AT principal — 26/09/2026 — 1 565 lignes |
+| NJS GROUP ERP - Lignes des expeditions + multicompany (13).xlsx | EXP principal — 26/09/2026 — 1 424 lignes |
+
+**v68** : Extraits AT(46) + EXP(13) du 26/09/2026 (12:22 — Date modif. max 26/09 10:00, données fraîches, pas de fichier figé). Mise à jour des statuts ERP : §14 23/09 et 25/09 vidés (10/11 forcées livrées — LEMOKEM, TAJOUO, NGOUADJEU, KAMGANG, BIEPIP, TESEHKOUE, ALEMAWO, TUMENTA, LEMNYUY, WAYAP) ; GIC MOS 69619 non livrée (prévue 03/02/2027) → non planifiée ; §13 −1 (DJUISSI 68591 livrée, SH2609-5217 Traitée). §12 inchangé (aucune exclusion devenue Livrée dans l'ERP).
 
 **v59** : Nouvelle éclosion 25/09/2026 (Vendredi, Ouest — 29 000 réel / 27 550 marge), 23/09 conservée. Extraits inchangés : AT(44) + EXP(15) du 21/09. ⚠ AT(35) (re-téléchargé le 21/09 15:38 mais données figées au 09/09) déplacé vers `extractions/archive/` — le script pointait dessus par mtime.
 
@@ -349,6 +418,23 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 | Version | Date | Changement |
 |---------|------|------------|
+| v82 | 29/09/2026 | **Restauration du 29/09 à l'ancien plan (demande utilisateur)** : SO2606-60066 (Kemajou Dorette, 1 500) remise au 29/09 (§14, forcée en totalité) — elle n'avait pas été demandée sur le 01/10, elle était déjà au 29/09 dans l'ancien plan (38 500 avec les 200 COQ). SO2604-51281 retirée du 29/09 (§13, date exclue). 01/10 verrouillé à l'état approuvé : 51281 part 1 000 + 51756 PIEBJOU MICHEL 2 100 forcées (§14) pour empêcher l'algo de déverser le reliquat de 51281. Exécution : **planifié 106 000/106 000 (100%)** — 29/09 = **38 300** (54941 5 800 + 63625 10 000 + 55433 6 500 + 57737 1 000 + 58836 8 500 + 62671 5 000 + 60066 1 500, +300 toléré ≤500), 01/10 = 37 500 inchangé, 02/10 = 30 200 inchangé. **Diff vérifié** : Plan Réel 29/09 = seul changement (+60066 1 500 / −51281 1 200), 01/10 et 02/10 identiques au plan approuvé ; la Marge (projection 95 %) se recompose mais conserve ses totaux (36 100 / 35 100 / 30 200). 439 exclusions, 243 non planifiées. |
+| v81 | 29/09/2026 | **01/10 : SO2606-60066 (Kemajou Dorette, 1 500) et SO2609-70124 (SOFAB PROVENDERIE, 2 150) retirées** (§13, date exclue 01/10 → non planifiées), remplacées par **GIC MOS SO2609-69619 (3 500, PONTE PREMIUM, MESSASSI) forcée au 01/10 en totalité** (§14, demande utilisateur). Exécution : **planifié 105 700/106 000 (100%)** — 29/09 = 38 000 plein, 01/10 = 37 500 (manque 500 : la place libérée n'a pas été intégralement recomblée — seuls des candidates > place libre restaient), 02/10 = 30 200 (+200 toléré), 439 exclusions, 244 non planifiées. **Diff v80→v81 vérifié** : Plan Réel 29/09 et 02/10 inchangés, 01/10 = swap seul ; la Marge 01/10 a en plus évincé 51281 (2 200) + 51756 (2 100) — mécanique de la projection 95 % (60066/70124 n'y étaient pas), validée par l'utilisateur. |
+| v80 | 29/09/2026 | **Différenciation PONTE/COQ dans les commandes mixtes** (demande utilisateur : le MARSHAL 200 du 29/09 est du COQ) — correctif script : l'agrégation des réf. multi-lignes (v76) se fait désormais **par (réf., PONTE/COQ)** au lieu de tout fusionner. Résultat : SO2605-54941 = **18 000 PONTE + 200 COQ séparés** — les 200 partent au **plan COQ du 29/09** (même jour que la 1ʳᵉ livraison PONTE du client), plus dans le plan PONTE ; idem SO2605-56506 = 1 000 PONTE + 300 COQ (COQ non planifié : règle « client a du PONTE mais non planifié »). Exécution : **planifié 105 850/106 000 (100%)** — 29/09 = 38 000 plein (sans les 200 COQ), 01/10 = 37 650 (manque 350), 02/10 = 30 200 (+200 toléré) ; COQ : 15 commandes 3 800 sujets (1 750 planifiés, 2 050 non planifiés). 439 exclusions, 243 non planifiées. |
+| v79 | 28/09/2026 | **02/10 réservé à MARSHAL + 2 commandes Ouest** (demande utilisateur) : **SO2605-57744 (Kenne Manfouo Idrice, 16 000, NDJELENG) et SO2606-58801 (DJIDJOU ETIENNE ARLEX, 2 000, FAMLA) forcées au 02/10 (§14)** à la place de toutes les autres commandes du jour — total forcé 02/10 = 30 200 (12 200 + 16 000 + 2 000), jour plein, l'Ouest rempli par l'algo (18 000) est évincé → non planifiées. Exécution : **planifié 106 700/106 000 (101%)** — 29/09 = 38 500 (+500 toléré ≤500, reliquat MARSHAL 200 remonté du 01/10 + 60066), 01/10 = 38 000 plein (MEMGBA 52840 partiellement replacée : split 2 800/5 300), 02/10 = 30 200/30 000 (+200 toléré — Marge 30 200/28 500, dépassement forcé assumé), 439 exclusions, 243 non planifiées. |
+| v78 | 28/09/2026 | **Nouvelle éclosion 02/10 (Vendredi, Littoral + Ouest — 30 000 réel / 28 500 marge)** : §1/§6 mis à jour, §6 verrouille 02/10 sur Littoral+Ouest. **Reliquat MARSHAL FARMERS SO2605-54941 (12 200) forcé au 02/10 (§14)** — seul Littoral du jour. **Remplacements du 01/10** (demande utilisateur, §14) : SO2604-51270 (3 000) + SO2606-59829 (5 600) + SO2605-55637 (2 500) + SO2606-61428 (1 100) = 12 200 forcés au 01/10. §13 étendu au 02/10 pour les Littoral (69839, 69890, 69666, 69647, 66549, 66550, 66552, 66553), 57737 exclue du 02/10 seul. **§18 exception (correctif script)** : une commande forcée §14 passe malgré État/StatutFacture = Brouillon (55637 bloquée sinon). Exécution : **planifié 106 050/106 000 (100%)** — 29/09 = 38 000 plein, 01/10 = 37 850 (manque 150), 02/10 = 30 200 (+200 toléré ≤500), 439 exclusions, 238 non planifiées. |
+| v77 | 28/09/2026 | **SOFAB PROVENDERIE SO2604-52011 (4 400) forcée au 01/10 en totalité** (ex-split 3 700/700) et **GIC JEPRO SO2605-55433 (6 500) forcée au 29/09 en totalité** (ex-split 2 700 + 3 800) — §14, demande utilisateur, reste inchangé. Exécution : planifié **76 700/76 000 (101%)** — 29/09 = 38 500 (+500 toléré ≤500 : 60066 1 500 placée en entier), 01/10 = 38 200 (+200 toléré ≤500 : 51756 2 100 placée en entier), 439 exclusions, 249 non planifiées. 52840 MEMGBA (5 300) reste non planifiée. |
+| v76 | 28/09/2026 | **Restructuration 29/09–01/10 (demande utilisateur)** : ① 69666 (5 300) + 69647 (500) retirées → §13, remplacées par MARSHAL FARMERS SO2605-54941 en **split forcé §14 : 5 800 le 29/09 (mêmes qtés) + 12 200 le 01/10** — retirée de §13. ② 61870 (4 650) + 61869 (1 500) retirées → §13, remplacées par SO2607-63625 (10 000) **en totalité, forcée au 29/09**. ③ TEULONG SO2606-61062 (3 300) **forcée au 01/10** (§14). ④ 01/10 réservé Nord : seule 65229 (5 200) gardée, **forcée §14** — 69211, 69158, 69314, 69306, 69312, 69316 → §13 (non planifiées). **Correctifs script** : agrégation des réf. multi-lignes (54941 = 18 000 + 200 → 18 200 ; le reliquat 200 se place sur le 29/09) + Littoral non compté comme région effective sur date verrouillée (extension v28, sinon 12 200 Littoral bloquaient Nord+Centre le 01/10). **Exécution : planifié 76 000/76 000 (100%)** — 29/09 = 38 000 plein (55433 split 2 700 + 52011 3 700), 01/10 = 38 000 plein (55433 3 800, MARSHAL 12 200, 61062, 65229), 439 exclusions, **247 non planifiées**. Évincées par les forcées : 52840 MEMGBA (5 300) et 700 de 52011 SOFAB → non planifiées. |
+| v75 | 28/09/2026 | **SO2607-62419 (WETE MANGA WILLIAM, Littoral, 1 100) : à programmer à partir du 20/10/2026** (demande utilisateur) — nouveau mécanisme **MIN_DATES** (§13, sous-table « Date minimale », contrainte durable indépendante du cycle) : parser `min_dates` (md_config) + contraintes dans try_schedule_order, Étape 0b Littoral, check Phase 2 et équité v20. Retirée du 29/09 → non planifiées. Exécution : planifié 76 450/76 000 (29/09 = 38 450 — +450 toléré ≤500 (SO2604-51281 2 200 placée avec dépassement 450) ; 01/10 = 38 000 plein), 439 exclusions, 238 non planifiées. |
+| v74 | 28/09/2026 | **SO2605-55433 (Gic/Jepro-Agro, Centre, 6 500) traitée comme ÉCHUE pure** (demande utilisateur) — nouveau mécanisme §4 « Commandes traitées comme ÉCHUE pure (non reclassées) » : tableau config + `force_echue_pure` dans md_config.py + surcharge de la détection reclassée (classification initiale et priorité dynamique v20, paramètre `order_ref`). Résultat : classée ÉCHUE (priorité 1) et **planifiée au 29/09 (6 500, Centre)**. Exécution : planifié 75 350/76 000 (29/09 = 37 350 — manque 650 non comblable : seules des ÉCHUE Ouest/Nord ≤1 000 restaient, incompatibles avec le verrouillage Centre du 29/09 ; 01/10 = 38 000 plein), 439 exclusions, 237 non planifiées. |
+| v72 | 28/09/2026 | MIAKAUG EPSE SODEA DIANE (Nord, NDERE) : les 4 commandes (SO2608-66549 1 200 + SO2608-66550 1 000 + SO2608-66552 1 400 + SO2608-66553 1 800 = 5 400, échues 26/09) retirées du cycle → §13 (29/09 + 01/10), **à intégrer dans un programme à partir de la semaine prochaine** (demande utilisateur). Exécution : planifié 76 000/76 000 (29/09 = 38 000, 01/10 = 38 000 — les 5 400 libérés recomblés, dépassement +450 résorbé), 439 exclusions, 237 non planifiées. |
+| v71 | 28/09/2026 | Surbrillance **CLIENT MULTI-CMD** dans le plan (orange FCE4D6) : lignes d'un même client (Tiers) à livrer avec plusieurs commandes dans la même éclosion — appliquée sur Plan Réel, Plan Marge et Plan Livraisons COQ + entrée de légende dédiée. Règle 5 des contraintes mise à jour (COMPTE TEMPORAIRE ajouté). Exécution : planifié 76 450/76 000 (29/09 = 38 000, 01/10 = 38 450), 439 exclusions, 234 non planifiées. Multi-cmd détectés : TAKAMTSING PROSPER ×3 (29/09), MIAKAUG EPSE SODEA DIANE ×4 + SCOOP EXCELLENCE PLUS ×2 + COGESDI SARL ×2 (01/10). |
+| v70 | 28/09/2026 | Client **COMPTE TEMPORAIRE** : à ne jamais programmer (règle utilisateur) — §16 client exclu, CLIENT_EXCLU du script (tuple), §12 +1 (SO2606-60929, 700 — ex-planifiée au 29/09) et SO2606-61347 (50) raison mise à jour. Exécution : planifié 76 450/76 000 (29/09 = 38 000 plein, 01/10 = 38 450 — +450 toléré ≤500), 439 exclusions, 234 non planifiées. |
+| v69 | 27/09/2026 | Nouveau cycle 29/09 (Mardi, Centre — 38 000 réel / 36 100 marge) + 01/10 (Jeudi, Nord + Centre — 38 000 réel / 36 100 marge) : §1/§4/§6 mis à jour, §4 réf = 29/09. §13 vidé (exclusions 25/09 passées) puis +3 : MARSHAL FARMERS 18 000, NGNIMPEYE 4 200, TCHANTCHOU 3 100 exclues du cycle (29/09 Centre prioritaire — Littoral limité au minime 7 900). Exécution : planifié 75 350/76 000 (29/09 = 37 350, manque 650 ; 01/10 = 38 000 plein), 438 exclusions, 244 non planifiées. |
+| v68 | 26/09/2026 | Exécution automatique. Planifié 44,000/44,000. 438 exclusions. |
+| v67 | 25/09/2026 | §12 +1 : SO2601-42302 METAFE (38 000, BERI, PONTE PREMIUM) — **déjà livrée**, livraison confirmée hors ERP (reste 38 000 dans l'ERP, StatutFacture=Brouillon). Exécution : planifié 46 700/44 000 (inchangé), 425 exclusions, 246 non planifiées. |
+| v66 | 25/09/2026 | §12 −3 : SO2606-61062 TEULONG (reste 3 300), SO2606-58836 TSAFACK (8 500) et SO2607-62671 BOGNING (5 000) — commandes « En attente — programmation ultérieure » / « Retirée du plan » remises dans les non planifiées. Exécution : planifié 46 700/44 000 (23/09 = 17 500, 25/09 = 29 200), 424 exclusions, 246 non planifiées. |
+| v65 | 24/09/2026 | §14 : BIEPIP SO2606-60194 reliquat 250 (PONTE PREMIUM, 7 550/7 800 livrés) basculé du 23/09 au 25/09. Total forcé 23/09 : 17 500 (117%) ; 25/09 : 29 200 (101%, +200). Exécution : planifié 46 700/44 000, 427 exclusions. |
 | v64 | 23/09/2026 | Exécution automatique. Planifié 46,700/44,000. 427 exclusions. |
 | v63 | 23/09/2026 | 25/09 : WAYAP SO2606-59891 retirée, MAGDALENE + WETE MANGA + PENKA + DJUISSI exclues (§13) — remplacées par TUMENTA SO2604-53701 2 000 + LEMNYUY SO2606-59760 1 000 + WAYAP SO2609-69790 2 700 (MBOUDA) forcées (§14). Total forcé 25/09 : 28 950. |
 | v62 | 23/09/2026 | Exécution automatique. Planifié 46,850/44,000. 427 exclusions. |
@@ -903,35 +989,88 @@ Date éclosion | Capacité production | Tiers | Réf. Tiers | Qté à livrer | Q
 
 ---
 
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
 ## 22. Dernière Exécution
 
-> Exécutée le **23/09/2026** — Réf: **23/09/2026**
+> Exécutée le **29/09/2026** — Réf: **29/09/2026**
 
 ### Résumé
 
 | Métrique | Valeur |
 |----------|--------|
-| Commandes PONTE | 254 |
-| Commandes COQ | 17 |
-| Exclusions | 427 |
-| Planifié Réel | 46,700 / 44,000 |
-| Planifié Marge | 46,700 / 41,800 |
-| Non planifiées (marge) | 243 |
-| Nouvelles auto-exclusions | 412 |
+| Commandes PONTE | 261 |
+| Commandes COQ | 15 |
+| Exclusions | 439 |
+| Planifié Réel | 106,000 / 106,000 |
+| Planifié Marge | 101,400 / 100,700 |
+| Non planifiées (marge) | 242 |
+| Nouvelles auto-exclusions | 425 |
 
 ### Plan Réel par date
 
 | Date | Jour | Région | Livré | Capacité | Taux |
 |------|------|--------|-------|----------|------|
-| 23/09/2026 | Mer | Centre, Ouest | 17,750 | 15,000 | 118% |
-| 25/09/2026 | Ven | Littoral, Ouest | 28,950 | 29,000 | 100% |
+| 29/09/2026 | Mar | Centre, Littoral, Ouest | 38,300 | 38,000 | 101% |
+| 01/10/2026 | Jeu | Centre, Nord | 37,500 | 38,000 | 99% |
+| 02/10/2026 | Ven | Littoral, Ouest | 30,200 | 30,000 | 101% |
 
 ### Répartition par priorité
 
 | Priorité | Commandes | Qté restante |
 |----------|-----------|-------------|
-| IMMINENTE | 24 | 78,200 |
-| NON ÉCHUE | 134 | 1,128,950 |
-| RECLASSÉE | 14 | 97,400 |
-| ÉCHUE | 74 | 606,800 |
-| ÉCHUE RECLASSÉE | 8 | 120,750 |
+| IMMINENTE | 19 | 72,750 |
+| NON ÉCHUE | 131 | 1,140,750 |
+| RECLASSÉE | 14 | 96,350 |
+| ÉCHUE | 89 | 660,050 |
+| ÉCHUE RECLASSÉE | 8 | 125,400 |

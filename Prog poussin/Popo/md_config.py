@@ -293,6 +293,22 @@ def parse_excluded_from_date(md_text):
     return result
 
 
+def parse_min_dates(md_text):
+    """Parse §13: tableau « Commandes à ne pas programmer avant une date » (MIN_DATES)
+    → dict {ref: datetime}. La table porte l'en-tête 'Date minimale'."""
+    section = extract_section(md_text, 13)
+    result = {}
+    for table in find_all_tables(section):
+        headers, rows = parse_md_table(table)
+        if 'Date minimale' in headers:
+            for row in rows:
+                ref = row.get('Réf.', '')
+                d = parse_french_date(row.get('Date minimale', ''))
+                if ref and d:
+                    result[ref] = d
+    return result
+
+
 def parse_forced_assignments(md_text):
     """Parse §14: FORCED_ASSIGNMENTS → dict {ref: (date, qty)}.
     Les dates sont dans les titres de sous-section (### 14/05 (Centre)).
@@ -380,6 +396,21 @@ def parse_ref_date(md_text):
     return None
 
 
+def parse_force_echue_pure(md_text):
+    """Parse §4: tableau « Commandes traitées comme ÉCHUE pure » → set de refs."""
+    section = extract_section(md_text, 4)
+    tables = find_all_tables(section)
+    result = set()
+    for table in tables:
+        headers, rows = parse_md_table(table)
+        if 'Réf.' in headers:
+            for row in rows:
+                ref = row.get('Réf.', '')
+                if ref:
+                    result.add(ref)
+    return result
+
+
 # ============================================================
 # FONCTION PRINCIPALE DE LECTURE
 # ============================================================
@@ -399,9 +430,11 @@ def load_config(md_path):
         'no_split': parse_no_split(md_text),
         'exclusions': parse_exclusions(md_text),
         'excluded_from_date': parse_excluded_from_date(md_text),
+        'min_dates': parse_min_dates(md_text),
         'forced_assignments': parse_forced_assignments(md_text),
         'special_include': parse_special_include(md_text),
         'ref_date': parse_ref_date(md_text),
+        'force_echue_pure': parse_force_echue_pure(md_text),
         'non_echue_enabled': parse_non_echue_enabled(md_text),
     }
 

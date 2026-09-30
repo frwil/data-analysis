@@ -1,6 +1,6 @@
 # 🐣 Plan de Livraisons BELGO — Suivi d'Avancement
 
-> Dernière mise à jour : **23/09/2026** — v63/v64 : 25/09 remanié — WAYAP SO2606-59891 (2 200) + MAGDALENE + WETE MANGA + PENKA + DJUISSI retirées (§13), remplacées par TUMENTA SO2604-53701 2 000 + LEMNYUY SO2606-59760 1 000 + WAYAP SO2609-69790 2 700 (MBOUDA) forcées → **28 950/29 000 (100%)**, 7 forcées uniquement. 23/09 = 17 750/15 000 (118%). Extraits AT(44)+EXP(15) du 21/09.
+> Dernière mise à jour : **30/09/2026** — v82 : 29/09 restauré à l'ancien plan — Kemajou Dorette 60066 (1 500) remise au 29/09 (§14), 51281 retirée du 29/09 (§13), 01/10 verrouillé (51281 part 1 000 + 51756 2 100 forcées). Plan : 106 000/106 000 (100%) — 29/09 = **38 300** (38 500 de l'ancien plan − 200 COQ), 01/10 = 37 500, 02/10 = 30 200. 439 exclusions, 243 non planifiées. 52840 MEMGBA reste non planifiée pour le moment (décision 30/09, §13).
 
 ---
 
@@ -22,16 +22,16 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 
 ---
 
-## 📊 Fichiers Source (v60)
+## 📊 Fichiers Source (v68)
 
 | Fichier | Rôle | Lignes |
 |---------|------|--------|
-| `NJS GROUP ERP - Lignes de commandes + multicompany (44).xlsx` | AT — 21/09 | 1 540 |
-| `NJS GROUP ERP - Lignes des expeditions + multicompany (15).xlsx` | EXP — 21/09 | 1 380 |
+| `NJS GROUP ERP - Lignes de commandes + multicompany (46).xlsx` | AT — 26/09 | 1 565 |
+| `NJS GROUP ERP - Lignes des expeditions + multicompany (13).xlsx` | EXP — 26/09 | 1 424 |
 
-> ✅ **Extractions à jour** (21/09/2026 13:50) — statuts ERP mis à jour dans le `.md` (v55) et plan régénéré (v56).
-> ⚠ **AT(35) retéléchargé le 17/09 contient des données figées au 09/09** (Date modif. max = 09/09) — ne pas l'utiliser, l'AT de référence est désormais le (44). Re-téléchargé à nouveau le 21/09 15:38 (toujours figé au 09/09) → **déplacé vers `extractions/archive/`** (v59) pour que le script ne le choisisse pas par mtime.
-> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 23/09 (v62) : 23/09 = 17 750/15 000 (118%, 4 forcées) ; 25/09 = 29 100/29 000 (100%, 5 forcées + 2 100 Littoral + 1 550 Ouest ≤1000).
+> ✅ **Extractions à jour** (26/09/2026 12:22) — statuts ERP mis à jour dans le `.md` (v68) et plan régénéré.
+> ⚠ Date modif. max des extraits = 26/09 10:00 (données fraîches, pas de fichier figé — vérifié avant lancement).
+> 📄 `output/Plan_Livraisons_BELGO_Ponte.xlsx` généré le 27/09 (v69) : 29/09 = 37 350/38 000 (98%, Centre 29 450 + Littoral minime 7 900) ; 01/10 = 38 000/38 000 (100%, Nord 21 300 + Centre 16 700).
 
 ---
 
@@ -150,6 +150,152 @@ Système de **planification de livraisons** pour l'agence **BELGO Ponte Noire** 
 7. **72 nouvelles commandes** depuis le 09/09 (33 BELGO — dont TEIKING 26 000, IBII OTTO 10 150, KOM BLAISE 10 200, KUEGHANG 10 850, SOFAB ×3)
 8. ⚠ **AT(35) retéléchargé le 17/09 = données figées au 09/09** — à ne pas utiliser ; ⚠ EXP(11) du 16/09 était un export sans colonnes Agence/Statut Expédition (remplacé par EXP(12))
 9. **Plan non régénéré** (dates du cycle passées — en attente du prochain cycle)
+
+---
+
+### 🔄 Chronologie v77 (28/09)
+
+1. **SOFAB PROVENDERIE SO2604-52011 (4 400) forcée au 01/10 en totalité** (§14) — ex-split 3 700 (29/09) + 700 (non planifié)
+2. **GIC JEPRO SO2605-55433 (6 500) forcée au 29/09 en totalité** (§14) — ex-split 2 700 (29/09) + 3 800 (01/10)
+3. **Reste sans changement** (demande utilisateur)
+4. **Exécution (v77)** : **76 700/76 000 (101%)** — 29/09 = 38 500 (+500 toléré ≤500 : 60066 placée en entier), 01/10 = 38 200 (+200 toléré ≤500 : 51756 placée en entier). **439 exclusions**, **249 non planifiées**. 52840 MEMGBA (5 300) reste non planifiée
+
+---
+
+### 🔄 Chronologie v82 (29/09)
+
+1. **Restauration du 29/09 à l'ancien plan** (demande utilisateur : « dans l'ancien plan nous n'avions pas SO2604-51281 le 29 mais plutôt la cliente Kemajou Dorette avec 1500 et le total nous donnais 38500 (vu que tu avais mis la commande de 200 coqs de Marshal Farm) ») : **SO2606-60066 (Kemajou Dorette, 1 500) remise au 29/09** (§14, forcée en totalité — elle était déjà au 29/09 dans l'ancien plan, jamais demandée sur le 01/10) et **SO2604-51281 retirée du 29/09** (§13, date exclue — sa part de 1 200 quitte le jour)
+2. **01/10 verrouillé à l'état approuvé** : 51281 part 1 000 + 51756 PIEBJOU MICHEL 2 100 forcées (§14) — sans cela l'algo déversait le reliquat de 51281 (1 200) sur le 01/10 en compressant 51756 (1 400 + 700)
+3. **Exécution (v82)** : **106 000/106 000 (100%)** — 29/09 = **38 300** (54941 5 800 + 63625 10 000 + 55433 6 500 + 57737 1 000 + 58836 8 500 + 62671 5 000 + 60066 1 500 — l'ancien 38 500 moins les 200 COQ partis au plan COQ en v80, +300 toléré ≤500), 01/10 = 37 500 inchangé, 02/10 = 30 200 inchangé
+4. **Diff vérifié** : Plan Réel — 29/09 = seul changement (+60066 1 500 / −51281 1 200), 01/10 et 02/10 **identiques** au plan approuvé ; COQ et exclues inchangés ; la Marge (projection 95 %) se recompose mais conserve ses totaux (36 100 / 35 100 / 30 200). **439 exclusions**, **243 non planifiées**
+5. **Décision (30/09)** : SO2604-52840 (MEMGBA MESSI ALBERTINE FLEUR, 5 300, MESSASSI) **reste non planifiée pour le moment** (demande utilisateur) — exclue des 3 dates du cycle (§13), à replacer sur un futur cycle. Plan inchangé (elle était déjà non planifiée) → pas de nouvelle exécution
+
+---
+
+### 🔄 Chronologie v81 (29/09)
+
+1. **01/10 : SO2606-60066 (Kemajou Dorette, 1 500, Centre) et SO2609-70124 (SOFAB PROVENDERIE, 2 150, Centre) retirées** (demande utilisateur) → §13 date exclue 01/10 → non planifiées (29/09 et 02/10 déjà pleins)
+2. **GIC MOS SO2609-69619 (3 500, PONTE PREMIUM, MESSASSI/Centre, Payée) forcée au 01/10 en totalité** (§14) — ex-non planifiée (Validée, prévue au 03/02/2027)
+3. **Exécution (v81)** : **105 700/106 000 (100%)** — 29/09 = 38 000 plein, 01/10 = 37 500 (manque 500 : les candidates Centre restantes dépassaient la place libre), 02/10 = 30 200 (+200 toléré). **439 exclusions**, **244 non planifiées**
+4. **Diff v80→v81 vérifié** (remarque utilisateur sur les dérives) : Plan Réel 29/09 et 02/10 **inchangés**, 01/10 = swap seul ✓ ; la Marge 01/10 a en plus évincé 51281 (2 200) + 51756 (2 100) — mécanique de la projection 95 % (60066/70124 n'y étaient pas planifiées), laissée telle quelle sur validation utilisateur
+
+---
+
+### 🔄 Chronologie v80 (29/09)
+
+1. **Différenciation PONTE/COQ** (demande utilisateur : « le MARSHAL 200 du 29/09 est du COQ ») : correctif script — l'agrégation des réf. multi-lignes (v76) se fait désormais **par (réf., PONTE/COQ)** au lieu de tout fusionner en PONTE
+2. **Résultat** : **SO2605-54941 = 18 000 PONTE + 200 COQ séparés** — les 200 (POUSSIN COQ VACCINE) partent au **plan COQ du 29/09** (même jour que la 1ʳᵉ livraison PONTE du client), plus dans le plan PONTE ; **SO2605-56506 = 1 000 PONTE + 300 COQ** — COQ non planifié (règle « client a du PONTE mais non planifié », PONTE Ouest IMMINENTE non planifiée aussi)
+3. **Exécution (v80)** : **105 850/106 000 (100%)** — 29/09 = 38 000 plein (sans les 200 COQ), 01/10 = 37 650 (manque 350, recomposition), 02/10 = 30 200 (+200 toléré, inchangé : MARSHAL 12 200 + 57744 + 58801). COQ : 15 commandes 3 800 sujets (1 750 planifiés). **439 exclusions**, **243 non planifiées**
+
+---
+
+### 🔄 Chronologie v79 (28/09)
+
+1. **02/10 réservé à 3 commandes** (demande utilisateur : « 57744 et 58801 à la place de toutes les autres commandes en dehors de MARSHAL ») : **SO2605-57744** (Kenne Manfouo Idrice, 16 000, NDJELENG — ex-non planifiée) et **SO2606-58801** (DJIDJOU ETIENNE ARLEX, 2 000, FAMLA — ex-non planifiée) **forcées au 02/10 (§14)**
+2. **Total forcé 02/10 = 30 200** (MARSHAL 12 200 + 16 000 + 2 000) — jour plein, plus aucune place : les 18 000 Ouest ajoutés par l'algo en v78 sont évincés → non planifiées
+3. **Exécution (v79)** : **106 700/106 000 (101%)** — 29/09 = 38 500 (+500 toléré ≤500 : reliquat MARSHAL 200 remonté du 01/10 + 60066 1 500), 01/10 = 38 000 plein (MEMGBA 52840 partiellement replacée : split 2 800/5 300), 02/10 = 30 200 (+200 toléré — **Marge 30 200/28 500, dépassement forcé +1 700 assumé**). **439 exclusions**, **243 non planifiées**
+
+---
+
+### 🔄 Chronologie v78 (28/09)
+
+1. **Nouvelle éclosion 02/10 (Vendredi, Littoral + Ouest — 30 000 réel / 28 500 marge)** : §1/§6 mis à jour, §6 verrouille 02/10 sur Littoral+Ouest (demande utilisateur : « 30000 pour littoral et ouest »)
+2. **Reliquat MARSHAL FARMERS SO2605-54941 (12 200) forcé au 02/10** (§14) — seul Littoral du jour
+3. **Remplacements du 01/10** (demande utilisateur) : SO2604-51270 (3 000) + SO2606-59829 (5 600) + SO2605-55637 (2 500) + SO2606-61428 (1 100) = **12 200 forcés au 01/10** (§14) — exactement la qté libérée par MARSHAL
+4. **§13 étendu au 02/10** pour les Littoral (69839, 69890, 69666, 69647, 66549, 66550, 66552, 66553 — sinon elles fuyaient sur la nouvelle éclosion via l'Étape 0b) ; 57737 (MAGDALENE) exclue du 02/10 seul
+5. **Correctif script + §18 exception (v78)** : une commande forcée §14 passe malgré État/StatutFacture = Brouillon (55637 était filtrée par l'auto-exclusion)
+6. **Exécution (v78)** : **106 050/106 000 (100%)** — 29/09 = 38 000 plein, 01/10 = 37 850 (manque 150), 02/10 = 30 200 (+200 toléré ≤500). **439 exclusions**, **238 non planifiées**. MARSHAL = 5 800 (29/09) + 12 200 (02/10)
+
+---
+
+### 🔄 Chronologie v76 (28/09)
+
+1. **Restructuration 29/09–01/10** (demande utilisateur) : ① 69666 (5 300) + 69647 (500) retirées → §13, remplacées par **MARSHAL FARMERS SO2605-54941 en split forcé §14 : 5 800 le 29/09 (mêmes qtés) + 12 200 le 01/10** (retirée de §13) ; ② 61870 (4 650) + 61869 (1 500) retirées → §13, remplacées par **SO2607-63625 (10 000) en totalité, forcée au 29/09** ; ③ **TEULONG SO2606-61062 (3 300) forcée au 01/10** ; ④ 01/10 réservé Nord : **seule 65229 (5 200) gardée, forcée §14** — les 6 autres Nord (69211, 69158, 69314, 69306, 69312, 69316) → §13
+2. **Correctifs script** : ① agrégation des réf. multi-lignes (une commande = une réf. — 54941 = 18 000 + 200 → 18 200 ; `remaining_qty` ne gardait que la dernière ligne, le split forcé aurait cassé) ; ② Littoral non compté comme région effective sur date verrouillée (extension v28 — sinon les 12 200 Littoral du 01/10 bloquaient l'ajout Nord+Centre, 3 régions effectives > 2)
+3. **Exécution (v76)** : **76 000/76 000 (100%)** — 29/09 = 38 000 plein (MARSHAL 6 000 dont reliquat 200, 63625 10 000, 57737 1 000, Centre : 55433 2 700 split + 51282 5 800 + 51281 2 200 + 51270 3 000 + 51756 2 100 + 60066 1 500 + 52011 3 700), 01/10 = 38 000 plein (MARSHAL 12 200, 61062 3 300, 65229 5 200, Centre : 58836 8 500 + 62671 5 000 + 55433 3 800). **439 exclusions**, **247 non planifiées**. Évincées par les forcées : **52840 MEMGBA (5 300)** et 700 de 52011 SOFAB → non planifiées
+
+---
+
+### 🔄 Chronologie v75 (28/09)
+
+1. **SO2607-62419 à programmer à partir du 20/10** (demande utilisateur) : WETE MANGA WILLIAM (BELGO-BERI, Littoral, 1 100, échue 18/09) retirée du 29/09
+2. **Nouveau mécanisme MIN_DATES** (§13, sous-table « Commandes à ne pas programmer avant une date ») — contrainte durable indépendante du cycle : parser `min_dates` (md_config) + contrôles dans `try_schedule_order`, Étape 0b (pré-planification Littoral), vérification Phase 2 et équité dynamique v20. **La sous-table doit survivre aux nettoyages de §13** (elle ne dépend pas des dates du cycle)
+3. **Exécution (v75)** : 29/09 = 38 450/38 000 (101%, +450 toléré ≤500 — SO2604-51281 2 200 placée avec dépassement 450 ; les 1 100 libérés + 650 du trou v74 recomblés), 01/10 = 38 000 (100%). **439 exclusions**, **238 non planifiées** (62419 incluse ✓)
+
+---
+
+### 🔄 Chronologie v74 (28/09)
+
+1. **SO2605-55433 traitée comme ÉCHUE pure** (demande utilisateur) : nouveau mécanisme config-driven — sous-section **§4 « Commandes traitées comme ÉCHUE pure (non reclassées) »** (tableau de réf.) → `force_echue_pure` parsé par `md_config.py` → surcharge de la détection « reclassée » dans `plan_livraisons.py` (classification initiale + priorité dynamique v20)
+2. **Résultat** : Gic/Jepro-Agro (Centre, 6 500, prévue 15/07) reclassée ÉCHUE pure (priorité 1) et **planifiée au 29/09** — elle était avant #99 de la file (derrière 98 ÉCHUE) en ÉCHUE RECLASSÉE
+3. **Exécution (v74)** : 29/09 = 37 350/38 000 (98%) — manque 650 non comblable (seules des ÉCHUE Ouest/Nord ≤1 000 restaient, bloquées par le verrouillage Centre du 29/09) ; 01/10 = 38 000 (100%). **439 exclusions**, **237 non planifiées**. Correctif bug : paramètre `order_ref` dans `get_dynamic_priority` (le paramètre `ref` était écrasé par la date de référence)
+
+---
+
+### 🔄 Chronologie v72 (28/09)
+
+1. **MIAKAUG EPSE SODEA DIANE (Nord, NDERE) sortie du cycle** (demande utilisateur) : les 4 commandes §13 des deux dates — SO2608-66549 (1 200), SO2608-66550 (1 000), SO2608-66552 (1 400), SO2608-66553 (1 800) = **5 400** → « Commandes non planifiées », **à intégrer dans un programme à partir de la semaine prochaine**
+2. **Exécution (v72)** : 29/09 = 38 000 (100%), 01/10 = 38 000 (100%) — les 5 400 libérés recomblés par l'algo, le dépassement +450 (MEMGBA 5 300) est résorbé. **439 exclusions**, **237 non planifiées** (234 + 4 MIAKAUG − 1 remontée dans le plan). Surbrillance multi-cmd : TAKAMTSING ×3 (29/09), SCOOP EXCELLENCE ×2 + COGESDI ×2 (01/10)
+
+---
+
+### 🔄 Chronologie v71 (28/09)
+
+1. **Surbrillance CLIENT MULTI-CMD** (demande utilisateur) : un même client (Tiers) à livrer avec **plusieurs commandes dans la même éclosion** → lignes colorées en **orange FCE4D6** dans Plan Réel, Plan Marge et Plan Livraisons COQ, avec entrée de légende dédiée (détection par date de production, pas en cumul sur le cycle)
+2. Règle 5 des contraintes (bas de feuille) mise à jour : « Clients TEDONGMO YEMDJI FRANCK **et COMPTE TEMPORAIRE** exclus »
+3. **Vérification** : 11 lignes colorées — TAKAMTSING PROSPER ×3 (29/09), MIAKAUG EPSE SODEA DIANE ×4 + SCOOP EXCELLENCE PLUS ×2 + COGESDI SARL ×2 (01/10) ✓ ; COQ : aucune (1 seule commande COQ au 29/09) ; plan inchangé (76 450/76 000, 439 exclusions, 234 non planifiées)
+
+---
+
+### 🔄 Chronologie v70 (28/09)
+
+1. **Règle utilisateur : client COMPTE TEMPORAIRE à ne JAMAIS programmer** — appliquée à 3 niveaux : §16 (client exclu), `CLIENT_EXCLU` du script passé en tuple `('TEDONGMO YEMDJI FRANCK', 'COMPTE TEMPORAIRE')`, §12 +1 (SO2606-60929, 700 — ex-planifiée au 29/09) et SO2606-61347 (50) raison mise à jour
+2. **Exécution (v70)** : COMPTE TEMPORAIRE vérifié absent du plan ✓ — le 700 libéré recomblé (29/09 = 38 000 plein, Centre 30 100) ; 01/10 = 38 450 (101%, +450 toléré ≤ 500 : MEMGBA 3 500 → 5 300, SANDJONG splité 850/…). **439 exclusions (+1)**, 234 non planifiées
+
+---
+
+### 🔄 Chronologie v69 (27/09)
+
+1. **Nouveau cycle 29/09 + 01/10** (§1) : 29/09 (Mardi, Centre — 38 000 réel / 36 100 marge) et 01/10 (Jeudi, Nord + Centre — 38 000 réel / 36 100 marge) ; 23/09 et 25/09 retirées. §4 réf = 29/09. §6 : 29/09 verrouillée Centre, 01/10 Nord + Centre
+2. **§13 vidé** (exclusions 25/09 passées — précédent v55) : OTANG, ALFRED FON JA-AI, WAYAP 59891, MAGDALENE, WETE MANGA, PENKA redeviennent éligibles → les 4 premières planifiées le 29/09
+3. **29/09 Centre prioritaire (choix utilisateur)** : Étape 0b avait réservé le 29/09 au Littoral (33 200 échues = 87%) → MARSHAL FARMERS 18 000 + NGNIMPEYE 4 200 + TCHANTCHOU 3 100 **exclues du cycle (§13)** — Littoral 29/09 limité au minime 7 900 (22%) ✓ (sans exclusion des deux dates, elles se déversaient sur le 01/10 à 66% du jour)
+4. **Exécution (v69)** : 29/09 = 37 350/38 000 (98% — Centre 29 450 + Littoral 7 900, manque 650) ; 01/10 = 38 000/38 000 (100% — Nord 21 300 + Centre 16 700). 438 exclusions (inchangé), **244 non planifiées** — les 3 Littoral exclues vérifiées dans « Commandes non planifiées » ✓
+
+---
+
+### 🔄 Chronologie v68 (26/09)
+
+1. **Nouveaux extraits AT(46) + EXP(13) du 26/09/2026** (12:22 — Date modif. max 26/09 10:00, données fraîches) — §19 mis à jour
+2. **§14 23/09 vidé** : LEMOKEM 2 000/2 000 ✓ (SH2609-1744), TAJOUO 12 000/12 000 ✓ (SH2609-5320) ; **GIC MOS 69619 NON livrée** (0/3 500, Validée, prévue désormais au 03/02/2027) → repasse en non planifiée (à repositionner sur un futur cycle)
+3. **§14 25/09 vidé 8/8 livrées** : NGOUADJEU 3 300, KAMGANG 5 800, BIEPIP 250 (7 800/7 800), TESEHKOUE 10 150, ALEMAWO 4 000, TUMENTA 2 000, LEMNYUY 1 000, WAYAP 2 700 — **cycle 23/09–25/09 exécuté (10/11 forcées livrées)**
+4. **§13 −1** : DJUISSI SO2609-68591 livrée (1 000/1 000, SH2609-5217 Traitée) → retirée (auto-exclusion État=Livrée). Les 6 autres restent (MAGDALENE, WAYAP 59891, WETE MANGA, PENKA 550, OTANG, Alfred Fon) — à reconsidérer au prochain cycle (dates exclues 25/09 passées)
+5. **§12 inchangé** : aucune exclusion devenue Livrée dans l'ERP
+6. **Exécution (v68)** : plan régénéré sur les dates du cycle (passées) — 23/09 = 15 000/15 000, 25/09 = 29 000/29 000 (échues Littoral+Ouest) ; **438 exclusions (+13)**, 250 non planifiées (marge) — GIC MOS vérifiée dans « Commandes non planifiées » ✓
+7. ⏭️ **Prochain cycle à définir** (§1/§4) — les éclosions 23/09 et 25/09 sont passées
+
+---
+
+### 🔄 Chronologie v67 (25/09)
+
+1. **SO2601-42302 METAFE GNITEYO SONYA MIGLANCHE** (38 000, BELGO-BERI, PONTE PREMIUM) **ajoutée à §12** — déjà livrée, livraison confirmée hors ERP (reste 38 000 dans l'ERP)
+2. **Exécution (v67)** : plan inchangé (23/09 = 17 500, 25/09 = 29 200) ; **425 exclusions (+1)**, 246 non planifiées
+3. ⚠ Note : la commande était déjà hors des pools du plan (StatutFacture=Brouillon dans l'ERP — filtrée par le script) — l'exclusion la documente et la protège si le statut facture passe à Validée
+
+---
+
+### 🔄 Chronologie v66 (24–25/09)
+
+1. **§12 −3 commandes remises en non planifiées** : SO2606-61062 TEULONG (reste 3 300), SO2606-58836 TSAFACK (8 500, 0 livré), SO2607-62671 BOGNING (5 000, 0 livré) — toutes MESSASSI (Centre), ÉCHUE, En cours
+2. **Exécution (v66)** : 23/09 = 17 500/15 000 (117%) ; 25/09 = 29 200/29 000 (101%) — inchangés ; **424 exclusions (−3), 246 non planifiées (+3)** — les 3 commandes vérifiées dans la feuille « Commandes non planifiées » ✓
+
+---
+
+### 🔄 Chronologie v65 (24/09)
+
+1. **BIEPIP SO2606-60194 reliquat 250** (PONTE PREMIUM, 7 550/7 800 livrés dans l'ERP — AT(44)) basculé du 23/09 au 25/09 dans §14
+2. **§14 23/09** : 17 500 (3 forcées — LEMOKEM 2 000, TAJOUO 12 000, GIC MOS 3 500)
+3. **§14 25/09** : +BIEPIP 250 → **8 forcées, 29 200 (100,7%, +200)** — Ouest : KAMGANG 5 800, BIEPIP 250, TESEHKOUE 10 150, TUMENTA 2 000, LEMNYUY 1 000, WAYAP 2 700 ; Littoral : NGOUADJEU 3 300 + ALEMAWO 4 000
+4. **Exécution (v65)** : 23/09 = 17 500/15 000 (117%) ; 25/09 = **29 200/29 000 (101%)** — forcées uniquement, 0 ajoutée par l'algo ; 427 exclusions ; 243 non planifiées (marge)
 
 ---
 
