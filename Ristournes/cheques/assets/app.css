@@ -5,13 +5,14 @@
  * (½ A4 chacun), marges @page 10 mm (haut/bas) × 12 mm (gauche/droite).
  * ============================================================= */
 :root {
-  --encre: #1c1c1c;
-  --mineur: #555;
+  --encre: #1F2937;
+  --mineur: #6B7280;
   --grille: #c9c9c9;
   --grille-clair: #e6e6e6;
-  --fond: #eef0ee;
+  --fond: #F5F7FB;
   --blanc: #fff;
-  --accent: #14532d;
+  --accent: #1F3864;
+  --or: #C9A961;
 }
 
 * { box-sizing: border-box; }
@@ -28,7 +29,7 @@ body {
  * Barre d'outils (écran uniquement)
  * --------------------------------------------------------------- */
 .toolbar {
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: 52px; z-index: 10;
   display: flex; align-items: center; gap: 14px;
   padding: 10px 20px;
   background: var(--accent); color: #fff;
@@ -51,6 +52,46 @@ body {
   border-radius: 4px;
 }
 .btn-pdf:hover { background: rgba(255,255,255,.18); }
+
+/* ---------------------------------------------------------------
+ * Navbar unique (toutes les pages sauf la page de connexion)
+ * --------------------------------------------------------------- */
+.navbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 4px;
+  min-height: 52px; padding: 0 20px;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.nav-brand {
+  font-weight: 700; letter-spacing: .04em; font-size: 15px;
+  white-space: nowrap; margin-right: 12px;
+}
+.nav-brand em { font-style: normal; color: var(--or); }
+.nav-links {
+  display: flex; align-items: center; gap: 2px;
+  flex: 1; flex-wrap: wrap;
+}
+.nav-links a {
+  color: #fff; text-decoration: none;
+  padding: 8px 12px; border-radius: 4px; font-size: 14px;
+}
+.nav-links a:hover { background: rgba(255,255,255,.12); }
+.nav-links a.actif {
+  background: rgba(255,255,255,.18); font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--or);
+}
+.nav-links .spacer { flex: 1; }
+.nav-user {
+  color: var(--or); font-weight: 600; font-size: 13px;
+  padding: 0 8px; white-space: nowrap;
+}
+.nav-mineur { font-size: 13px !important; opacity: .88; padding: 8px 8px !important; }
+.nav-mineur:hover { opacity: 1; }
+.nav-toggle {
+  display: none; background: none; border: none; color: #fff;
+  font-size: 22px; cursor: pointer; padding: 4px 10px; line-height: 1;
+}
 
 /* ---------------------------------------------------------------
  * Formulaire
@@ -298,6 +339,9 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .tab td.num, .tab th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .tab tr.tot td { font-weight: 700; border-top: 1px solid var(--encre); background: #f7f7f7; }
 
+/* Défilement horizontal des grands tableaux (écran uniquement) */
+.tab-scroll { overflow-x: auto; }
+
 /* Bas de document : 4 niveaux de signature + QR */
 .bas { display: flex; gap: 6mm; align-items: flex-end; margin-top: .4mm; }
 .signatures { flex: 1; display: flex; gap: 3mm; }
@@ -383,7 +427,7 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 
 @media print {
   html, body { background: #fff; }
-  .toolbar, .wrap-form { display: none !important; }
+  .toolbar, .navbar, .wrap-form { display: none !important; }
   .modal-impression { display: none !important; }
   .feuille {
     /* 276 mm = zone imprimable exacte (297 − 2 × 10,5). 277 mm
@@ -433,5 +477,206 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
   .wrap-suivi .tab { page-break-inside: auto; }
 }
 
+/* ---- Page Liste des gagnants ---- */
+.gagnants-tab {
+  table-layout: fixed; width: 100%;
+}
+.gagnants-tab th, .gagnants-tab td {
+  overflow-wrap: break-word; word-wrap: break-word;
+}
+.gagnants-tab td.qr-texte {
+  font: 12px Consolas, ui-monospace, monospace;
+  letter-spacing: .02em;
+}
+/* Largeurs de colonnes — 4 colonnes (par agence) : Code | Nom | Montant | QR */
+.gagnants-tab-4 th:nth-child(1) { width: 20%; }
+.gagnants-tab-4 th:nth-child(2) { width: 40%; }
+.gagnants-tab-4 th:nth-child(3) { width: 17%; }
+.gagnants-tab-4 th:nth-child(4) { width: 23%; }
+/* Largeurs de colonnes — 5 colonnes (tri continu) : Code | Nom | Agence | Montant | QR */
+.gagnants-tab-5 th:nth-child(1) { width: 15%; }
+.gagnants-tab-5 th:nth-child(2) { width: 34%; }
+.gagnants-tab-5 th:nth-child(3) { width: 15%; }
+.gagnants-tab-5 th:nth-child(4) { width: 14%; }
+.gagnants-tab-5 th:nth-child(5) { width: 22%; }
+/* Titre de l'agence dans le thead : répété en haut de chaque page du
+   tableau à l'impression (table-header-group), pages de continuation
+   d'une agence comprises. */
+.agence-ligne th {
+  background: var(--accent); color: #fff;
+  text-align: left; text-transform: uppercase; letter-spacing: .04em;
+  font-size: 12.5px; padding: 5px 8px;
+}
+.agence-bloc .tab { width: 100%; }
+.agence-bloc + .agence-bloc { margin-top: 26px; border-top: 2px solid var(--accent); padding-top: 16px; }
+/* Entête et pied de page de la liste : masqués à l'écran, répétés sur
+   chaque feuille A4 à l'impression (position: fixed). */
+.entete-page, .pied-page { display: none; }
+@media print {
+  /* Dégagements haut/bas pour l'entête et le pied fixes. Sans
+     box-decoration-break: clone, le padding du conteneur ne s'applique
+     qu'à la première page : les pages suivantes passaient sous l'entête. */
+  .gagnants-wrap {
+    padding-top: 34mm; padding-bottom: 14mm;
+    box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  }
+  .gagnants-tab { font-size: 9.5pt; }
+  .gagnants-tab td.qr-texte { font-size: 10pt; }
+  .gagnants-tab thead { display: table-header-group; }
+  .gagnants-tab tr { page-break-inside: avoid; }
+  .gagnants-wrap h1 { page-break-after: avoid; }
+  .agence-ligne th { font-size: 10pt; padding: 1.4mm 1.6mm; }
+  /* Chaque agence commence une nouvelle page (sauf la première) */
+  .agence-bloc { break-before: page; page-break-before: always; }
+  .agence-bloc:first-of-type { break-before: auto; page-break-before: auto; }
+  .agence-bloc + .agence-bloc { margin-top: 0; border-top: 0; padding-top: 0; }
+  .entete-page {
+    display: block; position: fixed; top: 0; left: 12mm; right: 12mm;
+    background: #fff; padding-top: 2mm;
+  }
+  .pied-page {
+    display: block; position: fixed; bottom: 0; left: 12mm; right: 12mm;
+    background: #fff; padding-bottom: 2mm;
+  }
+}
+
 /* ---- Entête et pied de page des documents : tout le texte en gras ---- */
 .entete div, .pied div { font-weight: 700; }
+
+/* ---------------------------------------------------------------
+ * Page de connexion
+ * --------------------------------------------------------------- */
+.login-page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
+  background: linear-gradient(160deg, #1F3864 0%, #2E5C8A 60%, #1F3A5F 100%);
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--blanc);
+  border-radius: 8px; padding: 30px 30px 26px;
+  box-shadow: 0 10px 30px rgba(10, 20, 45, .35);
+}
+.login-brand {
+  text-align: center; font-size: 24px; font-weight: 700;
+  color: var(--accent); letter-spacing: .06em; margin-bottom: 4px;
+}
+.login-brand span { color: var(--or); }
+.login-card h1 {
+  font-size: 16.5px; text-align: center; margin: 0 0 6px; color: var(--encre);
+}
+.login-sous { text-align: center; color: var(--mineur); margin: 0 0 18px; font-size: 13.5px; }
+.login-err {
+  background: #fdeceb; border: 1px solid #b3261e; color: #b3261e;
+  border-radius: 4px; padding: 8px 12px; font-size: 13.5px; margin: 0 0 14px;
+}
+.login-info {
+  background: #eef3fb; border: 1px solid var(--accent); color: var(--encre);
+  border-radius: 4px; padding: 8px 12px; font-size: 13px; margin: 0 0 14px;
+}
+.login-card form label {
+  display: block; margin-bottom: 14px; font-size: 13px; font-weight: 600; color: var(--encre);
+}
+.login-card form input[type="text"],
+.login-card form input[type="password"] {
+  display: block; width: 100%; margin-top: 5px; padding: 9px 11px;
+  border: 1px solid var(--grille); border-radius: 4px; font-size: 15px;
+}
+.login-card form input:focus { outline: 2px solid var(--or); border-color: var(--accent); }
+.login-card form .barre-actions { justify-content: center; }
+.login-card form .btn-principal { width: 100%; padding: 11px; font-size: 15px; }
+
+/* ---------------------------------------------------------------
+ * Administration (utilisateurs & rôles) + changement de mot de passe
+ * --------------------------------------------------------------- */
+.wrap-admin {
+  max-width: 980px; margin: 28px auto; padding: 22px 26px;
+  background: var(--blanc); border: 1px solid var(--grille); border-radius: 6px;
+}
+.wrap-admin h1 { margin: 0 0 4px; font-size: 21px; }
+.wrap-admin h2 { font-size: 16px; margin: 24px 0 10px; color: var(--accent); }
+.admin-tab { width: 100%; border-collapse: collapse; margin: 8px 0 4px; }
+.admin-tab th, .admin-tab td {
+  border: 1px solid var(--grille); padding: 7px 10px; text-align: left; font-size: 13.5px;
+}
+.admin-tab th { background: #f2f2f2; font-weight: 600; }
+.admin-tab tr:hover td { background: #fafbfd; }
+.form-inline { display: inline-flex; gap: 6px; align-items: center; }
+.form-inline select,
+.form-inline input[type="text"],
+.form-inline input[type="password"] {
+  padding: 5px 8px; border: 1px solid var(--grille); border-radius: 3px; font-size: 13.5px;
+}
+.badge { display: inline-block; padding: 2px 9px; border-radius: 9px; font-size: 12px; font-weight: 600; }
+.badge-ok { background: #e6f5ec; color: #0e7a3d; }
+.badge-off { background: #f0f0f0; color: #666; }
+.admin-ok {
+  background: #e6f5ec; border: 1px solid #0e7a3d; color: #0e7a3d;
+  border-radius: 4px; padding: 8px 12px; font-size: 13.5px;
+}
+.admin-err {
+  background: #fdeceb; border: 1px solid #b3261e; color: #b3261e;
+  border-radius: 4px; padding: 8px 12px; font-size: 13.5px;
+}
+.admin-form {
+  max-width: 640px; margin: 14px 0; padding: 14px 18px;
+  border: 1px solid var(--grille); border-radius: 6px; background: #fafbfd;
+}
+.admin-form .ligne-champs { margin-bottom: 10px; }
+.admin-form .ligne-champs label { font-weight: 600; }
+.ligne-nom { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ligne-nom input[type="text"] {
+  padding: 6px 10px; border: 1px solid var(--grille); border-radius: 3px; font-size: 14px;
+  flex: 1; min-width: 220px;
+}
+.tous-droits {
+  display: flex !important; align-items: center; gap: 8px;
+  margin: 12px 0 14px; padding: 9px 12px;
+  background: #f5f7fb; border: 1px dashed var(--accent); border-radius: 4px;
+  font-weight: 600;
+}
+.perm-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; margin: 4px 0 12px;
+}
+.perm-grid fieldset { margin: 0 0 12px; }
+.perm-grid label { display: flex; gap: 7px; align-items: flex-start; font-size: 13px; }
+.mdp-champs label { display: block; margin-bottom: 12px; font-size: 13px; font-weight: 600; }
+.mdp-champs input[type="password"] {
+  display: block; width: 100%; max-width: 320px; margin-top: 5px;
+  padding: 8px 10px; border: 1px solid var(--grille); border-radius: 4px; font-size: 14px;
+}
+.wrap-mdp { max-width: 560px; }
+
+/* ---------------------------------------------------------------
+ * Responsive écran (les règles @media print ci-dessus sont intactes)
+ * --------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .wrap-form, .wrap-suivi, .wrap-verif, .wrap-admin {
+    max-width: none; margin: 12px; padding: 16px;
+  }
+  .picklist { grid-template-columns: 1fr; }
+  .toolbar { flex-wrap: wrap; top: 52px; }
+  .perm-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .navbar { flex-wrap: nowrap; padding: 0 10px; }
+  .nav-toggle { display: block; }
+  .nav-links {
+    display: none; flex-basis: 100%;
+    flex-direction: column; align-items: stretch;
+    border-top: 1px solid rgba(255,255,255,.25);
+    padding: 6px 0;
+  }
+  .navbar.nav-open .nav-links { display: flex; }
+  .nav-links .spacer { display: none; }
+  .nav-links a { padding: 11px 12px; }
+  .nav-user { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,.15); margin-top: 4px; }
+  .toolbar { top: 52px; }
+  .tab-scroll { max-width: 100%; }
+}
+
+@media print {
+  .tab-scroll { overflow: visible !important; }
+}

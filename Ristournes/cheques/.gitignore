@@ -2,5 +2,9 @@
 # sa détention permet d'émettre des documents « authentiques ».
 data/sign.key
 
-# Log du serveur de dev local (php -S) — jamais versionné
+# Base des comptes et rôles (hashs de mots de passe) — jamais versionnée
+data/users.sqlite
+
+# Logs du serveur de dev local (php -S) — jamais versionnés
 php_server.log
+php_server_errors.log

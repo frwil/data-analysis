@@ -38,8 +38,25 @@ Application PHP locale d'édition des **chèques de ristourne** et **listings d'
 
 **Démarrage**
 1. Construire la base : `python _build_cheques_db.py` (après `restitution_finale.py`).
-2. Lancer le serveur : `php -S localhost:8123` depuis le dossier `cheques/`, puis ouvrir
+2. Lancer le serveur : `php -S localhost:8123 router.php` depuis le dossier `cheques/`, puis ouvrir
    `http://localhost:8123`.
+
+**Connexion & rôles**
+- L'application exige une connexion (page de login, sessions 8 h). Au premier accès, les
+  comptes par défaut sont créés à partir de variables d'environnement (aucun mot de passe
+  en clair dans le dépôt) :
+  - `BCP_ADMIN_MDP` → compte `admin`, rôle **Administrateur** : tous les droits ;
+  - `BCP_VERIF_MDP` → compte `GroupeNJS26`, rôle **Vérification** : uniquement la page
+    « Vérifier un document ».
+  PowerShell : `$env:BCP_ADMIN_MDP = '…'; $env:BCP_VERIF_MDP = '…'; php -S localhost:8123 router.php`
+  — bash : `BCP_ADMIN_MDP='…' BCP_VERIF_MDP='…' php -S localhost:8123 router.php`.
+  Sans ces variables, aucun compte n'est créé (la page de login l'indique) ; une fois les
+  comptes créés dans `cheques/data/users.sqlite`, elles ne sont plus nécessaires.
+- Les droits sont modulaires (consulter / imprimer / exporter PDF / corriger le suivi /
+  gérer utilisateurs et rôles…) : l'admin les attribue via les pages **Utilisateurs** et
+  **Rôles** de la barre de navigation. Les comptes et rôles sont stockés dans
+  `cheques/data/users.sqlite` (créé automatiquement au premier accès).
+  Changez les mots de passe initiaux après la première connexion (menu « Mot de passe »).
 
 **Personnalisation**
 - `cheques/inc/config.php` : en-tête et pied de page de l'entreprise (nom, adresse, téléphone,

@@ -1,5 +1,9 @@
 <?php
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit("Usage CLI uniquement : php _gen_verif.php\n");
+}
 /* =============================================================
  * Génère verif.html, la page autonome de vérification des QR :
  * - injecte la clé publique (data/sign.pub, créée au besoin) ;

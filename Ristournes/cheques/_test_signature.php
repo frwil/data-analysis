@@ -1,5 +1,9 @@
 <?php
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit("Usage CLI uniquement : php _test_signature.php\n");
+}
 /* Test de la chaîne signée : format, compression, signature, interop.
    Usage : php _test_signature.php
    Écrit aussi un fixture JSON dans le dossier temporaire pour le test

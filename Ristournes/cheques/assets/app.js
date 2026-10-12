@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   rendreQrs();
 
+  /* ---- Navbar : menu hamburger sur petits écrans ---- */
+  var navToggle = document.querySelector('.nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', function () {
+      var nav = navToggle.closest('.navbar');
+      var ouvert = nav.classList.toggle('nav-open');
+      navToggle.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+    });
+  }
+
   /* =============================================================
    * Suivi des impressions (aperçu / impression)
    * Le navigateur ne peut PAS détecter la réussite physique d'une
@@ -67,14 +77,29 @@ document.addEventListener('DOMContentLoaded', function () {
       return uuids;
     }
 
+    /* ---- Jeton CSRF (meta injectée par page_debut) ---- */
+    function csrf() {
+      var m = document.querySelector('meta[name="csrf-token"]');
+      return m ? m.getAttribute('content') : '';
+    }
+
+    /* ---- Session expirée : retour à la page de connexion ---- */
+    function retourLogin() {
+      alert('Session expirée — reconnectez-vous.');
+      window.location.href = 'index.php?p=login';
+    }
+
     /* ---- API suivi (POST JSON) — silencieuse en cas d'échec réseau ---- */
     function api(payload, ok) {
       fetch('index.php?p=suivi_api', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
         body: JSON.stringify(payload)
       })
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (r.status === 401) { retourLogin(); return Promise.reject('expire'); }
+        return r.json();
+      })
       .then(function (r) { if (ok) { ok(r); } })
       .catch(function () { /* ne pas bloquer l'utilisateur */ });
     }
@@ -188,6 +213,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function lancerImpression() {
       if (etat !== 'idle') { return; }
+      if (window.__lectureSeule) {
+        alert('Votre rôle ne permet pas l\'impression de documents.');
+        return;
+      }
       var fs = feuilles();
       if (!fs.length) { return; }
       document.body.classList.add('mode-lot');
@@ -210,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     window.addEventListener('afterprint', function () {
-      if (etat !== 'idle' || !feuilles().length) { return; }
+      if (etat !== 'idle' || !feuilles().length || window.__lectureSeule) { return; }
       var fs = feuilles();
       ouvrirModale('Impression du lot (' + fs.length + ' feuille(s))', [
         'L\'impression s\'est-elle bien déroulée ?'
@@ -232,6 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if ((ev.ctrlKey || ev.metaKey) && String(ev.key).toLowerCase() === 'p'
           && etat === 'idle' && feuilles().length) {
         ev.preventDefault();
+        if (window.__lectureSeule) {
+          alert('Votre rôle ne permet pas l\'impression de documents.');
+          return;
+        }
         lancerImpression();
       }
     });
@@ -242,9 +275,15 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!a) { return; }
       ev.preventDefault();
       var annee = a.getAttribute('data-nom') || 'annee';
-      fetch(a.href)
+      fetch(a.href, { headers: { 'X-CSRF-Token': csrf() } })
         .then(function (r) {
           if (!r.ok) { throw new Error('HTTP ' + r.status); }
+          /* Session expirée : le routeur renvoie la page de connexion
+             (text/html) au lieu du PDF — ne pas la télécharger. */
+          if ((r.headers.get('content-type') || '').indexOf('text/html') !== -1) {
+            retourLogin();
+            throw new Error('session expirée');
+          }
           return r.blob();
         })
         .then(function (blob) {
@@ -272,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* ---- p=imprimer : démarrage guidé dès que la page est prête ---- */
-    if (window.__autoPrint) {
+    if (window.__autoPrint && !window.__lectureSeule) {
       setTimeout(lancerImpression, 250);
     }
 
@@ -462,14 +501,17 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.disabled = true;
     fetch('index.php?p=suivi_api', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
       body: JSON.stringify({
         action: 'marquer',
         tiers: btn.getAttribute('data-tiers'),
         agence: btn.getAttribute('data-agence'),
         annee: parseInt(btn.getAttribute('data-annee'), 10)
       })
-    }).then(function (r) { return r.json(); })
+    }).then(function (r) {
+      if (r.status === 401) { retourLogin(); return Promise.reject('expire'); }
+      return r.json();
+    })
       .then(function (res) {
         if (!res.ok) {
           alert('Marquage impossible : ' + (res.message || 'erreur inconnue'));

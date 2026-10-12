@@ -2,10 +2,13 @@
 declare(strict_types=1);
 /* Application chèques & listings de ristournes — BELGOCAM S.A.
    Pages : ?p=form (formulaire) · ?p=apercu (aperçu groupé) · ?p=imprimer (impression directe)
-   Lancer : php -S localhost:8123 (dans le dossier cheques/) puis http://localhost:8123 */
+   Lancer : php -S localhost:8123 router.php (dans le dossier cheques/) puis http://localhost:8123
+   Accès : connexion obligatoire ; comptes par défaut seedés via BCP_ADMIN_MDP / BCP_VERIF_MDP. */
 require __DIR__ . '/inc/helpers.php';
 require __DIR__ . '/inc/signature.php';
 require __DIR__ . '/inc/suivi.php';
+require __DIR__ . '/inc/auth.php';
+require __DIR__ . '/inc/admin.php';
 $cfg = require __DIR__ . '/inc/config.php';
 
 function up(?string $s): string
@@ -158,7 +161,7 @@ function render_entete(array $d, array $cfg, string $titre): void
       </div>
       <div class="entete-titre">
         <div class="titre"><?= e($titre) ?></div>
-        <div class="docno">N° <?= e(substr($d['uuid'], 0, 8)) ?></div>
+        <?php if ($d['uuid'] !== ''): ?><div class="docno">N° <?= e(substr($d['uuid'], 0, 8)) ?></div><?php endif; ?>
         <div class="docdate">Édité le <?= date('d/m/Y') ?></div>
       </div>
     </header>
@@ -172,7 +175,7 @@ function render_pied(array $d, array $cfg): void
       <div class="pied-lignes">
         <?php foreach ($cfg['pied'] as $l): if ($l !== '' && $l !== '…'): ?><div><?= e($l) ?></div><?php endif; endforeach; ?>
       </div>
-      <div class="pied-uuid">Document généré le <?= date('d/m/Y à H:i') ?> · UUID <?= e($d['uuid']) ?></div>
+      <div class="pied-uuid">Document généré le <?= date('d/m/Y à H:i') ?><?= $d['uuid'] !== '' ? ' · UUID ' . e($d['uuid']) : '' ?></div>
     </footer>
     <?php
 }
@@ -297,19 +300,21 @@ function render_listing(array $d, array $cfg): void
 /* ---------------------------------------------------------------
  * Page enveloppe (formulaire ou documents)
  * --------------------------------------------------------------- */
-function page_debut(string $titre): void
+function page_debut(string $titre, bool $avecNav = true): void
 {
     ?><!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <title><?= e($titre) ?></title>
 <link rel="stylesheet" href="assets/app.css">
 <script src="assets/qrcode.min.js"></script>
 <script src="assets/app.js" defer></script>
 </head>
 <body>
+<?php if ($avecNav) { render_nav(); } ?>
 <?php
 }
 
@@ -358,8 +363,7 @@ function render_form(): void
     ?>
     <div class="wrap-form">
       <h1>Chèques &amp; listings de ristournes</h1>
-      <p class="sous-titre">BELGOCAM S.A. — édition des chèques et listings d'achat · format A4 portrait, 2 documents par page (½ A4 chacun)
-        · <a href="index.php?p=analyses">🔎 Analyses clients</a> · <a href="index.php?p=suivi">📊 Suivi des impressions</a></p>
+      <p class="sous-titre">BELGOCAM S.A. — édition des chèques et listings d'achat · format A4 portrait, 2 documents par page (½ A4 chacun)</p>
 
       <form id="filtres" method="get" action="index.php">
         <input type="hidden" name="p" value="apercu">
@@ -424,10 +428,12 @@ function render_form(): void
                   <span class="imp<?= ($stAn['echecs'] ?? 0) > 0 ? ' imp-alerte' : '' ?>"
                         title="Impressions : 🖨 directes · ✗ échecs/annulées · 📄 PDF"
                         data-imp="<?= e(json_encode($stats[$cle] ?? new stdClass(), JSON_UNESCAPED_UNICODE)) ?>"><?= e(badge_imp($stAn)) ?></span>
+                  <?php if (perm('doc.create')): ?>
                   <button type="button" class="btn-mini btn-imprime"
                           data-tiers="<?= e($c['tiers']) ?>" data-agence="<?= e($c['agence']) ?>" data-annee="<?= $annee ?>"
                           title="Marquer ce client comme déjà imprimé pour l'année (🖨 directe +1) — pour corriger un compteur à 0"
                           <?= $stAn && (($stAn['directe'] ?? 0) > 0 || ($stAn['pdf'] ?? 0) > 0) ? 'hidden' : '' ?>>✓ imprimé</button>
+                  <?php endif; ?>
                 </label>
               <?php endforeach; ?>
             </div>
@@ -456,17 +462,21 @@ function render_documents(array $res, bool $auto_print): void
     $n_docs = count($docs) * ($res['avec_cheques'] + $res['avec_listings']);
     page_debut('Aperçu — chèques & listings');
     ?>
+    <?php if (!perm('doc.create')): ?>
+      <script>window.__lectureSeule = true;</script>
+    <?php endif; ?>
     <div class="toolbar">
       <a class="lien-retour" href="index.php?p=form&amp;annee=<?= (int) $res['annee'] ?>&amp;mois=<?= e($res['mois']) ?>&amp;sel=<?= e($_GET['sel'] ?? 'tous') ?>&amp;id=<?= e($_GET['id'] ?? '') ?>&amp;ids=<?= e($_GET['ids'] ?? '') ?>&amp;cheques=<?= $res['avec_cheques'] ? '1' : '0' ?>&amp;listings=<?= $res['avec_listings'] ? '1' : '0' ?>">← Retour au formulaire</a>
-      <a class="lien-retour" href="index.php?p=verifier">🔎 Vérifier un document</a>
-      <a class="lien-retour" href="index.php?p=suivi&amp;annee=<?= (int) $res['annee'] ?>">📊 Suivi des impressions</a>
-      <a class="lien-retour" href="index.php?p=analyses">🔎 Analyses clients</a>
       <span class="tb-info"><?= count($docs) ?> client(s) · <?= $n_docs ?> document(s) · <?= e($res['periode']) ?></span>
       <span class="spacer"></span>
+      <?php if (perm('doc.create')): ?>
       <button class="btn-principal" onclick="lancerImpression()">🖨 Imprimer (Ctrl+P)</button>
+      <?php endif; ?>
+      <?php if (perm('doc.pdf')): ?>
       <a class="btn-pdf" data-action-pdf="1" data-nom="<?= (int) $res['annee'] ?>"
          title="Génère le PDF via le navigateur (peut prendre quelques secondes pour les gros lots)"
          href="index.php?p=pdf&amp;annee=<?= (int) $res['annee'] ?>&amp;mois=<?= e($res['mois']) ?>&amp;sel=<?= e($_GET['sel'] ?? 'tous') ?>&amp;id=<?= e($_GET['id'] ?? '') ?>&amp;ids=<?= e($_GET['ids'] ?? '') ?>&amp;cheques=<?= $res['avec_cheques'] ? '1' : '0' ?>&amp;listings=<?= $res['avec_listings'] ? '1' : '0' ?>">⬇ Télécharger PDF</a>
+      <?php endif; ?>
     </div>
     <?php if (!$docs): ?>
       <div class="vide">Aucun client sur cette période.</div>
@@ -526,6 +536,10 @@ function trouver_navigateur(): ?string
  *  $apresGeneration (optionnel) est appelé juste avant l'envoi (audit serveur). */
 function html_vers_pdf(string $html, string $nom, ?callable $apresGeneration = null): void
 {
+    /* Le serveur intégré (SAPI cli-server) applique max_execution_time du
+       php.ini (30 s par défaut) : la génération headless + la boucle
+       d'attente (3 min) doivent pouvoir aller au bout. */
+    set_time_limit(180);
     if (!function_exists('exec')) {
         http_response_code(500);
         echo "La fonction exec() de PHP est désactivée : utilisez l'aperçu puis Ctrl+P → « Enregistrer au format PDF ».";
@@ -654,11 +668,6 @@ function page_suivi(): void
 
     page_debut('Suivi des impressions — Ristournes');
     ?>
-    <div class="toolbar">
-      <a class="lien-retour" href="index.php?p=form">← Retour au formulaire</a>
-      <a class="lien-retour" href="index.php?p=apercu">Aperçu →</a>
-      <span class="spacer"></span>
-    </div>
     <div class="wrap-suivi">
       <h1>📊 Suivi des impressions</h1>
       <p class="sous-titre">Compteurs par document (chèque + listing partagent le même compteur).
@@ -680,6 +689,7 @@ function page_suivi(): void
       <?php if (!$lignes): ?>
         <div class="vide">Aucune impression enregistrée pour cette année.</div>
       <?php else: ?>
+        <div class="tab-scroll">
         <table class="tab suivi-tab">
           <thead><tr>
             <th>Code</th><th>Client</th><th>Agence</th>
@@ -698,11 +708,13 @@ function page_suivi(): void
                 <td class="num"><?= $l['pdf'] ?></td>
                 <td class="mineur"><?= e(str_replace('T', ' ', $l['dernier'])) ?></td>
                 <td class="actions">
+                  <?php if (perm('suivi.edit')): ?>
                   <button class="btn-mini" data-ajuster data-type="directe" <?= $l['directe'] <= 0 ? 'disabled' : '' ?>>−1 directe</button>
                   <button class="btn-mini" data-reset data-type="directe" <?= $l['directe'] <= 0 ? 'disabled' : '' ?>>réinit directe</button>
                   <button class="btn-mini" data-ajuster data-type="pdf" <?= $l['pdf'] <= 0 ? 'disabled' : '' ?>>−1 PDF</button>
                   <button class="btn-mini" data-reset data-type="pdf" <?= $l['pdf'] <= 0 ? 'disabled' : '' ?>>réinit PDF</button>
-                  <?php if ($l['id']): ?>
+                  <?php endif; ?>
+                  <?php if ($l['id'] && perm('doc.view')): ?>
                     <a class="btn-mini" href="index.php?p=apercu&amp;annee=<?= $annee ?>&amp;mois=all&amp;sel=un&amp;id=<?= $l['id'] ?>&amp;cheques=1&amp;listings=1">Aperçu</a>
                   <?php endif; ?>
                 </td>
@@ -720,12 +732,14 @@ function page_suivi(): void
             </tr>
           </tbody>
         </table>
+        </div>
       <?php endif; ?>
 
       <h2>Historique récent</h2>
       <?php if (!$histo): ?>
         <div class="vide">Aucun événement.</div>
       <?php else: ?>
+        <div class="tab-scroll">
         <table class="tab">
           <thead><tr><th>Moment</th><th>Document</th><th>Type</th><th>Statut</th><th>Δ</th><th>Note</th></tr></thead>
           <tbody>
@@ -741,6 +755,7 @@ function page_suivi(): void
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       <?php endif; ?>
     </div>
     <script>
@@ -794,7 +809,10 @@ function page_suivi(): void
         btn.disabled = true;
         fetch('index.php?p=suivi_api', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
           body: JSON.stringify({
             action: action,
             uuid: btn.closest('tr').getAttribute('data-uuid'),
@@ -1173,9 +1191,10 @@ function page_analyses(): void
     page_debut('Analyses clients — Ristournes');
     ?>
     <div class="toolbar no-print">
-      <a class="lien-retour" href="index.php?p=form">← Retour au formulaire</a>
+      <?php if (perm('analyses.export')): ?>
       <a class="btn-pdf" href="index.php?p=analyses_pdf&amp;annee=<?= $annee ?>"
          title="Génère le PDF via le navigateur (peut prendre quelques secondes)">⬇ Télécharger PDF</a>
+      <?php endif; ?>
       <button class="btn-principal" onclick="window.print()">🖨 Imprimer</button>
       <span class="spacer"></span>
     </div>
@@ -1187,10 +1206,11 @@ function page_analyses(): void
       <h2>1. Ristournes à retirer dans plusieurs agences — <?= count($parCode) ?> client(s)</h2>
       <p class="note">Regroupement par <b>code client</b> — plus fiable que le nom, il détecte aussi
         les variantes d'orthographe d'un même client (signalées ⚠). Montants de l'exercice
-        <?= $annee ?>. <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=multi">⬇ CSV</a></p>
+        <?= $annee ?>. <?php if (perm('analyses.export')): ?><a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=multi">⬇ CSV</a><?php endif; ?></p>
       <?php if (!$parCode): ?>
         <div class="vide">Aucun client multi-agences.</div>
       <?php else: ?>
+        <div class="tab-scroll">
         <table class="tab">
           <thead><tr>
             <th>Code</th><th>Client</th><th>Agence</th><th class="num">Montant (BLP)</th><th class="no-print">Aperçu</th>
@@ -1215,15 +1235,17 @@ function page_analyses(): void
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       <?php endif; ?>
 
       <h2>2. Même nom, codes différents — homonymes ou même client ? — <?= count($homoNoms) ?> nom(s)</h2>
       <p class="note">Même nom dans plusieurs agences avec des codes différents ou manquants : à vérifier
         dans l'ERP (même client enregistré sous deux codes, ou deux personnes distinctes ?).
-        <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=homo">⬇ CSV</a></p>
+        <?php if (perm('analyses.export')): ?><a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=homo">⬇ CSV</a><?php endif; ?></p>
       <?php if (!$homonymes): ?>
         <div class="vide">Aucun.</div>
       <?php else: ?>
+        <div class="tab-scroll">
         <table class="tab">
           <thead><tr>
             <th>Client</th><th>Code</th><th>Agence</th><th class="num">Montant (BLP)</th><th class="no-print">Aperçu</th>
@@ -1240,16 +1262,18 @@ function page_analyses(): void
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       <?php endif; ?>
 
       <h2>3. Noms à un seul mot — prénom seul probable — <?= count($unMot) ?> ligne(s)</h2>
       <p class="note">Nom sans espace (les mentions entre parenthèses sont exclues). Les noms
         d'entreprise sont signalés quand un suffixe typique (CAM, PRO) ou un titre (M./MME) est
         détecté ; le reste est « à vérifier » à la main dans l'ERP.
-        <a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=prenom">⬇ CSV</a></p>
+        <?php if (perm('analyses.export')): ?><a class="btn-mini no-print" href="index.php?p=analyses&amp;annee=<?= $annee ?>&amp;export=prenom">⬇ CSV</a><?php endif; ?></p>
       <?php if (!$unMot): ?>
         <div class="vide">Aucun.</div>
       <?php else: ?>
+        <div class="tab-scroll">
         <table class="tab">
           <thead><tr>
             <th>Client</th><th>Agence</th><th>Code</th><th class="num">Montant (BLP)</th><th>Remarque</th><th class="no-print">Aperçu</th>
@@ -1267,6 +1291,7 @@ function page_analyses(): void
             <?php endforeach; ?>
           </tbody>
         </table>
+        </div>
       <?php endif; ?>
     </div>
     <?php
@@ -1279,6 +1304,214 @@ function page_analyses_pdf(): void
     page_analyses();
     $html = ob_get_clean();
     html_vers_pdf($html, 'Analyses_clients_' . ((int) ($_GET['annee'] ?? 2025)) . '.pdf');
+}
+
+/* ---------------------------------------------------------------
+ * Liste des gagnants : code, nom, agence, montant et QR (texte),
+ * classée par agence par défaut — tri au choix dans le formulaire,
+ * impression directe (Ctrl+P) ou export PDF.
+ * --------------------------------------------------------------- */
+function page_gagnants(): void
+{
+    $db = db();
+    $annees = $db->query('SELECT DISTINCT substr(mois,1,4) FROM detail ORDER BY 1')
+                 ->fetchAll(PDO::FETCH_COLUMN);
+    $annee = (int) ($_GET['annee'] ?? (int) end($annees));
+    if (!in_array((string) $annee, $annees, true)) {
+        $annee = (int) end($annees);
+    }
+
+    /* Montant du chèque : somme des gains de l'exercice — calcul identique à
+       l'aperçu, le QR (texte) affiché est donc le même que sur le chèque. */
+    $st = $db->prepare('SELECT tiers, agence, SUM(total_mois) AS m FROM detail
+                        WHERE mois LIKE ? GROUP BY tiers, agence');
+    $st->execute([$annee . '-%']);
+    $montant = [];
+    foreach ($st->fetchAll() as $r) {
+        $montant[$r['tiers'] . '|' . $r['agence']] = (float) $r['m'];
+    }
+
+    $triVoulu = (string) ($_GET['tri'] ?? 'agence');
+    $tri = in_array($triVoulu, ['agence', 'nom', 'code', 'montant'], true) ? $triVoulu : 'agence';
+
+    $gagnants = [];
+    foreach ($db->query('SELECT tiers, agence, code FROM clients
+                         ORDER BY tiers COLLATE NOCASE, agence')->fetchAll() as $c) {
+        $m = $montant[$c['tiers'] . '|' . $c['agence']] ?? 0.0;
+        if ($m <= 0) {
+            continue;   // seuls les gagnants de l'exercice figurent dans la liste
+        }
+        $uuid = qr_uuid((string) $c['tiers'], (string) $c['agence'], $annee);
+        $gagnants[] = [
+            'code'    => (string) $c['code'],
+            'tiers'   => (string) $c['tiers'],
+            'agence'  => (string) $c['agence'],
+            'montant' => $m,
+            'qr'      => qr_code_court((string) $c['tiers'], (string) $c['agence'], $annee, $m, $uuid),
+        ];
+    }
+
+    switch ($tri) {
+        case 'nom':
+            usort($gagnants, function (array $a, array $b): int {
+                return strcasecmp($a['tiers'], $b['tiers']) ?: strcasecmp($a['agence'], $b['agence']);
+            });
+            break;
+        case 'code':
+            usort($gagnants, function (array $a, array $b): int {
+                return strnatcasecmp($a['code'], $b['code']) ?: strcasecmp($a['tiers'], $b['tiers']);
+            });
+            break;
+        case 'montant':
+            usort($gagnants, function (array $a, array $b): int {
+                return $b['montant'] <=> $a['montant'] ?: strcasecmp($a['tiers'], $b['tiers']);
+            });
+            break;
+        default: // agence
+            usort($gagnants, function (array $a, array $b): int {
+                return strcasecmp($a['agence'], $b['agence']) ?: strcasecmp($a['tiers'], $b['tiers']);
+            });
+    }
+    $tri_labels = ['agence' => 'Agence', 'nom' => 'Nom',
+                   'code' => 'Code', 'montant' => 'Montant (décroissant)'];
+
+    /* Impression classée par agence : regroupement en sections, chaque agence
+       commence une nouvelle page (les autres tris restent un tableau continu). */
+    $groupes = [];
+    $idxGroupe = [];
+    foreach ($gagnants as $g) {
+        $cle = strtolower($g['agence']);
+        if (!isset($idxGroupe[$cle])) {
+            $idxGroupe[$cle] = count($groupes);
+            $groupes[] = ['agence' => $g['agence'], 'rows' => []];
+        }
+        $groupes[$idxGroupe[$cle]]['rows'][] = $g;
+    }
+    $parAgence = $tri === 'agence';
+    $totalGeneral = array_sum(array_column($gagnants, 'montant'));
+
+    page_debut('Liste des gagnants — Ristournes');
+    ?>
+    <div class="toolbar">
+      <?php if (perm('gagnants.export')): ?>
+      <a class="btn-pdf" href="index.php?p=gagnants_pdf&amp;annee=<?= $annee ?>&amp;tri=<?= e($tri) ?>"
+         title="Génère le PDF via le navigateur (peut prendre quelques secondes)">⬇ Télécharger PDF</a>
+      <?php endif; ?>
+      <button class="btn-principal" onclick="window.print()">🖨 Imprimer</button>
+      <span class="spacer"></span>
+      <span class="tb-info"><?= count($gagnants) ?> gagnant(s) · <?= $annee ?></span>
+    </div>
+    <div class="wrap-suivi gagnants-wrap">
+      <h1 class="no-print">🏆 Liste des gagnants — Ristournes <?= $annee ?></h1>
+      <p class="sous-titre no-print">Code, nom, agence, montant et code QR (texte) de chaque gagnant.
+        Le code QR affiché est identique à celui imprimé sur le chèque.
+        À l'impression, chaque agence commence une nouvelle page ; le nom de l'agence,
+        l'entête et le pied de page figurent sur chaque feuille A4.</p>
+
+      <form method="get" action="index.php" class="ligne-annees no-print">
+        <input type="hidden" name="p" value="gagnants">
+        <label>Année
+          <select name="annee" onchange="this.form.submit()">
+            <?php foreach ($annees as $a): ?>
+              <option value="<?= e($a) ?>" <?= (int) $a === $annee ? 'selected' : '' ?>><?= e($a) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </label>
+        <label>Classer par
+          <select name="tri" onchange="this.form.submit()">
+            <?php foreach ($tri_labels as $v => $lab): ?>
+              <option value="<?= $v ?>" <?= $v === $tri ? 'selected' : '' ?>><?= e($lab) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </label>
+      </form>
+
+      <?php if (!$gagnants): ?>
+        <div class="vide">Aucun gagnant pour cette année.</div>
+      <?php else: ?>
+        <?php if ($parAgence): ?>
+          <?php foreach ($groupes as $gr): $totA = array_sum(array_column($gr['rows'], 'montant')); ?>
+            <section class="agence-bloc">
+              <!-- Le titre de l'agence est dans le thead : il se répète ainsi
+                   en haut de CHAQUE page du tableau (y compris les pages de
+                   continuation d'une agence qui s'étend sur plusieurs pages). -->
+              <div class="tab-scroll">
+              <table class="tab gagnants-tab gagnants-tab-4">
+                <thead>
+                  <tr class="agence-ligne"><th colspan="4"><?= e($gr['agence']) ?> — <?= count($gr['rows']) ?> gagnant(s) · <?= fmt_f($totA) ?> BLP</th></tr>
+                  <tr>
+                    <th>Code</th><th>Nom</th><th class="num">Montant (BLP)</th><th>QR (texte)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($gr['rows'] as $g): ?>
+                    <tr>
+                      <td><?= e($g['code']) ?></td>
+                      <td><?= e($g['tiers']) ?></td>
+                      <td class="num"><?= fmt_f($g['montant']) ?></td>
+                      <td class="qr-texte"><?= e($g['qr']) ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                  <tr class="tot">
+                    <td colspan="2">Total <?= e($gr['agence']) ?></td>
+                    <td class="num"><?= fmt_f($totA) ?></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </section>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="tab-scroll">
+          <table class="tab gagnants-tab gagnants-tab-5">
+            <thead><tr>
+              <th>Code</th><th>Nom</th><th>Agence</th><th class="num">Montant (BLP)</th><th>QR (texte)</th>
+            </tr></thead>
+            <tbody>
+              <?php foreach ($gagnants as $g): ?>
+                <tr>
+                  <td><?= e($g['code']) ?></td>
+                  <td><?= e($g['tiers']) ?></td>
+                  <td><?= e($g['agence']) ?></td>
+                  <td class="num"><?= fmt_f($g['montant']) ?></td>
+                  <td class="qr-texte"><?= e($g['qr']) ?></td>
+                </tr>
+              <?php endforeach; ?>
+              <tr class="tot">
+                <td colspan="3">Total — <?= count($gagnants) ?> gagnant(s)</td>
+                <td class="num"><?= fmt_f($totalGeneral) ?></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+    <!-- Entête et pied de page fixes : visibles uniquement à l'impression,
+         répétés sur chaque feuille A4 (position: fixed) -->
+    <div class="entete-page">
+      <?php render_entete(['uuid' => ''], $GLOBALS['cfg'], 'LISTE DES GAGNANTS — RISTOURNES ' . $annee); ?>
+    </div>
+    <div class="pied-page">
+      <footer class="pied">
+        <div class="pied-lignes">
+          <?php foreach ($GLOBALS['cfg']['pied'] as $l): if ($l !== '' && $l !== '…'): ?><div><?= e($l) ?></div><?php endif; endforeach; ?>
+        </div>
+        <div class="pied-uuid">Total général : <?= fmt_f($totalGeneral) ?> BLP · Document généré le <?= date('d/m/Y à H:i') ?> · <?= count($gagnants) ?> gagnant(s)</div>
+      </footer>
+    </div>
+    <?php
+    page_fin();
+}
+
+function page_gagnants_pdf(): void
+{
+    ob_start();
+    page_gagnants();
+    $html = ob_get_clean();
+    html_vers_pdf($html, 'Gagnants_' . ((int) ($_GET['annee'] ?? 2025)) . '.pdf');
 }
 
 /** Envoie un CSV (BOM UTF-8, séparateur « ; » — Excel FR) en téléchargement. */
@@ -1301,11 +1534,6 @@ function page_verifier(): void
     $res = $code === '' ? null : verifier_code($code);
     page_debut('Vérifier un document — Ristournes');
     ?>
-    <div class="toolbar">
-      <a class="lien-retour" href="index.php?p=form">← Retour au formulaire</a>
-      <span class="spacer"></span>
-      <a class="lien-retour" href="index.php?p=apercu">Aperçu →</a>
-    </div>
     <div class="wrap-verif">
       <h1>🔎 Vérification d'un document</h1>
       <p class="sous-titre">Collez le code obtenu en scannant le QR du document, ou tapez le <b>N° du document</b> imprimé en haut à droite (8 caractères, ex. <code>3fa9c1d2</code>).</p>
@@ -1324,25 +1552,98 @@ function page_verifier(): void
  * Routage
  * --------------------------------------------------------------- */
 $p = $_GET['p'] ?? 'form';
-if ($p === 'form') {
-    render_form();
-} elseif ($p === 'pdf') {
-    render_pdf();
-} elseif ($p === 'apercu' || $p === 'imprimer') {
-    render_documents(charger_documents(), $p === 'imprimer');
-} elseif ($p === 'suivi') {
-    page_suivi();
-} elseif ($p === 'analyses') {
-    page_analyses();
-} elseif ($p === 'analyses_pdf') {
-    page_analyses_pdf();
+
+if ($p === 'login') {
+    page_login();
+} elseif ($p === 'logout') {
+    auth_logout();
+} elseif ($p === 'changer_mdp') {
+    page_changer_mdp();          // exige la connexion (require_login interne)
+} elseif ($p === 'utilisateurs') {
+    require_perm('admin.users');
+    page_utilisateurs();
+} elseif ($p === 'roles') {
+    require_perm('admin.roles');
+    page_roles();
 } elseif ($p === 'suivi_api') {
+    /* API JSON : réponses 401/403 en JSON, jamais de redirection
+       (les appels fetch font r.json() inconditionnellement). */
     header('Content-Type: application/json; charset=UTF-8');
-    $req = json_decode((string) file_get_contents('php://input'), true);
-    echo json_encode(suivi_action(is_array($req) ? $req : []), JSON_UNESCAPED_UNICODE);
-} elseif ($p === 'verifier') {
-    page_verifier();
+    if (!csrf_valide($_SERVER['HTTP_X_CSRF_TOKEN'] ?? null)) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'message' => 'Jeton CSRF manquant ou invalide.'], JSON_UNESCAPED_UNICODE);
+    } elseif (current_user() === null) {
+        http_response_code(401);
+        echo json_encode(['ok' => false, 'message' => 'Session expirée — reconnectez-vous.'], JSON_UNESCAPED_UNICODE);
+    } else {
+        $req = json_decode((string) file_get_contents('php://input'), true);
+        $req = is_array($req) ? $req : [];
+        $action = (string) ($req['action'] ?? '');
+        $cleAction = [
+            'log' => 'doc.create', 'log_lot' => 'doc.create', 'marquer' => 'doc.create',
+            'ajuster' => 'suivi.edit', 'reset' => 'suivi.edit',
+        ];
+        if (!isset($cleAction[$action])) {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'message' => 'Action inconnue.'], JSON_UNESCAPED_UNICODE);
+        } elseif (!perm($cleAction[$action])) {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'message' => 'Permission insuffisante pour cette action.'], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(suivi_action($req), JSON_UNESCAPED_UNICODE);
+        }
+    }
 } else {
-    http_response_code(404);
-    echo 'Page inconnue.';
+    /* Pages normales : une permission par page. */
+    $carte = [
+        'form'          => 'doc.view',
+        'apercu'        => 'doc.view',
+        'imprimer'      => 'doc.view',
+        'pdf'           => 'doc.pdf',
+        'suivi'         => 'suivi.view',
+        'analyses'      => 'analyses.view',
+        'analyses_pdf'  => 'analyses.export',
+        'gagnants'      => 'gagnants.view',
+        'gagnants_pdf'  => 'gagnants.export',
+        'verifier'      => 'verif.use',
+    ];
+    if (!isset($carte[$p])) {
+        http_response_code(404);
+        if (current_user() !== null) {
+            page_debut('Page inconnue — Ristournes');
+            ?>
+            <div class="wrap-form"><h1>Page inconnue</h1>
+              <p><a class="btn-mini" href="<?= e(premiere_page()) ?>">Retour à l'accueil</a></p></div>
+            <?php
+            page_fin();
+        } else {
+            echo 'Page inconnue.';
+        }
+    } else {
+        require_perm($carte[$p]);
+        /* Cas particulier : l'export CSV s'exécute avant page_debut,
+           il exige une permission distincte de la consultation. */
+        if ($p === 'analyses' && ($_GET['export'] ?? '') !== '') {
+            require_perm('analyses.export');
+        }
+        if ($p === 'form') {
+            render_form();
+        } elseif ($p === 'pdf') {
+            render_pdf();
+        } elseif ($p === 'apercu' || $p === 'imprimer') {
+            render_documents(charger_documents(), $p === 'imprimer');
+        } elseif ($p === 'suivi') {
+            page_suivi();
+        } elseif ($p === 'analyses') {
+            page_analyses();
+        } elseif ($p === 'analyses_pdf') {
+            page_analyses_pdf();
+        } elseif ($p === 'gagnants') {
+            page_gagnants();
+        } elseif ($p === 'gagnants_pdf') {
+            page_gagnants_pdf();
+        } elseif ($p === 'verifier') {
+            page_verifier();
+        }
+    }
 }
