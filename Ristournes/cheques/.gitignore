@@ -5,6 +5,11 @@ data/sign.key
 # Base des comptes et rôles (hashs de mots de passe) — jamais versionnée
 data/users.sqlite
 
+# Toutes les données locales (clients, uuids, compteurs, codes, clés, PDFs
+# d'essai) — jamais versionnées : le dépôt est public, transfert par
+# SSH/SFTP uniquement (voir DEPLOIEMENT.md)
+data/*
+
 # Logs du serveur de dev local (php -S) — jamais versionnés
 php_server.log
 php_server_errors.log
