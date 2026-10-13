@@ -249,6 +249,26 @@ legend { font-weight: 600; padding: 0 6px; color: var(--accent); }
 .verif-card .avert { font-size: 13px; color: #8a5a00; margin-top: 8px; }
 .verif-card .conseil { font-size: 13px; color: var(--mineur); margin-top: 8px; }
 
+/* Paiements : bouton « Marquer comme déjà payé » + liste des payés */
+.paie-bloc { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.paie-paye {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  background: #d8f2e2; border: 1px solid #0e7a3d; color: #0e7a3d;
+  font-size: 13px; font-weight: 600;
+}
+.paie-sect { margin-top: 26px; border-top: 1px solid var(--grille); padding-top: 14px; }
+.paie-sect h2 { font-size: 17px; margin: 0 0 10px; }
+.paie-filtres { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.paie-filtres select, .paie-filtres input[type="text"] {
+  padding: 5px 8px; border: 1px solid var(--grille); border-radius: 3px; font: inherit;
+}
+.paie-filtres input[type="text"] { flex: 0 1 180px; }
+.paie-compteur {
+  display: inline-block; margin: 12px 0 8px; padding: 5px 12px;
+  background: var(--accent); color: #fff; border-radius: 4px;
+  font-size: 14px; font-weight: 700;
+}
+
 /* ---------------------------------------------------------------
  * Documents (chèque / listing) — ½ A4 en longueur : 186 × 128 mm
  * (A5 paysage 210 × 148 mm − marges 12+12, 10+10)

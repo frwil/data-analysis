@@ -31,6 +31,16 @@ function db_suivi(): PDO
         )");
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_imp_uuid_type ON impressions(uuid, type)');
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_imp_moment ON impressions(moment)');
+        /* Paiements des ristournes : journal ±1 par document (même
+           philosophie que impressions — l'historique reste complet). */
+        $pdo->exec("CREATE TABLE IF NOT EXISTS paiements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid TEXT NOT NULL,
+            delta INTEGER NOT NULL DEFAULT 0,
+            par TEXT,
+            moment TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+        )");
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_paie_uuid ON paiements(uuid)');
     }
     return $pdo;
 }
@@ -152,11 +162,134 @@ function badge_imp(?array $s): string
 }
 
 /* ---------------------------------------------------------------
+ * Paiements des ristournes (bouton « Marquer comme déjà payé »
+ * de la page Vérifier). État dérivé : SUM(delta) > 0 = payé.
+ * --------------------------------------------------------------- */
+
+/** État de paiement d'un document : null si jamais payé, sinon
+ *  ['paye' => true, 'par' => username, 'moment' => dernière écriture]. */
+function paiement_etat(string $uuid): ?array
+{
+    if (!preg_match('/^[0-9a-f-]{36}$/i', $uuid)) {
+        return null;
+    }
+    $s = db_suivi();
+    $st = $s->prepare('SELECT COALESCE(SUM(delta), 0) FROM paiements WHERE uuid = ?');
+    $st->execute([$uuid]);
+    if ((int) $st->fetchColumn() <= 0) {
+        return null;
+    }
+    $st = $s->prepare('SELECT par, moment FROM paiements WHERE uuid = ? ORDER BY id DESC LIMIT 1');
+    $st->execute([$uuid]);
+    $r = $st->fetch();
+    return ['paye' => true,
+            'par' => (string) ($r['par'] ?? ''),
+            'moment' => (string) ($r['moment'] ?? '')];
+}
+
+/** Marque (ou démarque) un document comme déjà payé. Écriture ±1 dans le
+ *  journal — gardes : uuid valide et présent dans la base qr, pas de
+ *  double +1 ni de -1 sans +1 préalable. */
+function paiement_marquer(string $uuid, bool $paye, string $par): array
+{
+    if (!preg_match('/^[0-9a-f-]{36}$/i', $uuid)) {
+        return ['ok' => false, 'message' => 'document introuvable'];
+    }
+    $st = db_qr()->prepare('SELECT 1 FROM qr WHERE uuid = ?');
+    $st->execute([$uuid]);
+    if (!$st->fetchColumn()) {
+        return ['ok' => false, 'message' => 'document introuvable'];
+    }
+    $deja = paiement_etat($uuid) !== null;
+    if ($paye === $deja) {
+        return ['ok' => false, 'message' => $paye
+            ? 'ce client est déjà marqué comme payé'
+            : 'ce client n\'est pas marqué comme payé'];
+    }
+    db_suivi()->prepare('INSERT INTO paiements (uuid, delta, par) VALUES (?, ?, ?)')
+              ->execute([$uuid, $paye ? 1 : -1, $par !== '' ? $par : null]);
+    return ['ok' => true, 'paye' => $paye];
+}
+
+/** Liste des clients avec leur état de paiement, filtrée (agence, code,
+ *  nom) — exercice courant = MAX(annee) de la base qr.
+ *  Retour : ['lignes' => […], 'payes' => n, 'total' => n].
+ *  Chaque ligne : tiers, agence, code, uuid (null si jamais imprimé),
+ *  'detail' => ['par','moment'] si payé, sinon null.
+ *  Les bases sont séparées (ristournes/qr/suivi) : pas de jointure SQL,
+ *  combinaison en PHP comme dans suivi_stats_par_client(). */
+function paiements_liste(array $filtre): array
+{
+    $agence = trim((string) ($filtre['agence'] ?? ''));
+    $code = trim((string) ($filtre['code'] ?? ''));
+    $nom = trim((string) ($filtre['nom'] ?? ''));
+
+    /* Clients filtrés (base ristournes) */
+    $conds = ['1=1'];
+    $args = [];
+    if ($agence !== '') { $conds[] = 'agence = ?'; $args[] = $agence; }
+    if ($code !== '') { $conds[] = 'code LIKE ?'; $args[] = $code . '%'; }
+    if ($nom !== '') { $conds[] = 'tiers LIKE ?'; $args[] = '%' . $nom . '%'; }
+    $st = db()->prepare('SELECT tiers, agence, code FROM clients WHERE '
+        . implode(' AND ', $conds)
+        . ' ORDER BY agence COLLATE NOCASE, tiers COLLATE NOCASE');
+    $st->execute($args);
+    $lignes = $st->fetchAll();
+
+    /* uuids de l'exercice courant (base qr) */
+    $annee = (int) db_qr()->query('SELECT COALESCE(MAX(annee), 0) FROM qr')->fetchColumn();
+    $st = db_qr()->prepare('SELECT uuid, tiers, agence FROM qr WHERE annee = ?');
+    $st->execute([$annee]);
+    $uuidParClient = [];
+    foreach ($st->fetchAll() as $r) {
+        $uuidParClient[$r['tiers'] . '|' . $r['agence']] = (string) $r['uuid'];
+    }
+
+    /* sommes des paiements (base suivi) */
+    $sommes = [];
+    foreach (db_suivi()->query('SELECT uuid, SUM(delta) AS n FROM paiements GROUP BY uuid')->fetchAll() as $r) {
+        $sommes[(string) $r['uuid']] = (int) $r['n'];
+    }
+
+    $payes = 0;
+    foreach ($lignes as &$l) {
+        $uuid = $uuidParClient[$l['tiers'] . '|' . $l['agence']] ?? null;
+        $l['uuid'] = $uuid;
+        $l['n'] = $uuid !== null ? (int) ($sommes[$uuid] ?? 0) : 0;
+        if ($l['n'] > 0) {
+            $payes++;
+        }
+        $l['detail'] = null;
+    }
+    unset($l);
+
+    /* auteur et date du dernier événement, pour les lignes payées uniquement */
+    if ($payes > 0) {
+        $detail = [];
+        foreach (db_suivi()->query(
+            'SELECT p.uuid, p.par, p.moment FROM paiements p
+             JOIN (SELECT uuid, MAX(id) AS mx FROM paiements GROUP BY uuid) m ON m.mx = p.id'
+        )->fetchAll() as $d) {
+            $detail[(string) $d['uuid']] = ['par' => (string) $d['par'], 'moment' => (string) $d['moment']];
+        }
+        foreach ($lignes as &$l) {
+            if ($l['n'] > 0) {
+                $l['detail'] = $detail[$l['uuid']] ?? null;
+            }
+        }
+    }
+
+    return ['lignes' => $lignes, 'payes' => $payes, 'total' => count($lignes)];
+}
+
+/* ---------------------------------------------------------------
  * API JSON (p=suivi_api) — actions :
  *   log     {uuid, type, statut}            directe : reussi (+1) sinon 0
  *   log_lot {type, statut, delta, uuids[]}  une écriture par uuid
  *   ajuster {uuid, type}                    -1 (seulement si compteur > 0)
  *   reset   {uuid, type}                    delta = -compteur courant
+ *   payer   {uuid}                          marque le document comme payé (+1)
+ *   depayer {uuid}                          annule le marquage payé (-1)
  * --------------------------------------------------------------- */
 function suivi_action(array $r): array
 {
@@ -231,6 +364,12 @@ function suivi_action(array $r): array
             }
             suivi_log($uuid, 'directe', 'reussi', 1, 'marqué manuellement comme déjà imprimé');
             return ['ok' => true, 'compteurs' => suivi_compteurs($uuid)];
+
+        case 'payer':
+        case 'depayer':
+            $u = current_user();
+            return paiement_marquer($uuid, $action === 'payer',
+                                    is_array($u) ? (string) ($u['username'] ?? '') : '');
     }
     return ['ok' => false, 'message' => 'action inconnue'];
 }

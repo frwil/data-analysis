@@ -40,6 +40,7 @@ Application PHP locale d'édition des **chèques de ristourne** et **listings d'
 1. Construire la base : `python _build_cheques_db.py` (après `restitution_finale.py`).
 2. Lancer le serveur : `php -S localhost:8123 router.php` depuis le dossier `cheques/`, puis ouvrir
    `http://localhost:8123`.
+3. Mise en ligne sur un hébergeur (AlwaysData…) : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 
 **Connexion & rôles**
 - L'application exige une connexion (page de login, sessions 8 h). Au premier accès, les

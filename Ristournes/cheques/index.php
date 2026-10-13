@@ -520,6 +520,11 @@ function trouver_navigateur(): ?string
         'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
         'C:/Program Files/Google/Chrome/Application/chrome.exe',
         'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+        /* Linux (ex. VPS AlwaysData : apt install chromium) */
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
     ] as $p) {
         if (is_file($p)) {
             return $p;
@@ -959,6 +964,28 @@ function verif_par_uuid(string $uuid, ?array $signe): array
     return $out;
 }
 
+/** Bloc « paiement » d'une .verif-card : état payé + bouton marquer/démarquer.
+ *  N'affiché que si le document est retrouvé en base (tiers connu). */
+function render_paiement_bloc(array $res): void
+{
+    if (empty($res['uuid']) || empty($res['tiers'])) {
+        return;
+    }
+    $etat = paiement_etat((string) $res['uuid']);
+    ?>
+    <div class="paie-bloc">
+      <?php if ($etat !== null): ?>
+        <span class="paie-paye">✅ Déjà payé<?= $etat['par'] !== '' ? ' — par ' . e($etat['par']) : '' ?><?= $etat['moment'] !== '' ? ' le ' . e($etat['moment']) : '' ?></span>
+        <button type="button" class="btn-mini" data-paiement="0"
+                data-uuid="<?= e((string) $res['uuid']) ?>">↩ Annuler le paiement</button>
+      <?php else: ?>
+        <button type="button" class="btn-principal" data-paiement="1"
+                data-uuid="<?= e((string) $res['uuid']) ?>">💵 Marquer comme déjà payé</button>
+      <?php endif; ?>
+    </div>
+    <?php
+}
+
 /** Rendu du résultat + ré-affichage du document concerné pour comparaison. */
 function render_verif_resultat(array $res): void
 {
@@ -984,6 +1011,7 @@ function render_verif_resultat(array $res): void
           <?php if ($ecart): ?>
             <div class="avert">⚠ Le montant signé (<?= fmt_f((float) $s['m']) ?>) diffère du montant actuel en base (<?= fmt_f((float) $res['montant_base']) ?>) — vérifier la version du document.</div>
           <?php endif; ?>
+          <?php render_paiement_bloc($res); ?>
         </div>
         <?php
     } elseif ($res['statut'] === 'trouve') {
@@ -998,6 +1026,7 @@ function render_verif_resultat(array $res): void
             <tr><td>N° du document</td><td><?= e($uuid) ?></td></tr>
           </table>
           <div class="avert">Ce code n'est pas une preuve cryptographique : comparez visuellement le document ci-dessous avec le papier.</div>
+          <?php render_paiement_bloc($res); ?>
         </div>
         <?php
     } elseif ($res['statut'] === 'plusieurs') {
@@ -1532,6 +1561,10 @@ function page_verifier(): void
 {
     $code = trim((string) ($_GET['code'] ?? ''));
     $res = $code === '' ? null : verifier_code($code);
+    $f_agence = trim((string) ($_GET['f_agence'] ?? ''));
+    $f_code = trim((string) ($_GET['f_code'] ?? ''));
+    $f_nom = trim((string) ($_GET['f_nom'] ?? ''));
+    $liste = paiements_liste(['agence' => $f_agence, 'code' => $f_code, 'nom' => $f_nom]);
     page_debut('Vérifier un document — Ristournes');
     ?>
     <div class="wrap-verif">
@@ -1543,6 +1576,39 @@ function page_verifier(): void
         <div class="barre-actions"><button type="submit" class="btn-principal">Vérifier</button></div>
       </form>
       <?php if ($res !== null) { render_verif_resultat($res); } ?>
+
+      <div class="paie-sect">
+        <h2>💵 Clients déjà payés</h2>
+        <form method="get" action="index.php" class="paie-filtres">
+          <input type="hidden" name="p" value="verifier">
+          <select name="f_agence" aria-label="Agence">
+            <option value="">Toutes les agences</option>
+            <?php foreach (db()->query('SELECT DISTINCT agence FROM clients ORDER BY agence COLLATE NOCASE')->fetchAll(PDO::FETCH_COLUMN) as $ag): ?>
+            <option value="<?= e((string) $ag) ?>" <?= $f_agence === (string) $ag ? 'selected' : '' ?>><?= e((string) $ag) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <input type="text" name="f_code" placeholder="Code client…" value="<?= e($f_code) ?>">
+          <input type="text" name="f_nom" placeholder="Nom du client…" value="<?= e($f_nom) ?>">
+          <button type="submit" class="btn-mini">Filtrer</button>
+        </form>
+        <p class="paie-compteur"><?= (int) $liste['payes'] ?> payés / <?= (int) $liste['total'] ?> clients</p>
+        <div class="tab-scroll">
+          <table class="tab">
+            <tr><th>Agence</th><th>Code</th><th>Client</th><th>État</th></tr>
+            <?php $n = 0; foreach ($liste['lignes'] as $l) { if (++$n > 200) { break; } ?>
+            <tr>
+              <td><?= e((string) $l['agence']) ?></td>
+              <td><?= e((string) $l['code']) ?></td>
+              <td><?= e((string) $l['tiers']) ?></td>
+              <td><?php if ($l['detail'] !== null): ?><span class="paie-paye">✅ le <?= e($l['detail']['moment']) ?><?= $l['detail']['par'] !== '' ? ' (' . e($l['detail']['par']) . ')' : '' ?></span><?php else: ?>—<?php endif; ?></td>
+            </tr>
+            <?php } ?>
+          </table>
+        </div>
+        <?php if (count($liste['lignes']) > 200): ?>
+          <p class="note-picker">Affichage limité aux 200 premières lignes — le compteur porte sur la totalité filtrée.</p>
+        <?php endif; ?>
+      </div>
     </div>
     <?php
     page_fin();
@@ -1582,6 +1648,7 @@ if ($p === 'login') {
         $cleAction = [
             'log' => 'doc.create', 'log_lot' => 'doc.create', 'marquer' => 'doc.create',
             'ajuster' => 'suivi.edit', 'reset' => 'suivi.edit',
+            'payer' => 'verif.use', 'depayer' => 'verif.use',
         ];
         if (!isset($cleAction[$action])) {
             http_response_code(403);

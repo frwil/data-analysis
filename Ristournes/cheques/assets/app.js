@@ -348,6 +348,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /* ---- Paiements (page Vérifier) : « Marquer comme déjà payé » ---- */
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target && ev.target.closest ? ev.target.closest('[data-paiement]') : null;
+    if (!btn) { return; }
+    ev.preventDefault();
+    var paye = btn.getAttribute('data-paiement') === '1';
+    btn.disabled = true;
+    fetch('index.php?p=suivi_api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
+      body: JSON.stringify({ action: paye ? 'payer' : 'depayer', uuid: btn.getAttribute('data-uuid') })
+    }).then(function (r) {
+      if (r.status === 401) { retourLogin(); return Promise.reject('expire'); }
+      return r.json();
+    })
+      .then(function (res) {
+        if (!res.ok) {
+          alert((paye ? 'Marquage' : 'Annulation') + ' impossible : ' + (res.message || 'erreur inconnue'));
+          btn.disabled = false;
+          return;
+        }
+        /* Le code est dans l'URL : le rechargement refait la vérification
+           et affiche l'état payé + le compteur à jour. */
+        window.location.reload();
+      })
+      .catch(function () {
+        alert('Erreur réseau — action non appliquée.');
+        btn.disabled = false;
+      });
+  });
+
   /* ---- Formulaire ---- */
   var form = document.getElementById('filtres');
   if (!form) { return; }
